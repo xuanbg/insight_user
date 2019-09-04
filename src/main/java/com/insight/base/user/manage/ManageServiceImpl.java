@@ -1,15 +1,15 @@
-package com.insight.base.user.service;
+package com.insight.base.user.manage;
 
-import com.insight.base.user.common.dto.UserDto;
 import com.insight.util.pojo.Reply;
+import com.insight.util.pojo.User;
 
 /**
  * @author 宣炳刚
  * @date 2019-09-01
- * @remark 用户服务
+ * @remark 用户管理服务
  */
 @org.springframework.stereotype.Service
-public class ServiceImpl implements Service {
+public class ManageServiceImpl implements ManageService {
     /**
      * 查询用户列表
      *
@@ -35,80 +35,69 @@ public class ServiceImpl implements Service {
     }
 
     /**
-     * 注册用户
+     * 新增用户
      *
      * @param dto 用户DTO
      * @return Reply
      */
     @Override
-    public Reply register(UserDto dto) {
+    public Reply newUser(User dto) {
         return null;
     }
 
     /**
-     * 更新用户信息
+     * 编辑用户
      *
      * @param dto 用户DTO
      * @return Reply
      */
     @Override
-    public Reply updateUser(UserDto dto) {
+    public Reply editUser(User dto) {
         return null;
     }
 
     /**
-     * 修改密码
+     * 删除用户
      *
-     * @param dto 用户DTO
+     * @param id 用户ID
      * @return Reply
      */
     @Override
-    public Reply changePassword(UserDto dto) {
+    public Reply deleteUser(String id) {
         return null;
     }
 
     /**
-     * 重置密码
+     * 改变用户禁用/启用状态
      *
-     * @param dto 用户DTO
+     * @param id     用户ID
+     * @param status 禁用/启用状态
      * @return Reply
      */
     @Override
-    public Reply resetPassword(UserDto dto) {
+    public Reply changeUserStatus(String id, boolean status) {
         return null;
     }
 
     /**
-     * 设置支付密码
+     * 重置用户密码
      *
-     * @param dto 用户DTO
+     * @param id 用户ID
      * @return Reply
      */
     @Override
-    public Reply setPayPassword(UserDto dto) {
+    public Reply resetPassword(String id) {
         return null;
     }
 
     /**
-     * 新增用户(供服务调用)
+     * 邀请用户
      *
-     * @param dto 用户DTO
+     * @param id 用户ID
      * @return Reply
      */
     @Override
-    public Reply newUser(UserDto dto) {
-        return null;
-    }
-
-    /**
-     * 验证支付密码(供服务调用)
-     *
-     * @param id       用户ID
-     * @param password 支付密码(MD5)
-     * @return Reply
-     */
-    @Override
-    public Reply verifyPayPw(String id, String password) {
+    public Reply inviteUser(String id) {
         return null;
     }
 }

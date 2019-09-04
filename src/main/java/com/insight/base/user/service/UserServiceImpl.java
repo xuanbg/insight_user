@@ -1,15 +1,15 @@
 package com.insight.base.user.service;
 
-import com.insight.base.user.common.dto.UserDto;
 import com.insight.util.pojo.Reply;
+import com.insight.util.pojo.User;
 
 /**
  * @author 宣炳刚
  * @date 2019-09-01
- * @remark 用户服务接口
+ * @remark 用户服务
  */
-public interface Service {
-
+@org.springframework.stereotype.Service
+public class UserServiceImpl implements UserService {
     /**
      * 查询用户列表
      *
@@ -18,7 +18,10 @@ public interface Service {
      * @param size 每页记录数
      * @return Reply
      */
-    Reply getUsers(String key, int page, int size);
+    @Override
+    public Reply getUsers(String key, int page, int size) {
+        return null;
+    }
 
     /**
      * 获取用户详情
@@ -26,7 +29,10 @@ public interface Service {
      * @param id 用户ID
      * @return Reply
      */
-    Reply getUser(String id);
+    @Override
+    public Reply getUser(String id) {
+        return null;
+    }
 
     /**
      * 注册用户
@@ -34,7 +40,10 @@ public interface Service {
      * @param dto 用户DTO
      * @return Reply
      */
-    Reply register(UserDto dto);
+    @Override
+    public Reply register(User dto) {
+        return null;
+    }
 
     /**
      * 更新用户信息
@@ -42,7 +51,10 @@ public interface Service {
      * @param dto 用户DTO
      * @return Reply
      */
-    Reply updateUser(UserDto dto);
+    @Override
+    public Reply updateUser(User dto) {
+        return null;
+    }
 
     /**
      * 修改密码
@@ -50,7 +62,10 @@ public interface Service {
      * @param dto 用户DTO
      * @return Reply
      */
-    Reply changePassword(UserDto dto);
+    @Override
+    public Reply changePassword(User dto) {
+        return null;
+    }
 
     /**
      * 重置密码
@@ -58,7 +73,10 @@ public interface Service {
      * @param dto 用户DTO
      * @return Reply
      */
-    Reply resetPassword(UserDto dto);
+    @Override
+    public Reply resetPassword(User dto) {
+        return null;
+    }
 
     /**
      * 设置支付密码
@@ -66,22 +84,20 @@ public interface Service {
      * @param dto 用户DTO
      * @return Reply
      */
-    Reply setPayPassword(UserDto dto);
-
-    /**
-     * 新增用户(供服务调用)
-     *
-     * @param dto 用户DTO
-     * @return Reply
-     */
-    Reply newUser(UserDto dto);
+    @Override
+    public Reply setPayPassword(User dto) {
+        return null;
+    }
 
     /**
      * 验证支付密码(供服务调用)
      *
-     * @param id       用户ID
-     * @param password 支付密码(MD5)
+     * @param id  用户ID
+     * @param key 支付密码(MD5)
      * @return Reply
      */
-    Reply verifyPayPw(String id, String password);
+    @Override
+    public Reply verifyPayPw(String id, String key) {
+        return null;
+    }
 }

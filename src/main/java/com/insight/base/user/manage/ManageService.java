@@ -1,15 +1,15 @@
 package com.insight.base.user.manage;
 
-import com.insight.base.user.common.dto.UserDto;
 import com.insight.util.pojo.Reply;
+import com.insight.util.pojo.User;
 
 /**
  * @author 宣炳刚
  * @date 2019-09-01
- * @remark 用户管理服务
+ * @remark 用户管理服务接口
  */
-@org.springframework.stereotype.Service
-public class ServiceImpl implements Service {
+public interface ManageService {
+
     /**
      * 查询用户列表
      *
@@ -18,10 +18,7 @@ public class ServiceImpl implements Service {
      * @param size 每页记录数
      * @return Reply
      */
-    @Override
-    public Reply getUsers(String key, int page, int size) {
-        return null;
-    }
+    Reply getUsers(String key, int page, int size);
 
     /**
      * 获取用户详情
@@ -29,10 +26,7 @@ public class ServiceImpl implements Service {
      * @param id 用户ID
      * @return Reply
      */
-    @Override
-    public Reply getUser(String id) {
-        return null;
-    }
+    Reply getUser(String id);
 
     /**
      * 新增用户
@@ -40,10 +34,7 @@ public class ServiceImpl implements Service {
      * @param dto 用户DTO
      * @return Reply
      */
-    @Override
-    public Reply newUser(UserDto dto) {
-        return null;
-    }
+    Reply newUser(User dto);
 
     /**
      * 编辑用户
@@ -51,10 +42,7 @@ public class ServiceImpl implements Service {
      * @param dto 用户DTO
      * @return Reply
      */
-    @Override
-    public Reply editUser(UserDto dto) {
-        return null;
-    }
+    Reply editUser(User dto);
 
     /**
      * 删除用户
@@ -62,10 +50,7 @@ public class ServiceImpl implements Service {
      * @param id 用户ID
      * @return Reply
      */
-    @Override
-    public Reply deleteUser(String id) {
-        return null;
-    }
+    Reply deleteUser(String id);
 
     /**
      * 改变用户禁用/启用状态
@@ -74,10 +59,7 @@ public class ServiceImpl implements Service {
      * @param status 禁用/启用状态
      * @return Reply
      */
-    @Override
-    public Reply changeUserStatus(String id, boolean status) {
-        return null;
-    }
+    Reply changeUserStatus(String id, boolean status);
 
     /**
      * 重置用户密码
@@ -85,10 +67,7 @@ public class ServiceImpl implements Service {
      * @param id 用户ID
      * @return Reply
      */
-    @Override
-    public Reply resetPassword(String id) {
-        return null;
-    }
+    Reply resetPassword(String id);
 
     /**
      * 邀请用户
@@ -96,8 +75,5 @@ public class ServiceImpl implements Service {
      * @param id 用户ID
      * @return Reply
      */
-    @Override
-    public Reply inviteUser(String id) {
-        return null;
-    }
+    Reply inviteUser(String id);
 }

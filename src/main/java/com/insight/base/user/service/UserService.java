@@ -1,14 +1,14 @@
-package com.insight.base.user.manage;
+package com.insight.base.user.service;
 
-import com.insight.base.user.common.dto.UserDto;
 import com.insight.util.pojo.Reply;
+import com.insight.util.pojo.User;
 
 /**
  * @author 宣炳刚
  * @date 2019-09-01
- * @remark 用户管理服务接口
+ * @remark 用户服务接口
  */
-public interface Service {
+public interface UserService {
 
     /**
      * 查询用户列表
@@ -29,51 +29,51 @@ public interface Service {
     Reply getUser(String id);
 
     /**
-     * 新增用户
+     * 注册用户
      *
      * @param dto 用户DTO
      * @return Reply
      */
-    Reply newUser(UserDto dto);
+    Reply register(User dto);
 
     /**
-     * 编辑用户
+     * 更新用户信息
      *
      * @param dto 用户DTO
      * @return Reply
      */
-    Reply editUser(UserDto dto);
+    Reply updateUser(User dto);
 
     /**
-     * 删除用户
+     * 修改密码
      *
-     * @param id 用户ID
+     * @param dto 用户DTO
      * @return Reply
      */
-    Reply deleteUser(String id);
+    Reply changePassword(User dto);
 
     /**
-     * 改变用户禁用/启用状态
+     * 重置密码
      *
-     * @param id     用户ID
-     * @param status 禁用/启用状态
+     * @param dto 用户DTO
      * @return Reply
      */
-    Reply changeUserStatus(String id, boolean status);
+    Reply resetPassword(User dto);
 
     /**
-     * 重置用户密码
+     * 设置支付密码
      *
-     * @param id 用户ID
+     * @param dto 用户DTO
      * @return Reply
      */
-    Reply resetPassword(String id);
+    Reply setPayPassword(User dto);
 
     /**
-     * 邀请用户
+     * 验证支付密码(供服务调用)
      *
-     * @param id 用户ID
+     * @param id  用户ID
+     * @param key 支付密码(MD5)
      * @return Reply
      */
-    Reply inviteUser(String id);
+    Reply verifyPayPw(String id, String key);
 }
