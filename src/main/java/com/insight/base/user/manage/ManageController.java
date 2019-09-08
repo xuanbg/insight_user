@@ -1,8 +1,11 @@
 package com.insight.base.user.manage;
 
+import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.util.pojo.Reply;
 import com.insight.util.pojo.User;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 /**
  * @author 宣炳刚
@@ -33,7 +36,7 @@ public class ManageController {
      * @return Reply
      */
     @GetMapping("/v1.0/users")
-    public Reply getUsers(String key, int page, int size){
+    public Reply getUsers(String key, int page, int size) {
         return service.getUsers(key, page, size);
     }
 
@@ -44,7 +47,7 @@ public class ManageController {
      * @return Reply
      */
     @GetMapping("/v1.0/users/{id}")
-    public Reply getUser(String id){
+    public Reply getUser(String id) {
         return service.getUser(id);
     }
 
@@ -55,7 +58,7 @@ public class ManageController {
      * @return Reply
      */
     @PostMapping("/v1.0/users")
-    public Reply newUser(User dto){
+    public Reply newUser(@Valid @RequestBody User dto) {
         return service.newUser(dto);
     }
 
@@ -66,7 +69,7 @@ public class ManageController {
      * @return Reply
      */
     @PutMapping("/v1.0/users")
-    public Reply editUser(User dto){
+    public Reply editUser(@Valid @RequestBody User dto) {
         return service.editUser(dto);
     }
 
@@ -76,8 +79,8 @@ public class ManageController {
      * @param id 用户ID
      * @return Reply
      */
-    @DeleteMapping("/v1.0/users/{id}")
-    public Reply deleteUser(String id){
+    @DeleteMapping("/v1.0/users")
+    public Reply deleteUser(@RequestBody String id) {
         return service.deleteUser(id);
     }
 
@@ -88,20 +91,20 @@ public class ManageController {
      * @param status 禁用/启用状态
      * @return Reply
      */
-    @PutMapping("/v1.0/users/{id}/status")
-    public Reply changeUserStatus(String id, boolean status){
+    @PutMapping("/v1.0/users/status")
+    public Reply changeUserStatus(@RequestBody String id, @RequestBody boolean status) {
         return service.changeUserStatus(id, status);
     }
 
     /**
      * 重置用户密码
      *
-     * @param id 用户ID
+     * @param dto 密码DTO
      * @return Reply
      */
-    @PutMapping("/v1.0/users/{id}/password")
-    public Reply resetPassword(String id){
-        return service.resetPassword(id);
+    @PutMapping("/v1.0/users/password")
+    public Reply resetPassword(@Valid PasswordDto dto) {
+        return service.resetPassword(dto);
     }
 
     /**
@@ -110,8 +113,8 @@ public class ManageController {
      * @param id 用户ID
      * @return Reply
      */
-    @PostMapping("/v1.0/users/{id}/relation")
-    public Reply inviteUser(String id){
+    @PostMapping("/v1.0/users/relation")
+    public Reply inviteUser(@RequestBody String id) {
         return service.inviteUser(id);
     }
 }

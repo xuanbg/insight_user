@@ -1,5 +1,6 @@
 package com.insight.base.user.service;
 
+import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.util.pojo.Reply;
 import com.insight.util.pojo.User;
 
@@ -59,22 +60,22 @@ public class UserServiceImpl implements UserService {
     /**
      * 修改密码
      *
-     * @param dto 用户DTO
+     * @param dto 密码DTO
      * @return Reply
      */
     @Override
-    public Reply changePassword(User dto) {
+    public Reply changePassword(PasswordDto dto) {
         return null;
     }
 
     /**
      * 重置密码
      *
-     * @param dto 用户DTO
+     * @param dto 密码DTO
      * @return Reply
      */
     @Override
-    public Reply resetPassword(User dto) {
+    public Reply resetPassword(PasswordDto dto) {
         return null;
     }
 

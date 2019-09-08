@@ -1,5 +1,6 @@
 package com.insight.base.user.service;
 
+import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.util.pojo.Reply;
 import com.insight.util.pojo.User;
 import org.springframework.web.bind.annotation.*;
@@ -73,22 +74,22 @@ public class UserController {
     /**
      * 修改密码
      *
-     * @param dto 用户DTO
+     * @param dto 密码DTO
      * @return Reply
      */
     @PutMapping("/v1.0/users/password")
-    public Reply changePassword(User dto) {
+    public Reply changePassword(PasswordDto dto) {
         return service.changePassword(dto);
     }
 
     /**
      * 重置密码
      *
-     * @param dto 用户DTO
+     * @param dto 密码DTO
      * @return Reply
      */
     @PostMapping("/v1.0/users/password")
-    public Reply resetPassword(User dto) {
+    public Reply resetPassword(PasswordDto dto) {
         return service.resetPassword(dto);
     }
 

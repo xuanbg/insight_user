@@ -1,5 +1,6 @@
 package com.insight.base.user.manage;
 
+import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.util.pojo.Reply;
 import com.insight.util.pojo.User;
 
@@ -82,11 +83,11 @@ public class ManageServiceImpl implements ManageService {
     /**
      * 重置用户密码
      *
-     * @param id 用户ID
+     * @param dto 密码DTO
      * @return Reply
      */
     @Override
-    public Reply resetPassword(String id) {
+    public Reply resetPassword(PasswordDto dto) {
         return null;
     }
 

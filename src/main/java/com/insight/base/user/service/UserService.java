@@ -1,5 +1,6 @@
 package com.insight.base.user.service;
 
+import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.util.pojo.Reply;
 import com.insight.util.pojo.User;
 
@@ -47,18 +48,18 @@ public interface UserService {
     /**
      * 修改密码
      *
-     * @param dto 用户DTO
+     * @param dto 密码DTO
      * @return Reply
      */
-    Reply changePassword(User dto);
+    Reply changePassword(PasswordDto dto);
 
     /**
      * 重置密码
      *
-     * @param dto 用户DTO
+     * @param dto 密码DTO
      * @return Reply
      */
-    Reply resetPassword(User dto);
+    Reply resetPassword(PasswordDto dto);
 
     /**
      * 设置支付密码
