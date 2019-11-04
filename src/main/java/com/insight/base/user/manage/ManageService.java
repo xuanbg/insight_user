@@ -1,6 +1,8 @@
 package com.insight.base.user.manage;
 
 import com.insight.base.user.common.dto.PasswordDto;
+import com.insight.base.user.common.dto.UserDto;
+import com.insight.util.pojo.LoginInfo;
 import com.insight.util.pojo.Reply;
 import com.insight.util.pojo.User;
 
@@ -14,12 +16,13 @@ public interface ManageService {
     /**
      * 查询用户列表
      *
-     * @param key  查询关键词
-     * @param page 分页页码
-     * @param size 每页记录数
+     * @param tenantId 租户ID
+     * @param keyword  查询关键词
+     * @param page     分页页码
+     * @param size     每页记录数
      * @return Reply
      */
-    Reply getUsers(String key, int page, int size);
+    Reply getUsers(String tenantId, String keyword, int page, int size);
 
     /**
      * 获取用户详情
@@ -32,49 +35,55 @@ public interface ManageService {
     /**
      * 新增用户
      *
-     * @param dto 用户DTO
+     * @param info 用户关键信息
+     * @param dto  用户DTO
      * @return Reply
      */
-    Reply newUser(User dto);
+    Reply newUser(LoginInfo info, User dto);
 
     /**
      * 编辑用户
      *
-     * @param dto 用户DTO
+     * @param info 用户关键信息
+     * @param dto  用户DTO
      * @return Reply
      */
-    Reply editUser(User dto);
+    Reply editUser(LoginInfo info, UserDto dto);
 
     /**
      * 删除用户
      *
-     * @param id 用户ID
+     * @param info 用户关键信息
+     * @param id   用户ID
      * @return Reply
      */
-    Reply deleteUser(String id);
+    Reply deleteUser(LoginInfo info, String id);
 
     /**
      * 改变用户禁用/启用状态
      *
+     * @param info   用户关键信息
      * @param id     用户ID
      * @param status 禁用/启用状态
      * @return Reply
      */
-    Reply changeUserStatus(String id, boolean status);
+    Reply changeUserStatus(LoginInfo info, String id, boolean status);
 
     /**
      * 重置用户密码
      *
-     * @param dto 密码DTO
+     * @param info 用户关键信息
+     * @param dto  密码DTO
      * @return Reply
      */
-    Reply resetPassword(PasswordDto dto);
+    Reply resetPassword(LoginInfo info, PasswordDto dto);
 
     /**
      * 邀请用户
      *
-     * @param id 用户ID
+     * @param info 用户关键信息
+     * @param id   用户ID
      * @return Reply
      */
-    Reply inviteUser(String id);
+    Reply inviteUser(LoginInfo info, String id);
 }

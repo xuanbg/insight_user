@@ -31,6 +31,6 @@ public class Listener {
     @RabbitHandler
     @RabbitListener(queues = "auth.user")
     public void receiveUser(User user) {
-        core.addUser(user);
+        core.addUser(user, null);
     }
 }
