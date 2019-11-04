@@ -3,6 +3,7 @@ package com.insight.base.user.manage;
 import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
 import com.insight.util.Json;
+import com.insight.util.ReplyHelper;
 import com.insight.util.pojo.LoginInfo;
 import com.insight.util.pojo.Reply;
 import com.insight.util.pojo.User;
@@ -55,6 +56,10 @@ public class ManageController {
      */
     @GetMapping("/v1.0/users/{id}")
     public Reply getUser(@PathVariable String id) {
+        if (id == null || id.isEmpty()) {
+            return ReplyHelper.invalidParam();
+        }
+
         return service.getUser(id);
     }
 
@@ -155,4 +160,35 @@ public class ManageController {
 
         return service.inviteUser(loginInfo, id);
     }
-}
+
+    /**
+     * 获取日志列表
+     *
+     * @param info    用户关键信息
+     * @param keyword 查询关键词
+     * @param page    分页页码
+     * @param size    每页记录数
+     * @return Reply
+     */
+    @GetMapping("/v1.0/users/logs")
+    public Reply getUserLogs(@RequestHeader("loginInfo") String info, @RequestParam(required = false) String keyword,
+                                 @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "20") int size) {
+        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+
+        return service.getUserLogs(loginInfo.getTenantId(), keyword, page, size);
+    }
+
+    /**
+     * 获取日志详情
+     *
+     * @param id 日志ID
+     * @return Reply
+     */
+    @GetMapping("/v1.0/users/logs/{id}")
+    Reply getUserLog(@PathVariable String id) {
+        if (id == null || id.isEmpty()) {
+            return ReplyHelper.invalidParam();
+        }
+
+        return service.getUserLog(id);
+    }}

@@ -10,10 +10,7 @@ import com.insight.base.user.common.mapper.UserMapper;
 import com.insight.util.Redis;
 import com.insight.util.ReplyHelper;
 import com.insight.util.Util;
-import com.insight.util.pojo.LoginInfo;
-import com.insight.util.pojo.OperateType;
-import com.insight.util.pojo.Reply;
-import com.insight.util.pojo.User;
+import com.insight.util.pojo.*;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -267,5 +264,39 @@ public class ManageServiceImpl implements ManageService {
         }
 
         return ReplyHelper.success();
+    }
+
+    /**
+     * 获取日志列表
+     *
+     * @param tenantId 租户ID
+     * @param keyword  查询关键词
+     * @param page     分页页码
+     * @param size     每页记录数
+     * @return Reply
+     */
+    @Override
+    public Reply getUserLogs(String tenantId, String keyword, int page, int size) {
+        PageHelper.startPage(page, size);
+        List<Log> logs = mapper.getLogs(tenantId, "用户管理", keyword);
+        PageInfo<Log> pageInfo = new PageInfo<>(logs);
+
+        return ReplyHelper.success(logs, pageInfo.getTotal());
+    }
+
+    /**
+     * 获取日志详情
+     *
+     * @param id 日志ID
+     * @return Reply
+     */
+    @Override
+    public Reply getUserLog(String id) {
+        Log log = mapper.getLog(id);
+        if (log == null) {
+            return ReplyHelper.fail("ID不存在,未读取数据");
+        }
+
+        return ReplyHelper.success(log);
     }
 }
