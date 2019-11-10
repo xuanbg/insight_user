@@ -62,6 +62,18 @@ public interface UserMapper {
     int matchUsers(@Param("id") String id, @Param("key") String key);
 
     /**
+     * 获取指定租户下指定编码的模板数量
+     *
+     * @param tenantId 租户ID
+     * @param code     模板编码
+     * @return 模板数量
+     */
+    @Select("<script>select count(*) from ibu_user u " +
+            "<if test = 'tenantId != null'>join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} </if>" +
+            "where u.code = #{code};</script>")
+    int getUserCount(@Param("tenantId") String tenantId, @Param("code") String code);
+
+    /**
      * 匹配租户下的用户数
      *
      * @param tenantId 租户ID
@@ -76,8 +88,17 @@ public interface UserMapper {
      *
      * @param user 用户DTO
      */
-    @Update("update ibu_user set name = #{name}, account = #{account}, mobile = #{mobile}, email = #{email}, remark = #{remark} where id = #{id};")
-    void editUser(UserDto user);
+    @Update("update ibu_user set name = #{name}, account = #{account}, mobile = #{mobile}, email = #{email}, head_img = #{headImg}, remark = #{remark} where id = #{id};")
+    void updateUser(UserDto user);
+
+    /**
+     * 更新密码
+     *
+     * @param id       用户ID
+     * @param password 新密码
+     */
+    @Update("update ibu_user set password = #{password} where id = #{id};")
+    void updatePassword(String id, String password);
 
     /**
      * 重置密码
@@ -85,8 +106,8 @@ public interface UserMapper {
      * @param id       用户ID
      * @param password 新密码
      */
-    @Update("update ibu_user set password = #{password} where id = #{id};")
-    void resetPassword(String id, String password);
+    @Update("update ibu_user set pay_password = #{password} where id = #{id};")
+    void updatePayPassword(String id, String password);
 
     /**
      * 禁用/启用用户
@@ -95,7 +116,7 @@ public interface UserMapper {
      * @param status 禁用/启用状态
      */
     @Update("update ibu_user set is_invalid = #{status} where id = #{id};")
-    void changeUserStatus(String id, boolean status);
+    void updateStatus(String id, boolean status);
 
     /**
      * 删除用户

@@ -82,9 +82,13 @@ public class ManageServiceImpl implements ManageService {
     @Override
     public Reply newUser(LoginInfo info, User dto) {
         String id = uuid();
-        String tenantId = info.getTenantId();
-        dto.setId(id);
+        Reply reply = core.matchUser(id, dto.getAccount(), dto.getMobile(), dto.getEmail());
+        if (reply != null) {
+            return reply;
+        }
 
+        dto.setId(id);
+        String tenantId = info.getTenantId();
         core.addUser(dto, tenantId);
         core.writeLog(info, OperateType.INSERT, "用户管理", id, dto);
 
@@ -107,21 +111,11 @@ public class ManageServiceImpl implements ManageService {
         }
 
         String account = dto.getAccount();
-        int count = mapper.matchUsers(id, account);
-        if (count > 0) {
-            return ReplyHelper.invalidParam("账号[" + account + "]已被使用");
-        }
-
         String mobile = dto.getMobile();
-        count = mapper.matchUsers(id, mobile);
-        if (count > 0) {
-            return ReplyHelper.invalidParam("手机号[" + mobile + "]已被使用");
-        }
-
         String email = dto.getEmail();
-        count = mapper.matchUsers(id, email);
-        if (count > 0) {
-            return ReplyHelper.invalidParam("Email[" + email + "]已被使用");
+        Reply reply = core.matchUser(id, account, mobile, email);
+        if (reply != null) {
+            return reply;
         }
 
         // 清理失效缓存数据
@@ -131,17 +125,17 @@ public class ManageServiceImpl implements ManageService {
         }
 
         String oldMobile = user.getMobile();
-        if (mobile != null && !mobile.equals(oldMobile) && oldMobile != null && !oldMobile.isEmpty()) {
+        if (oldMobile != null && !oldMobile.isEmpty()) {
             Redis.deleteKey("ID:" + oldMobile);
         }
 
         String oldEmail = user.getEmail();
-        if (email != null && !email.equals(oldEmail) && oldEmail != null && !oldEmail.isEmpty()) {
+        if (oldEmail != null && !oldEmail.isEmpty()) {
             Redis.deleteKey("ID:" + oldEmail);
         }
 
         // 更新数据
-        mapper.editUser(dto);
+        mapper.updateUser(dto);
         core.writeLog(info, OperateType.UPDATE, "用户管理", id, dto);
 
         return ReplyHelper.success();
@@ -202,7 +196,7 @@ public class ManageServiceImpl implements ManageService {
             Redis.set(key, "invalid", status);
         }
 
-        mapper.changeUserStatus(id, status);
+        mapper.updateStatus(id, status);
         core.writeLog(info, OperateType.UPDATE, "用户管理", id, user);
 
         return ReplyHelper.success();
@@ -228,7 +222,7 @@ public class ManageServiceImpl implements ManageService {
             password = Util.md5("123456");
         }
 
-        mapper.resetPassword(id, password);
+        mapper.updatePassword(id, password);
         String key = "User:" + id;
         if (Redis.hasKey(key)) {
             Redis.set(key, "password", password);

@@ -32,6 +32,21 @@ public class PasswordDto implements Serializable {
      */
     private String old;
 
+    /**
+     * 应用ID
+     */
+    private String appId;
+
+    /**
+     * 租户ID
+     */
+    private String tenantId;
+
+    /**
+     * 登录部门ID
+     */
+    private String deptId;
+
     public String getId() {
         return id;
     }
@@ -62,6 +77,30 @@ public class PasswordDto implements Serializable {
 
     public void setOld(String old) {
         this.old = old;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public String getDeptId() {
+        return deptId;
+    }
+
+    public void setDeptId(String deptId) {
+        this.deptId = deptId;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.insight.base.user.service;
 
+import com.insight.base.user.common.dto.MobileDto;
 import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.util.pojo.Reply;
 import com.insight.util.pojo.User;
@@ -10,16 +11,6 @@ import com.insight.util.pojo.User;
  * @remark 用户服务接口
  */
 public interface UserService {
-
-    /**
-     * 查询用户列表
-     *
-     * @param key  查询关键词
-     * @param page 分页页码
-     * @param size 每页记录数
-     * @return Reply
-     */
-    Reply getUsers(String key, int page, int size);
 
     /**
      * 获取用户详情
@@ -38,12 +29,49 @@ public interface UserService {
     Reply register(User dto);
 
     /**
-     * 更新用户信息
+     * 更新用户昵称
      *
-     * @param dto 用户DTO
+     * @param id   用户ID
+     * @param name 用户昵称
      * @return Reply
      */
-    Reply updateUser(User dto);
+    Reply updateName(String id, String name);
+
+    /**
+     * 更新用户手机号
+     *
+     * @param id  用户ID
+     * @param dto 手机验证码DTO
+     * @return Reply
+     */
+    Reply updateMobile(String id, MobileDto dto);
+
+    /**
+     * 更新用户Email
+     *
+     * @param id    用户ID
+     * @param email Email
+     * @return Reply
+     */
+    Reply updateEmail(String id, String email);
+
+    /**
+     * 更新用户头像
+     *
+     * @param id      用户ID
+     * @param headImg 头像
+     * @return Reply
+     */
+    Reply updateHeadImg(String id, String headImg);
+
+    /**
+     * 更新用户备注
+     *
+     * @param id     用户ID
+     * @param remark 备注
+     * @return Reply
+     */
+    Reply updateRemark(String id, String remark);
 
     /**
      * 修改密码
@@ -64,10 +92,10 @@ public interface UserService {
     /**
      * 设置支付密码
      *
-     * @param dto 用户DTO
+     * @param dto 密码DTO
      * @return Reply
      */
-    Reply setPayPassword(User dto);
+    Reply setPayPassword(PasswordDto dto);
 
     /**
      * 验证支付密码(供服务调用)
