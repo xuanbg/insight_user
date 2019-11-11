@@ -17,12 +17,13 @@ public interface ManageService {
      * 查询用户列表
      *
      * @param tenantId 租户ID
+     * @param all      是否查询全部用户
      * @param keyword  查询关键词
      * @param page     分页页码
      * @param size     每页记录数
      * @return Reply
      */
-    Reply getUsers(String tenantId, String keyword, int page, int size);
+    Reply getUsers(String tenantId, boolean all, String keyword, int page, int size);
 
     /**
      * 获取用户详情

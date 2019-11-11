@@ -35,17 +35,18 @@ public class ManageController {
      * 查询用户列表
      *
      * @param info    用户关键信息
+     * @param all     是否查询全部用户
      * @param keyword 查询关键词
      * @param page    分页页码
      * @param size    每页记录数
      * @return Reply
      */
     @GetMapping("/v1.0/users")
-    public Reply getUsers(@RequestHeader("loginInfo") String info, @RequestParam(required = false) String keyword,
+    public Reply getUsers(@RequestHeader("loginInfo") String info, @RequestParam boolean all, @RequestParam(required = false) String keyword,
                           @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "20") int size) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.getUsers(loginInfo.getTenantId(), keyword, page, size);
+        return service.getUsers(loginInfo.getTenantId(), all, keyword, page, size);
     }
 
     /**
@@ -172,7 +173,7 @@ public class ManageController {
      */
     @GetMapping("/v1.0/users/logs")
     public Reply getUserLogs(@RequestHeader("loginInfo") String info, @RequestParam(required = false) String keyword,
-                                 @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "20") int size) {
+                             @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "20") int size) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.getUserLogs(loginInfo.getTenantId(), keyword, page, size);
@@ -191,4 +192,5 @@ public class ManageController {
         }
 
         return service.getUserLog(id);
-    }}
+    }
+}

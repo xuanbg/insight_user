@@ -42,15 +42,20 @@ public class ManageServiceImpl implements ManageService {
      * 查询用户列表
      *
      * @param tenantId 租户ID
+     * @param all      是否查询全部用户
      * @param keyword  查询关键词
      * @param page     分页页码
      * @param size     每页记录数
      * @return Reply
      */
     @Override
-    public Reply getUsers(String tenantId, String keyword, int page, int size) {
+    public Reply getUsers(String tenantId, boolean all, String keyword, int page, int size) {
+        if (tenantId != null && all && keyword == null) {
+            return ReplyHelper.invalidParam("查询关键词不能为空");
+        }
+
         PageHelper.startPage(page, size);
-        List<UserListDto> scenes = mapper.getUsers(tenantId, keyword);
+        List<UserListDto> scenes = mapper.getUsers(all ? null : tenantId, keyword);
         PageInfo<UserListDto> pageInfo = new PageInfo<>(scenes);
 
         return ReplyHelper.success(scenes, pageInfo.getTotal());
