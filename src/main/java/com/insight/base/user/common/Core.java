@@ -150,7 +150,7 @@ public class Core {
         boolean isTenant = tenantId != null;
         String format = isTenant ? "#6" : "IU#8";
         while (true) {
-            String code = newCode(format, "User:" + tenantId, !isTenant);
+            String code = newCode(format, "User:" + (tenantId == null ? "" : tenantId), !isTenant);
             int count = mapper.getUserCount(tenantId, code);
             if (count > 0) {
                 continue;
