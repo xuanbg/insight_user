@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
-import static com.insight.util.Generator.newCode;
 import static com.insight.util.Generator.uuid;
 
 /**
@@ -46,7 +45,7 @@ public class Core {
         }
 
         // 生成用户编码
-        String code = getUserCode(tenantId);
+        String code = newCode(tenantId);
         user.setCode(code);
 
         // 补完账号
@@ -146,11 +145,12 @@ public class Core {
      * @param tenantId 租户ID
      * @return 用户编码
      */
-    private String getUserCode(String tenantId) {
+    private String newCode(String tenantId) {
         boolean isTenant = tenantId != null;
         String format = isTenant ? "#6" : "IU#8";
+        String group = "User" + (isTenant ? ":" +  tenantId : "");
         while (true) {
-            String code = newCode(format, "User:" + (tenantId == null ? "" : tenantId), !isTenant);
+            String code = Generator.newCode(format, group, !isTenant);
             int count = mapper.getUserCount(tenantId, code);
             if (count > 0) {
                 continue;
