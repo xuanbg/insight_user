@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static com.insight.util.Generator.uuid;
 
@@ -45,12 +46,12 @@ public class Core {
         }
 
         // 生成用户编码
-        String code = newCode(tenantId);
+        String code = newUserCode(tenantId);
         user.setCode(code);
 
         // 补完账号
         String account = user.getAccount();
-        if (account == null || account.isEmpty()){
+        if (account == null || account.isEmpty()) {
             user.setAccount(Generator.uuid());
         }
 
@@ -114,6 +115,28 @@ public class Core {
     }
 
     /**
+     * 获取操作日志列表
+     *
+     * @param tenantId 租户ID
+     * @param business 业务类型
+     * @param key      查询关键词
+     * @return 操作日志列表
+     */
+    public List<Log> getLogs(String tenantId, String business, String key) {
+        return mapper.getLogs(tenantId, business, key);
+    }
+
+    /**
+     * 获取操作日志列表
+     *
+     * @param id 日志ID
+     * @return 操作日志列表
+     */
+    public Log getLog(String id) {
+        return mapper.getLog(id);
+    }
+
+    /**
      * 记录操作日志
      *
      * @param info     用户关键信息
@@ -145,10 +168,10 @@ public class Core {
      * @param tenantId 租户ID
      * @return 用户编码
      */
-    private String newCode(String tenantId) {
+    private String newUserCode(String tenantId) {
         boolean isTenant = tenantId != null;
         String format = isTenant ? "#6" : "IU#8";
-        String group = "User" + (isTenant ? ":" +  tenantId : "");
+        String group = "User" + (isTenant ? ":" + tenantId : "");
         while (true) {
             String code = Generator.newCode(format, group, !isTenant);
             int count = mapper.getUserCount(tenantId, code);

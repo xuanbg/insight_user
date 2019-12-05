@@ -13,7 +13,7 @@ import java.util.Map;
 /**
  * @author 宣炳刚
  * @date 2019-09-04
- * @remark
+ * @remark 用户DTO
  */
 @Mapper
 public interface UserMapper {
@@ -62,11 +62,11 @@ public interface UserMapper {
     int matchUsers(@Param("id") String id, @Param("key") String key);
 
     /**
-     * 获取指定租户下指定编码的模板数量
+     * 获取指定租户下指定编码的用户数量
      *
      * @param tenantId 租户ID
-     * @param code     模板编码
-     * @return 模板数量
+     * @param code     用户编码
+     * @return 用户数量
      */
     @Select("<script>select count(*) from ibu_user u " +
             "<if test = 'tenantId != null'>join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} </if>" +
@@ -123,40 +123,10 @@ public interface UserMapper {
      *
      * @param id 用户ID
      */
-    @Delete("delete from ibu_user where id = #{id};")
+    @Delete("delete u, g, t, o, r from ibu_user u left join ibu_group_member g on g.user_id = u.id " +
+            "left join ibt_tenant_user t on t.user_id = u.id left join ibo_organize_member o on o.user_id = u.id " +
+            "left join ibr_role_member r on r.member_id = u.id and r.type = 1 where u.id = #{id};")
     void deleteUser(String id);
-
-    /**
-     * 删除租户-用户关系
-     *
-     * @param id 用户ID
-     */
-    @Delete("delete from ibt_tenant_user where user_id = #{id};")
-    void deleteRelation(String id);
-
-    /**
-     * 删除组织机构成员关系
-     *
-     * @param id 用户ID
-     */
-    @Delete("delete from ibo_organize_member where user_id = #{id};")
-    void deleteOrgMember(String id);
-
-    /**
-     * 删除用户组成员关系
-     *
-     * @param id 用户ID
-     */
-    @Delete("delete from ibu_group_member where user_id = #{id};")
-    void deleteGroupMember(String id);
-
-    /**
-     * 删除角色成员关系
-     *
-     * @param id 用户ID
-     */
-    @Delete("delete from ibr_role_member where type = 1 and member_id = #{id};")
-    void deleteRoleMember(String id);
 
     /**
      * 新增租户-用户关系

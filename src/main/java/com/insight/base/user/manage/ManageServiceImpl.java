@@ -11,7 +11,6 @@ import com.insight.util.Redis;
 import com.insight.util.ReplyHelper;
 import com.insight.util.Util;
 import com.insight.util.pojo.*;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -153,7 +152,6 @@ public class ManageServiceImpl implements ManageService {
      * @param id   用户ID
      * @return Reply
      */
-    @Transactional
     @Override
     public Reply deleteUser(LoginInfo info, String id) {
         UserDto user = mapper.getUser(id);
@@ -171,10 +169,6 @@ public class ManageServiceImpl implements ManageService {
 
         // 删除数据
         mapper.deleteUser(id);
-        mapper.deleteRelation(id);
-        mapper.deleteOrgMember(id);
-        mapper.deleteGroupMember(id);
-        mapper.deleteRoleMember(id);
         core.writeLog(info, OperateType.DELETE, "用户管理", id, user);
 
         return ReplyHelper.success();
@@ -277,7 +271,7 @@ public class ManageServiceImpl implements ManageService {
     @Override
     public Reply getUserLogs(String tenantId, String keyword, int page, int size) {
         PageHelper.startPage(page, size);
-        List<Log> logs = mapper.getLogs(tenantId, "用户管理", keyword);
+        List<Log> logs = core.getLogs(tenantId, "用户管理", keyword);
         PageInfo<Log> pageInfo = new PageInfo<>(logs);
 
         return ReplyHelper.success(logs, pageInfo.getTotal());
@@ -291,7 +285,7 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public Reply getUserLog(String id) {
-        Log log = mapper.getLog(id);
+        Log log = core.getLog(id);
         if (log == null) {
             return ReplyHelper.fail("ID不存在,未读取数据");
         }
