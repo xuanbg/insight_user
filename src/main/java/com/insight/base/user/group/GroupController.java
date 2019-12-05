@@ -179,7 +179,7 @@ public class GroupController {
      * @return Reply
      */
     @GetMapping("/v1.0/groups/logs/{id}")
-    Reply getGroupLog(@PathVariable String id) {
+    public Reply getGroupLog(@PathVariable String id) {
         if (id == null || id.isEmpty()) {
             return ReplyHelper.invalidParam();
         }
