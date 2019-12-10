@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * @author 宣炳刚
  * @date 2019/12/5
- * @remark
+ * @remark 用户组成员DTO
  */
 public class MemberListDto implements Serializable {
     private static final long serialVersionUID = -1L;
