@@ -29,7 +29,7 @@ public class Listener {
      * @param user 队列消息
      */
     @RabbitHandler
-    @RabbitListener(queues = "auth.user")
+    @RabbitListener(queues = "insight.user")
     public void receiveUser(User user) {
         core.addUser(user, null);
     }
