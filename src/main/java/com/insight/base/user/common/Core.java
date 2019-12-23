@@ -35,7 +35,8 @@ public class Core {
     /**
      * 新增用户
      *
-     * @param user 用户DTO
+     * @param user     用户DTO
+     * @param tenantId 租户ID
      */
     @Transactional
     public void addUser(User user, String tenantId) {
