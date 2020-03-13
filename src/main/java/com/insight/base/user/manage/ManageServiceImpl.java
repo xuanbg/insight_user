@@ -3,6 +3,7 @@ package com.insight.base.user.manage;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.insight.base.user.common.Core;
+import com.insight.base.user.common.dto.FuncPermitDto;
 import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
 import com.insight.base.user.common.dto.UserListDto;
@@ -74,6 +75,23 @@ public class ManageServiceImpl implements ManageService {
         }
 
         return ReplyHelper.success(user);
+    }
+
+    /**
+     * 获取用户功能授权
+     *
+     * @param id 用户ID
+     * @return Reply
+     */
+    @Override
+    public Reply getUserPermit(String id) {
+        UserDto user = mapper.getUser(id);
+        if (user == null) {
+            return ReplyHelper.fail("ID不存在,未读取数据");
+        }
+
+        List<FuncPermitDto> list = mapper.getUserPermit(id);
+        return ReplyHelper.success(list);
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.insight.base.user.common.mapper;
 
+import com.insight.base.user.common.dto.FuncPermitDto;
 import com.insight.base.user.common.dto.UserDto;
 import com.insight.base.user.common.dto.UserListDto;
 import com.insight.util.common.JsonTypeHandler;
@@ -41,6 +42,26 @@ public interface UserMapper {
     @Select("select id, code, name, account, mobile, email, union_id, open_id, head_img, remark, is_builtin, is_invalid, creator, creator_id, created_time " +
             "from ibu_user where id = #{id};")
     UserDto getUser(String id);
+
+    /**
+     * 获取用户功能授权
+     *
+     * @param id 用户ID
+     * @return 功能授权集合
+     */
+    @Select("select * from (select distinct a.id, null as parent_id, a.`index`, 0 as type, a.`name`, null as remark, null as permit from ibv_user_roles r " +
+            "join ibr_role_func_permit p on p.role_id = r.role_id join ibs_function f on f.id = p.function_id join ibs_navigator m on m.id = f.nav_id " +
+            "join ibs_navigator g on g.id = m.parent_id join ibs_application a on a.id = g.app_id where r.user_id = #{id} union all " +
+            "select distinct g.id, g.app_id as parent_id, g.`index`, g.type, g.`name`, null as remark, null as permit from ibv_user_roles r " +
+            "join ibr_role_func_permit p on p.role_id = r.role_id join ibs_function f on f.id = p.function_id join ibs_navigator m on m.id = f.nav_id " +
+            "join ibs_navigator g on g.id = m.parent_id where r.user_id = #{id} union all " +
+            "select distinct m.id, m.parent_id, m.`index`, m.type, m.`name`, null as remark, null as permit from ibv_user_roles r " +
+            "join ibr_role_func_permit p on p.role_id = r.role_id join ibs_function f on f.id = p.function_id " +
+            "join ibs_navigator m on m.id = f.nav_id where r.user_id = #{id} union all " +
+            "select f.id, f.nav_id as parent_id, f.`index`, p.permit + 3 as type, f.`name`, case p.permit when 0 then '禁止' else '允许' end as remark, p.permit " +
+            "from ibv_user_roles r join ibr_role_func_permit p on p.role_id = r.role_id join ibs_function f on f.id = p.function_id " +
+            "where r.user_id = #{id}) t order by t.`index`;")
+    List<FuncPermitDto> getUserPermit(String id);
 
     /**
      * 新增用户

@@ -42,7 +42,7 @@ public class ManageController {
      * @return Reply
      */
     @GetMapping("/v1.0/users")
-    public Reply getUsers(@RequestHeader("loginInfo") String info, @RequestParam boolean all, @RequestParam(required = false) String keyword,
+    public Reply getUsers(@RequestHeader("loginInfo") String info, @RequestParam(defaultValue = "false") boolean all, @RequestParam(required = false) String keyword,
                           @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "20") int size) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
@@ -62,6 +62,21 @@ public class ManageController {
         }
 
         return service.getUser(id);
+    }
+
+    /**
+     * 获取用户功能授权
+     *
+     * @param id 用户ID
+     * @return Reply
+     */
+    @GetMapping("/v1.0/users/{id}/functions")
+    public Reply getUserPermit(@PathVariable String id) {
+        if (id == null || id.isEmpty()) {
+            return ReplyHelper.invalidParam();
+        }
+
+        return service.getUserPermit(id);
     }
 
     /**

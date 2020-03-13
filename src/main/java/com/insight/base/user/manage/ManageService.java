@@ -34,6 +34,14 @@ public interface ManageService {
     Reply getUser(String id);
 
     /**
+     * 获取用户功能授权
+     *
+     * @param id 用户ID
+     * @return Reply
+     */
+    Reply getUserPermit(String id);
+
+    /**
      * 新增用户
      *
      * @param info 用户关键信息
