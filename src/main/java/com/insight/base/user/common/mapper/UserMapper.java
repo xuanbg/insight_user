@@ -29,7 +29,7 @@ public interface UserMapper {
     @Select("<script>select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_user u " +
             "<if test = 'tenantId != null'>join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} </if>" +
             "<if test = 'key != null'>where u.code = #{key} or u.account = #{key} or u.mobile = #{key} or u.name like concat('%',#{key},'%') </if>" +
-            "order by u.created_time desc</script>")
+            "order by u.created_time</script>")
     List<UserListDto> getUsers(@Param("tenantId") String tenantId, @Param("key") String key);
 
     /**
