@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  * @date 2019-08-31
  * @remark 消息中心Feign客户端
  */
-@FeignClient(name = "base-message", configuration = FeignClientConfig.class)
+@FeignClient(name = "common-message", configuration = FeignClientConfig.class)
 public interface MessageClient {
 
     /**
@@ -20,6 +20,6 @@ public interface MessageClient {
      * @param key 验证参数,MD5(type + mobile + code)
      * @return Reply
      */
-    @GetMapping("/base/message/v1.0/codes/{key}/status?isCheck=false")
+    @GetMapping("/common/message/v1.0/codes/{key}/status?isCheck=false")
     Reply verifySmsCode(@PathVariable String key);
 }
