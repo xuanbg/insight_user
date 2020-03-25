@@ -1,5 +1,7 @@
 package com.insight.base.user.common;
 
+import com.insight.base.user.common.config.QueueConfig;
+import com.insight.util.Json;
 import com.insight.util.pojo.User;
 import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
@@ -8,6 +10,8 @@ import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 /**
  * @author 宣炳刚
@@ -31,16 +35,20 @@ public class Listener {
     /**
      * 从队列订阅新增用户消息
      *
-     * @param user 队列消息
+     * @param dto 队列消息
      */
     @RabbitHandler
     @RabbitListener(queues = "insight.user")
-    public void receiveUser(User user, Channel channel, Message message) {
+    public void receiveUser(User dto, Channel channel, Message message) throws IOException {
+        long tag = message.getMessageProperties().getDeliveryTag();
         try {
-            core.addUser(user, null);
-            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+            core.addUser(dto, null);
         } catch (Exception ex) {
             logger.error("发生异常: {}", ex.getMessage());
+
+            channel.basicPublish(QueueConfig.DELAY_EXCHANGE_NAME, QueueConfig.DELAY_QUEUE_NAME, null, Json.toJson(dto).getBytes());
+        } finally {
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         }
     }
 }
