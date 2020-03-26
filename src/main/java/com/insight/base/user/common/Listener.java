@@ -35,18 +35,20 @@ public class Listener {
     /**
      * 从队列订阅新增用户消息
      *
-     * @param dto 队列消息
+     * @param channel Channel
+     * @param message Message
+     * @throws IOException IOException
      */
     @RabbitHandler
     @RabbitListener(queues = "insight.user")
-    public void receiveUser(User dto, Channel channel, Message message) throws IOException {
-        long tag = message.getMessageProperties().getDeliveryTag();
+    public void receiveUser(Channel channel, Message message) throws IOException {
         try {
-            core.addUser(dto, null);
+            String body = new String(message.getBody());
+            core.addUser(Json.toBean(body, User.class), null);
         } catch (Exception ex) {
             logger.error("发生异常: {}", ex.getMessage());
 
-            channel.basicPublish(QueueConfig.DELAY_EXCHANGE_NAME, QueueConfig.DELAY_QUEUE_NAME, null, Json.toJson(dto).getBytes());
+            channel.basicPublish(QueueConfig.DELAY_EXCHANGE_NAME, QueueConfig.DELAY_QUEUE_NAME, null, message.getBody());
         } finally {
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         }
