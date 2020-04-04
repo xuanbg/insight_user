@@ -23,11 +23,6 @@ public class LoginDto implements Serializable {
     private String tenantId;
 
     /**
-     * 登录部门ID
-     */
-    private String deptId;
-
-    /**
      * 登录账号
      */
     private String account;
@@ -51,14 +46,6 @@ public class LoginDto implements Serializable {
 
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
-    }
-
-    public String getDeptId() {
-        return deptId;
-    }
-
-    public void setDeptId(String deptId) {
-        this.deptId = deptId;
     }
 
     public String getAccount() {

@@ -530,7 +530,6 @@ curl -X "POST" "http://192.168.236.8:6200/base/user/manage/v1.0/users/relation" 
 |String|type|操作类型|
 |String|business|业务名称|
 |String|businessId|业务ID|
-|String|deptId|创建人登录部门ID|
 |String|creator|创建人|
 |String|creatorId|创建人ID|
 |Date|createdTime|创建时间|
@@ -560,7 +559,6 @@ curl "http://192.168.236.8:6200/base/user/manage/v1.0/users/logs?keyword=insert"
       "business": "用户管理",
       "businessId": "52fdf8884f6c46609fe67668731236cb",
       "content": null,
-      "deptId": null,
       "creator": "系统管理员",
       "creatorId": "bb82f6bdfc5211e99bc30242ac110005",
       "createdTime": "2019-11-04 15:10:41"
@@ -595,7 +593,6 @@ curl "http://192.168.236.8:6200/base/user/manage/v1.0/users/logs?keyword=insert"
 |String|business|业务名称|
 |String|businessId|业务ID|
 |Object|content|日志内容|
-|String|deptId|创建人登录部门ID|
 |String|creator|创建人|
 |String|creatorId|创建人ID|
 |Date|createdTime|创建时间|
@@ -641,7 +638,6 @@ curl "http://192.168.236.8:6200/base/user/manage/v1.0/users/logs/b0c781a91ed448d
       "createdTime": "2019-11-04 15:10:40",
       "payPassword": null
     },
-    "deptId": null,
     "creator": "系统管理员",
     "creatorId": "bb82f6bdfc5211e99bc30242ac110005",
     "createdTime": "2019-11-04 15:10:41"
@@ -1025,7 +1021,6 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/v1.0/users/password" \
 | ------------ | ------------ | ------------ | ------------ |
 |String|appId|是|应用ID|
 |String|tenantId|否|租户ID|
-|String|deptId|否|登录部门ID|
 |String|key|是|验证参数,MD5(2 + 绑定手机号 + 短信验证码)|
 |String|password|是|密码(MD5)|
 
@@ -1069,8 +1064,6 @@ curl -X "POST" "http://192.168.236.8:6200/base/user/v1.0/users/password" \
     "userInfo": {
       "id": "cc790eaff0b740989649db46e3e3d88b",
       "tenantId": null,
-      "deptId": null,
-      "code": "",
       "name": "86-13867891234",
       "account": "3982dc4ffed645f1888d18062ccf1688",
       "mobile": "86-13867891234",
@@ -1187,8 +1180,6 @@ curl -X "GET" "http://192.168.236.8:6200/base/user/v1.0/users/password/pay?key=6
 |----|----|----|
 |String|id|用户ID|
 |String|tenantId|用户当前登录租户ID|
-|String|deptId|用户当前登录部门ID|
-|String|code|用户编码|
 |String|name|用户姓名|
 |String|account|用户登录账号|
 |String|mobile|用户绑定手机号|

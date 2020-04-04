@@ -290,7 +290,6 @@ public class UserServiceImpl implements UserService {
         LoginDto login = new LoginDto();
         login.setAppId(dto.getAppId());
         login.setTenantId(dto.getTenantId());
-        login.setDeptId(dto.getDeptId());
         login.setAccount(mobile);
         login.setSignature(sign);
 

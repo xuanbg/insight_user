@@ -155,7 +155,6 @@ public class Core {
         log.setBusiness(business);
         log.setBusinessId(id);
         log.setContent(content);
-        log.setDeptId(info.getDeptId());
         log.setCreator(info.getUserName());
         log.setCreatorId(info.getUserId());
         log.setCreatedTime(LocalDateTime.now());

@@ -42,11 +42,6 @@ public class PasswordDto implements Serializable {
      */
     private String tenantId;
 
-    /**
-     * 登录部门ID
-     */
-    private String deptId;
-
     public String getId() {
         return id;
     }
@@ -93,14 +88,6 @@ public class PasswordDto implements Serializable {
 
     public void setTenantId(String tenantId) {
         this.tenantId = tenantId;
-    }
-
-    public String getDeptId() {
-        return deptId;
-    }
-
-    public void setDeptId(String deptId) {
-        this.deptId = deptId;
     }
 
     @Override
