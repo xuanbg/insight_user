@@ -1,18 +1,16 @@
 package com.insight.base.user.common;
 
 import com.insight.base.user.common.mapper.UserMapper;
-import com.insight.util.Generator;
-import com.insight.util.ReplyHelper;
-import com.insight.util.Util;
-import com.insight.util.pojo.*;
+import com.insight.utils.Generator;
+import com.insight.utils.ReplyHelper;
+import com.insight.utils.Util;
+import com.insight.utils.pojo.*;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static com.insight.util.Generator.uuid;
 
 /**
  * @author 宣炳刚
@@ -43,7 +41,7 @@ public class Core {
         // 补完ID
         String userId = user.getId();
         if (userId == null || userId.isEmpty()) {
-            user.setId(Generator.uuid());
+            user.setId(Util.uuid());
         }
 
         // 生成用户编码
@@ -53,13 +51,13 @@ public class Core {
         // 补完账号
         String account = user.getAccount();
         if (account == null || account.isEmpty()) {
-            user.setAccount(Generator.uuid());
+            user.setAccount(Util.uuid());
         }
 
         // 补完密码
         String password = user.getPassword();
         if (password == null || password.isEmpty()) {
-            String pw = Util.md5(tenantId == null ? Generator.uuid() : "123456");
+            String pw = Util.md5(tenantId == null ? Util.uuid() : "123456");
             user.setPassword(pw);
         }
 
@@ -149,7 +147,7 @@ public class Core {
     @Async
     public void writeLog(LoginInfo info, OperateType type, String business, String id, Object content) {
         Log log = new Log();
-        log.setId(uuid());
+        log.setId(Util.uuid());
         log.setTenantId(info.getTenantId());
         log.setType(type);
         log.setBusiness(business);

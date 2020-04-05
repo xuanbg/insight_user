@@ -3,9 +3,9 @@ package com.insight.base.user.common.mapper;
 import com.insight.base.user.common.dto.FuncPermitDto;
 import com.insight.base.user.common.dto.UserDto;
 import com.insight.base.user.common.dto.UserListDto;
-import com.insight.util.common.JsonTypeHandler;
-import com.insight.util.pojo.Log;
-import com.insight.util.pojo.User;
+import com.insight.utils.common.JsonTypeHandler;
+import com.insight.utils.pojo.Log;
+import com.insight.utils.pojo.User;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -165,7 +165,7 @@ public interface UserMapper {
      * @param log 日志DTO
      */
     @Insert("insert ibl_operate_log(id, tenant_id, type, business, business_id, content, creator, creator_id, created_time) values " +
-            "(#{id}, #{tenantId}, #{type}, #{business}, #{businessId}, #{content, typeHandler = com.insight.util.common.JsonTypeHandler}, " +
+            "(#{id}, #{tenantId}, #{type}, #{business}, #{businessId}, #{content, typeHandler = com.insight.utils.common.JsonTypeHandler}, " +
             "#{creator}, #{creatorId}, #{createdTime});")
     void addLog(Log log);
 

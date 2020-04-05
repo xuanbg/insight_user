@@ -7,17 +7,16 @@ import com.insight.base.user.common.dto.GroupDto;
 import com.insight.base.user.common.dto.GroupListDto;
 import com.insight.base.user.common.dto.MemberListDto;
 import com.insight.base.user.common.mapper.GroupMapper;
-import com.insight.util.Generator;
-import com.insight.util.ReplyHelper;
-import com.insight.util.pojo.Log;
-import com.insight.util.pojo.LoginInfo;
-import com.insight.util.pojo.OperateType;
-import com.insight.util.pojo.Reply;
+import com.insight.utils.Generator;
+import com.insight.utils.ReplyHelper;
+import com.insight.utils.Util;
+import com.insight.utils.pojo.Log;
+import com.insight.utils.pojo.LoginInfo;
+import com.insight.utils.pojo.OperateType;
+import com.insight.utils.pojo.Reply;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static com.insight.util.Generator.uuid;
 
 /**
  * @author 宣炳刚
@@ -83,7 +82,7 @@ public class GroupServiceImpl implements GroupService {
      */
     @Override
     public Reply newGroup(LoginInfo info, GroupDto dto) {
-        String id = uuid();
+        String id = Util.uuid();
         String tenantId = info.getTenantId();
         dto.setId(id);
         dto.setTenantId(tenantId);

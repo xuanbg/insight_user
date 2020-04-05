@@ -2,11 +2,11 @@ package com.insight.base.user.manage;
 
 import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
-import com.insight.util.Json;
-import com.insight.util.ReplyHelper;
-import com.insight.util.pojo.LoginInfo;
-import com.insight.util.pojo.Reply;
-import com.insight.util.pojo.User;
+import com.insight.utils.Json;
+import com.insight.utils.ReplyHelper;
+import com.insight.utils.pojo.LoginInfo;
+import com.insight.utils.pojo.Reply;
+import com.insight.utils.pojo.User;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;

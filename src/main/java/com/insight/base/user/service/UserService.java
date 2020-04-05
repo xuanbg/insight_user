@@ -2,8 +2,8 @@ package com.insight.base.user.service;
 
 import com.insight.base.user.common.dto.MobileDto;
 import com.insight.base.user.common.dto.PasswordDto;
-import com.insight.util.pojo.Reply;
-import com.insight.util.pojo.User;
+import com.insight.utils.pojo.Reply;
+import com.insight.utils.pojo.User;
 
 /**
  * @author 宣炳刚

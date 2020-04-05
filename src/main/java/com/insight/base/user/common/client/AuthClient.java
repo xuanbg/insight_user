@@ -2,7 +2,7 @@ package com.insight.base.user.common.client;
 
 import com.insight.base.user.common.config.FeignClientConfig;
 import com.insight.base.user.common.dto.LoginDto;
-import com.insight.util.pojo.Reply;
+import com.insight.utils.pojo.Reply;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;

@@ -8,14 +8,12 @@ import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
 import com.insight.base.user.common.dto.UserListDto;
 import com.insight.base.user.common.mapper.UserMapper;
-import com.insight.util.Redis;
-import com.insight.util.ReplyHelper;
-import com.insight.util.Util;
-import com.insight.util.pojo.*;
+import com.insight.utils.Redis;
+import com.insight.utils.ReplyHelper;
+import com.insight.utils.Util;
+import com.insight.utils.pojo.*;
 
 import java.util.List;
-
-import static com.insight.util.Generator.uuid;
 
 /**
  * @author 宣炳刚
@@ -103,7 +101,7 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public Reply newUser(LoginInfo info, User dto) {
-        String id = uuid();
+        String id = Util.uuid();
         Reply reply = core.matchUser(id, dto.getAccount(), dto.getMobile(), dto.getEmail());
         if (reply != null) {
             return reply;

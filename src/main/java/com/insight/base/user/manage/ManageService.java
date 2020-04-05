@@ -2,9 +2,9 @@ package com.insight.base.user.manage;
 
 import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
-import com.insight.util.pojo.LoginInfo;
-import com.insight.util.pojo.Reply;
-import com.insight.util.pojo.User;
+import com.insight.utils.pojo.LoginInfo;
+import com.insight.utils.pojo.Reply;
+import com.insight.utils.pojo.User;
 
 /**
  * @author 宣炳刚

@@ -8,9 +8,9 @@ import com.insight.base.user.common.dto.MobileDto;
 import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
 import com.insight.base.user.common.mapper.UserMapper;
-import com.insight.util.*;
-import com.insight.util.pojo.Reply;
-import com.insight.util.pojo.User;
+import com.insight.utils.*;
+import com.insight.utils.pojo.Reply;
+import com.insight.utils.pojo.User;
 
 /**
  * @author 宣炳刚
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Reply register(User dto) {
         // 验证账号|手机号|邮箱是否已存在
-        String id = Generator.uuid();
+        String id = Util.uuid();
         Reply reply = core.matchUser(id, dto.getAccount(), dto.getMobile(), dto.getEmail());
         if (reply != null) {
             return reply;

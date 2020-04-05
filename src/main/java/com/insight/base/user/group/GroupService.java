@@ -1,8 +1,8 @@
 package com.insight.base.user.group;
 
 import com.insight.base.user.common.dto.GroupDto;
-import com.insight.util.pojo.LoginInfo;
-import com.insight.util.pojo.Reply;
+import com.insight.utils.pojo.LoginInfo;
+import com.insight.utils.pojo.Reply;
 
 import java.util.List;
 
