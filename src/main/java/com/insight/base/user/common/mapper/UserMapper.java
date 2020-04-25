@@ -50,17 +50,17 @@ public interface UserMapper {
      * @return 功能授权集合
      */
     @Select("select * from (select distinct a.id, null as parent_id, a.`index`, 0 as type, a.`name`, null as remark, null as permit from ibv_user_roles r " +
-            "join ibr_role_func_permit p on p.role_id = r.role_id join ibs_function f on f.id = p.function_id join ibs_navigator m on m.id = f.nav_id " +
+            "join ibr_role_permit p on p.role_id = r.role_id join ibs_function f on f.id = p.function_id join ibs_navigator m on m.id = f.nav_id " +
             "join ibs_navigator g on g.id = m.parent_id join ibs_application a on a.id = g.app_id where r.user_id = #{id} union " +
             "select distinct g.id, g.app_id as parent_id, g.`index`, g.type, g.`name`, null as remark, null as permit from ibv_user_roles r " +
-            "join ibr_role_func_permit p on p.role_id = r.role_id join ibs_function f on f.id = p.function_id join ibs_navigator m on m.id = f.nav_id " +
+            "join ibr_role_permit p on p.role_id = r.role_id join ibs_function f on f.id = p.function_id join ibs_navigator m on m.id = f.nav_id " +
             "join ibs_navigator g on g.id = m.parent_id where r.user_id = #{id} union " +
             "select distinct m.id, m.parent_id, m.`index`, m.type, m.`name`, null as remark, null as permit from ibv_user_roles r " +
-            "join ibr_role_func_permit p on p.role_id = r.role_id join ibs_function f on f.id = p.function_id " +
+            "join ibr_role_permit p on p.role_id = r.role_id join ibs_function f on f.id = p.function_id " +
             "join ibs_navigator m on m.id = f.nav_id where r.user_id = #{id} union " +
             "select f.id, f.nav_id as parent_id, f.`index`, min(p.permit) + 3 as type, f.`name`, " +
             "case min(p.permit) when 0 then '禁止' else '允许' end as remark, min(p.permit) as permit " +
-            "from ibv_user_roles r join ibr_role_func_permit p on p.role_id = r.role_id join ibs_function f on f.id = p.function_id " +
+            "from ibv_user_roles r join ibr_role_permit p on p.role_id = r.role_id join ibs_function f on f.id = p.function_id " +
             "where r.user_id = #{id} group by f.id) t order by t.`index`;")
     List<FuncPermitDto> getUserPermit(String id);
 
