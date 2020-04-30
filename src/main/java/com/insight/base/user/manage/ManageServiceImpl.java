@@ -53,10 +53,10 @@ public class ManageServiceImpl implements ManageService {
         }
 
         PageHelper.startPage(page, size);
-        List<UserListDto> scenes = mapper.getUsers(all ? null : tenantId, keyword);
-        PageInfo<UserListDto> pageInfo = new PageInfo<>(scenes);
+        List<UserListDto> users = mapper.getUsers(all ? null : tenantId, keyword);
+        PageInfo<UserListDto> pageInfo = new PageInfo<>(users);
 
-        return ReplyHelper.success(scenes, pageInfo.getTotal());
+        return ReplyHelper.success(users, pageInfo.getTotal());
     }
 
     /**
@@ -246,6 +246,31 @@ public class ManageServiceImpl implements ManageService {
         core.writeLog(info, OperateType.UPDATE, "用户管理", id, user);
 
         return ReplyHelper.success();
+    }
+
+    /**
+     * 获取可邀请用户列表
+     *
+     * @param info    用户关键信息
+     * @param keyword 查询关键词
+     * @return Reply
+     */
+    @Override
+    public Reply getInviteUsers(LoginInfo info, String keyword) {
+        String tenantId = info.getTenantId();
+        if (tenantId == null) {
+            return ReplyHelper.invalidParam("租户ID不能为空");
+        }
+
+        if (keyword == null) {
+            return ReplyHelper.invalidParam("查询关键词不能为空");
+        }
+
+        PageHelper.startPage(1, 20);
+        List<UserListDto> users = mapper.getUsers(tenantId, keyword);
+        PageInfo<UserListDto> pageInfo = new PageInfo<>(users);
+
+        return ReplyHelper.success(users);
     }
 
     /**

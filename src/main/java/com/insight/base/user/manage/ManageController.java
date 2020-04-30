@@ -164,6 +164,20 @@ public class ManageController {
     }
 
     /**
+     * 获取可邀请用户列表
+     *
+     * @param info    用户关键信息
+     * @param keyword 查询关键词
+     * @return Reply
+     */
+    @GetMapping("/v1.0/users/others")
+    public Reply getInviteUsers(@RequestHeader("loginInfo") String info, @RequestParam String keyword) {
+        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+
+        return service.getInviteUsers(loginInfo, keyword);
+    }
+
+    /**
      * 邀请用户
      *
      * @param info 用户关键信息

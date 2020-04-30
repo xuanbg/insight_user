@@ -151,6 +151,17 @@ public interface UserMapper {
     void deleteUser(String id);
 
     /**
+     * 获取可邀请用户列表
+     *
+     * @param tenantId 租户ID
+     * @param key      查询关键词
+     * @return 用户列表
+     */
+    @Select("select u.id, u.`name`, u.account, u.remark from ibu_user u left join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} " +
+            "where isnull(r.id) and (u.account = #{key} or u.mobile = #{key} or u.`name` like concat('%',#{key},'%'))")
+    List<UserListDto> getOtherUsers(@Param("tenantId") String tenantId, @Param("key") String key);
+
+    /**
      * 新增租户-用户关系
      *
      * @param tenantId 租户ID

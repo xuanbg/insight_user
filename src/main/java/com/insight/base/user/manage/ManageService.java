@@ -88,6 +88,15 @@ public interface ManageService {
     Reply resetPassword(LoginInfo info, PasswordDto dto);
 
     /**
+     * 获取可邀请用户列表
+     *
+     * @param info    用户关键信息
+     * @param keyword 查询关键词
+     * @return Reply
+     */
+    Reply getInviteUsers(LoginInfo info, String keyword);
+
+    /**
      * 邀请用户
      *
      * @param info 用户关键信息
