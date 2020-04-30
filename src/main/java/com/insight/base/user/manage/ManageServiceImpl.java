@@ -301,6 +301,21 @@ public class ManageServiceImpl implements ManageService {
     }
 
     /**
+     * 清退用户
+     *
+     * @param info 用户关键信息
+     * @param id   用户ID
+     * @return Reply
+     */
+    @Override
+    public Reply removeUser(LoginInfo info, String id) {
+        String tenantId = info.getTenantId();
+        mapper.removeRelation(tenantId, id);
+
+        return ReplyHelper.success();
+    }
+
+    /**
      * 获取日志列表
      *
      * @param tenantId 租户ID

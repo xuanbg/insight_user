@@ -106,6 +106,15 @@ public interface ManageService {
     Reply inviteUser(LoginInfo info, String id);
 
     /**
+     * 清退用户
+     *
+     * @param info 用户关键信息
+     * @param id   用户ID
+     * @return Reply
+     */
+    Reply removeUser(LoginInfo info, String id);
+
+    /**
      * 获取日志列表
      *
      * @param tenantId 租户ID

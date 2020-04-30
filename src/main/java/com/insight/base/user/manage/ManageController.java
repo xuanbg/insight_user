@@ -192,6 +192,20 @@ public class ManageController {
     }
 
     /**
+     * 清退用户
+     *
+     * @param info 用户关键信息
+     * @param id   用户ID
+     * @return Reply
+     */
+    @DeleteMapping("/v1.0/users/relation")
+    public Reply removeUser(@RequestHeader("loginInfo") String info, @RequestBody String id) {
+        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+
+        return service.removeUser(loginInfo, id);
+    }
+
+    /**
      * 获取日志列表
      *
      * @param info    用户关键信息

@@ -171,6 +171,14 @@ public interface UserMapper {
     void addRelation(@Param("tenantId") String tenantId, @Param("userId") String userId);
 
     /**
+     * 删除租户-用户关系
+     * @param tenantId 租户ID
+     * @param userId   用户ID
+     */
+    @Delete("delete from ibt_tenant_user where tenant_id = #{tenantId} and user_id = #{userId};")
+    void removeRelation(@Param("tenantId") String tenantId, @Param("userId") String userId);
+
+    /**
      * 记录操作日志
      *
      * @param log 日志DTO
