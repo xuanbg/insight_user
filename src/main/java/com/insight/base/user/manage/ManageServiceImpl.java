@@ -267,7 +267,7 @@ public class ManageServiceImpl implements ManageService {
         }
 
         PageHelper.startPage(1, 20);
-        List<UserListDto> users = mapper.getUsers(tenantId, keyword);
+        List<UserListDto> users = mapper.getOtherUsers(tenantId, keyword);
         PageInfo<UserListDto> pageInfo = new PageInfo<>(users);
 
         return ReplyHelper.success(users);
