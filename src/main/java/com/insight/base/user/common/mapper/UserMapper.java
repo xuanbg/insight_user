@@ -157,7 +157,8 @@ public interface UserMapper {
      * @param key      查询关键词
      * @return 用户列表
      */
-    @Select("select u.id, u.`name`, u.account, u.mobile, u.remark from ibu_user u left join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} " +
+    @Select("select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_user u " +
+            "left join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} " +
             "where isnull(r.id) and (u.account = #{key} or u.mobile = #{key} or u.`name` like concat('%',#{key},'%'))")
     List<UserListDto> getOtherUsers(@Param("tenantId") String tenantId, @Param("key") String key);
 
