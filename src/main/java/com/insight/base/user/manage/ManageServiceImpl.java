@@ -12,6 +12,7 @@ import com.insight.utils.Redis;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.Util;
 import com.insight.utils.pojo.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -308,9 +309,13 @@ public class ManageServiceImpl implements ManageService {
      * @return Reply
      */
     @Override
+    @Transactional
     public Reply removeUser(LoginInfo info, String id) {
         String tenantId = info.getTenantId();
         mapper.removeRelation(tenantId, id);
+        mapper.removeGroupRelation(tenantId, id);
+        mapper.removeOrganizeRelation(tenantId, id);
+        mapper.removeRoleRelation(tenantId, id);
 
         return ReplyHelper.success();
     }

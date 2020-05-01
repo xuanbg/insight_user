@@ -157,7 +157,7 @@ public interface UserMapper {
      * @param key      查询关键词
      * @return 用户列表
      */
-    @Select("select u.id, u.`name`, u.account, u.remark from ibu_user u left join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} " +
+    @Select("select u.id, u.`name`, u.account, u.mobile, u.remark from ibu_user u left join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} " +
             "where isnull(r.id) and (u.account = #{key} or u.mobile = #{key} or u.`name` like concat('%',#{key},'%'))")
     List<UserListDto> getOtherUsers(@Param("tenantId") String tenantId, @Param("key") String key);
 
@@ -177,6 +177,30 @@ public interface UserMapper {
      */
     @Delete("delete from ibt_tenant_user where tenant_id = #{tenantId} and user_id = #{userId};")
     void removeRelation(@Param("tenantId") String tenantId, @Param("userId") String userId);
+
+    /**
+     * 删除租户-角色关系
+     * @param tenantId 租户ID
+     * @param userId   用户ID
+     */
+    @Delete("delete m from ibr_role r join ibr_role_member m on m.role_id = r.id and m.type = 1 and m.member_id = #{userId} where r.tenant_id = #{tenantId};")
+    void removeRoleRelation(@Param("tenantId") String tenantId, @Param("userId") String userId);
+
+    /**
+     * 删除租户-用户组关系
+     * @param tenantId 租户ID
+     * @param userId   用户ID
+     */
+    @Delete("delete m from ibu_group g join ibu_group_member m on m.group_id = g.id and m.user_id = #{userId} where g.tenant_id = #{tenantId};")
+    void removeGroupRelation(@Param("tenantId") String tenantId, @Param("userId") String userId);
+
+    /**
+     * 删除租户-组织机构关系
+     * @param tenantId 租户ID
+     * @param userId   用户ID
+     */
+    @Delete("delete m from ibo_organize o join ibo_organize_member m on m.post_id = o.id and m.user_id = #{userId} where o.tenant_id = #{tenantId};")
+    void removeOrganizeRelation(@Param("tenantId") String tenantId, @Param("userId") String userId);
 
     /**
      * 记录操作日志
