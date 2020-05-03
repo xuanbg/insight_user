@@ -2,7 +2,6 @@ package com.insight.base.user.common.mapper;
 
 import com.insight.base.user.common.dto.GroupDto;
 import com.insight.base.user.common.dto.GroupListDto;
-import com.insight.base.user.common.dto.MemberListDto;
 import com.insight.base.user.common.dto.UserListDto;
 import org.apache.ibatis.annotations.*;
 
@@ -69,10 +68,10 @@ public interface GroupMapper {
      * @param key 查询关键词
      * @return 用户组成员集合
      */
-    @Select("<script>select u.id, u.code, u.name, u.account, u.mobile, u.is_invalid from ibu_group_member m join ibu_user u on u.id = m.user_id " +
+    @Select("<script>select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_group_member m join ibu_user u on u.id = m.user_id " +
             "<if test = 'key != null'>and (u.code = #{key} or u.account = #{key} or u.name like concat('%',#{key},'%')) </if>" +
             "where m.group_id = #{id} order by u.created_time</script>")
-    List<MemberListDto> getMembers(@Param("id") String id, @Param("key") String key);
+    List<UserListDto> getMembers(@Param("id") String id, @Param("key") String key);
 
     /**
      * 查询用户组可用用户列表

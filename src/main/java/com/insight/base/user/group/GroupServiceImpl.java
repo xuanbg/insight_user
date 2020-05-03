@@ -5,7 +5,6 @@ import com.github.pagehelper.PageInfo;
 import com.insight.base.user.common.Core;
 import com.insight.base.user.common.dto.GroupDto;
 import com.insight.base.user.common.dto.GroupListDto;
-import com.insight.base.user.common.dto.MemberListDto;
 import com.insight.base.user.common.dto.UserListDto;
 import com.insight.base.user.common.mapper.GroupMapper;
 import com.insight.utils.Generator;
@@ -157,8 +156,8 @@ public class GroupServiceImpl implements GroupService {
         }
 
         PageHelper.startPage(page, size);
-        List<MemberListDto> members = mapper.getMembers(id, keyword);
-        PageInfo<MemberListDto> pageInfo = new PageInfo<>(members);
+        List<UserListDto> members = mapper.getMembers(id, keyword);
+        PageInfo<UserListDto> pageInfo = new PageInfo<>(members);
 
         return ReplyHelper.success(members, pageInfo.getTotal());
     }
