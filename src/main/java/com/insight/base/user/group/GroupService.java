@@ -71,6 +71,14 @@ public interface GroupService {
     Reply getMembers(String id, String keyword, int page, int size);
 
     /**
+     * 查询用户组可用用户列表
+     *
+     * @param id 用户组ID
+     * @return Reply
+     */
+    Reply getOthers(String id);
+
+    /**
      * 添加用户组成员
      *
      * @param info    用户关键信息

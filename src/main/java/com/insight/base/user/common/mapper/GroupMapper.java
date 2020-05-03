@@ -3,6 +3,7 @@ package com.insight.base.user.common.mapper;
 import com.insight.base.user.common.dto.GroupDto;
 import com.insight.base.user.common.dto.GroupListDto;
 import com.insight.base.user.common.dto.MemberListDto;
+import com.insight.base.user.common.dto.UserListDto;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -72,6 +73,17 @@ public interface GroupMapper {
             "<if test = 'key != null'>and (u.code = #{key} or u.account = #{key} or u.name like concat('%',#{key},'%')) </if>" +
             "where m.group_id = #{id} order by u.created_time</script>")
     List<MemberListDto> getMembers(@Param("id") String id, @Param("key") String key);
+
+    /**
+     * 查询用户组可用用户列表
+     *
+     * @param id 用户组ID
+     * @return 用户列表
+     */
+    @Select("select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_user u " +
+            "join ibt_tenant_user t on t.user_id = u.id join ibu_group g on g.tenant_id = t.tenant_id and g.id = #{id} " +
+            "left join ibu_group_member m on m.group_id = g.id and m.user_id = u.id where isnull(m.id)")
+    List<UserListDto> getOthers(String id);
 
     /**
      * 添加用户组成员

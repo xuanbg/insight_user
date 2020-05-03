@@ -6,6 +6,7 @@ import com.insight.base.user.common.Core;
 import com.insight.base.user.common.dto.GroupDto;
 import com.insight.base.user.common.dto.GroupListDto;
 import com.insight.base.user.common.dto.MemberListDto;
+import com.insight.base.user.common.dto.UserListDto;
 import com.insight.base.user.common.mapper.GroupMapper;
 import com.insight.utils.Generator;
 import com.insight.utils.ReplyHelper;
@@ -160,6 +161,19 @@ public class GroupServiceImpl implements GroupService {
         PageInfo<MemberListDto> pageInfo = new PageInfo<>(members);
 
         return ReplyHelper.success(members, pageInfo.getTotal());
+    }
+
+    /**
+     * 查询用户组可用用户列表
+     *
+     * @param id 用户组ID
+     * @return Reply
+     */
+    @Override
+    public Reply getOthers(String id) {
+        List<UserListDto> users = mapper.getOthers(id);
+
+        return ReplyHelper.success(users);
     }
 
     /**
