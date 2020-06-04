@@ -4,7 +4,6 @@ import com.insight.base.user.common.dto.FuncPermitDto;
 import com.insight.base.user.common.dto.UserDto;
 import com.insight.base.user.common.dto.UserListDto;
 import com.insight.utils.common.JsonTypeHandler;
-import com.insight.utils.pojo.Log;
 import com.insight.utils.pojo.User;
 import org.apache.ibatis.annotations.*;
 
@@ -202,40 +201,4 @@ public interface UserMapper {
      */
     @Delete("delete m from ibo_organize o join ibo_organize_member m on m.post_id = o.id and m.user_id = #{userId} where o.tenant_id = #{tenantId};")
     void removeOrganizeRelation(@Param("tenantId") String tenantId, @Param("userId") String userId);
-
-    /**
-     * 记录操作日志
-     *
-     * @param log 日志DTO
-     */
-    @Insert("insert ibl_operate_log(id, tenant_id, type, business, business_id, content, creator, creator_id, created_time) values " +
-            "(#{id}, #{tenantId}, #{type}, #{business}, #{businessId}, #{content, typeHandler = com.insight.utils.common.JsonTypeHandler}, " +
-            "#{creator}, #{creatorId}, #{createdTime});")
-    void addLog(Log log);
-
-    /**
-     * 获取操作日志列表
-     *
-     * @param tenantId 租户ID
-     * @param business 业务类型
-     * @param key      查询关键词
-     * @return 操作日志列表
-     */
-    @Select("<script>select id, type, business, business_id, creator, creator_id, created_time " +
-            "from ibl_operate_log where business = #{business} " +
-            "<if test = 'tenantId != null'>and tenant_id = #{tenantId} </if>" +
-            "<if test = 'tenantId == null'>and tenant_id is null </if>" +
-            "<if test = 'key!=null'>and (type = #{key} or business = #{key} or business_id = #{key} or creator = #{key} or creator_id = #{key}) </if>" +
-            "order by created_time</script>")
-    List<Log> getLogs(@Param("tenantId") String tenantId, @Param("business") String business, @Param("key") String key);
-
-    /**
-     * 获取操作日志列表
-     *
-     * @param id 日志ID
-     * @return 操作日志列表
-     */
-    @Results({@Result(property = "content", column = "content", javaType = Object.class, typeHandler = JsonTypeHandler.class)})
-    @Select("select * from ibl_operate_log where id = #{id};")
-    Log getLog(String id);
 }
