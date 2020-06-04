@@ -3,6 +3,8 @@ package com.insight.base.user.manage;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.insight.base.user.common.Core;
+import com.insight.base.user.common.client.LogClient;
+import com.insight.base.user.common.client.LogServiceClient;
 import com.insight.base.user.common.dto.FuncPermitDto;
 import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
@@ -23,17 +25,21 @@ import java.util.List;
  */
 @org.springframework.stereotype.Service
 public class ManageServiceImpl implements ManageService {
+    private static final String BUSINESS = "用户管理";
     private final UserMapper mapper;
+    private final LogServiceClient client;
     private final Core core;
 
     /**
      * 构造方法
      *
      * @param mapper UserMapper
+     * @param client LogServiceClient
      * @param core   Core
      */
-    public ManageServiceImpl(UserMapper mapper, Core core) {
+    public ManageServiceImpl(UserMapper mapper, LogServiceClient client, Core core) {
         this.mapper = mapper;
+        this.client = client;
         this.core = core;
     }
 
@@ -111,7 +117,7 @@ public class ManageServiceImpl implements ManageService {
         dto.setId(id);
         String tenantId = info.getTenantId();
         core.addUser(dto, tenantId);
-        core.writeLog(info, OperateType.INSERT, "用户管理", id, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, dto);
 
         return ReplyHelper.created(id);
     }
@@ -157,7 +163,7 @@ public class ManageServiceImpl implements ManageService {
 
         // 更新数据
         mapper.updateUser(dto);
-        core.writeLog(info, OperateType.UPDATE, "用户管理", id, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, dto);
 
         return ReplyHelper.success();
     }
@@ -186,7 +192,7 @@ public class ManageServiceImpl implements ManageService {
 
         // 删除数据
         mapper.deleteUser(id);
-        core.writeLog(info, OperateType.DELETE, "用户管理", id, user);
+        LogClient.writeLog(info, BUSINESS, OperateType.DELETE, id, user);
 
         return ReplyHelper.success();
     }
@@ -213,7 +219,7 @@ public class ManageServiceImpl implements ManageService {
         }
 
         mapper.updateStatus(id, status);
-        core.writeLog(info, OperateType.UPDATE, "用户管理", id, user);
+        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, user);
 
         return ReplyHelper.success();
     }
@@ -244,7 +250,7 @@ public class ManageServiceImpl implements ManageService {
             Redis.set(key, "password", password);
         }
 
-        core.writeLog(info, OperateType.UPDATE, "用户管理", id, user);
+        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, user);
 
         return ReplyHelper.success();
     }
@@ -331,11 +337,7 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public Reply getUserLogs(String tenantId, String keyword, int page, int size) {
-        PageHelper.startPage(page, size);
-        List<Log> logs = core.getLogs(tenantId, "用户管理", keyword);
-        PageInfo<Log> pageInfo = new PageInfo<>(logs);
-
-        return ReplyHelper.success(logs, pageInfo.getTotal());
+        return client.getLogs(BUSINESS, keyword, page, size);
     }
 
     /**
@@ -346,11 +348,6 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public Reply getUserLog(String id) {
-        Log log = core.getLog(id);
-        if (log == null) {
-            return ReplyHelper.fail("ID不存在,未读取数据");
-        }
-
-        return ReplyHelper.success(log);
+        return client.getLog(id);
     }
 }

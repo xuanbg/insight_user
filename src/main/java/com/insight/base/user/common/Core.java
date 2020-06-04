@@ -4,13 +4,12 @@ import com.insight.base.user.common.mapper.UserMapper;
 import com.insight.utils.Generator;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.Util;
-import com.insight.utils.pojo.*;
-import org.springframework.scheduling.annotation.Async;
+import com.insight.utils.pojo.Reply;
+import com.insight.utils.pojo.User;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * @author 宣炳刚
@@ -111,53 +110,6 @@ public class Core {
         }
 
         return null;
-    }
-
-    /**
-     * 获取操作日志列表
-     *
-     * @param tenantId 租户ID
-     * @param business 业务类型
-     * @param key      查询关键词
-     * @return 操作日志列表
-     */
-    public List<Log> getLogs(String tenantId, String business, String key) {
-        return mapper.getLogs(tenantId, business, key);
-    }
-
-    /**
-     * 获取操作日志列表
-     *
-     * @param id 日志ID
-     * @return 操作日志列表
-     */
-    public Log getLog(String id) {
-        return mapper.getLog(id);
-    }
-
-    /**
-     * 记录操作日志
-     *
-     * @param info     用户关键信息
-     * @param type     操作类型
-     * @param business 业务名称
-     * @param id       业务ID
-     * @param content  日志内容
-     */
-    @Async
-    public void writeLog(LoginInfo info, OperateType type, String business, String id, Object content) {
-        Log log = new Log();
-        log.setId(Util.uuid());
-        log.setTenantId(info.getTenantId());
-        log.setType(type);
-        log.setBusiness(business);
-        log.setBusinessId(id);
-        log.setContent(content);
-        log.setCreator(info.getUserName());
-        log.setCreatorId(info.getUserId());
-        log.setCreatedTime(LocalDateTime.now());
-
-        mapper.addLog(log);
     }
 
     /**

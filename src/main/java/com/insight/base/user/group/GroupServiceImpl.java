@@ -2,7 +2,8 @@ package com.insight.base.user.group;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.insight.base.user.common.Core;
+import com.insight.base.user.common.client.LogClient;
+import com.insight.base.user.common.client.LogServiceClient;
 import com.insight.base.user.common.dto.GroupDto;
 import com.insight.base.user.common.dto.GroupListDto;
 import com.insight.base.user.common.dto.UserListDto;
@@ -10,7 +11,6 @@ import com.insight.base.user.common.mapper.GroupMapper;
 import com.insight.utils.Generator;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.Util;
-import com.insight.utils.pojo.Log;
 import com.insight.utils.pojo.LoginInfo;
 import com.insight.utils.pojo.OperateType;
 import com.insight.utils.pojo.Reply;
@@ -25,18 +25,19 @@ import java.util.List;
  */
 @org.springframework.stereotype.Service
 public class GroupServiceImpl implements GroupService {
+    private static final String BUSINESS = "用户组管理";
     private final GroupMapper mapper;
-    private final Core core;
+    private final LogServiceClient client;
 
     /**
      * 构造方法
      *
      * @param mapper GroupMapper
-     * @param core   Core
+     * @param client LogServiceClient
      */
-    public GroupServiceImpl(GroupMapper mapper, Core core) {
+    public GroupServiceImpl(GroupMapper mapper, LogServiceClient client) {
         this.mapper = mapper;
-        this.core = core;
+        this.client = client;
     }
 
     /**
@@ -93,7 +94,7 @@ public class GroupServiceImpl implements GroupService {
         dto.setCreatedTime(LocalDateTime.now());
 
         mapper.addGroup(dto);
-        core.writeLog(info, OperateType.INSERT, "用户组管理", id, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, dto);
 
         return ReplyHelper.created(id);
     }
@@ -114,7 +115,7 @@ public class GroupServiceImpl implements GroupService {
         }
 
         mapper.updateGroup(dto);
-        core.writeLog(info, OperateType.UPDATE, "用户组管理", id, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, dto);
 
         return ReplyHelper.success();
     }
@@ -134,7 +135,7 @@ public class GroupServiceImpl implements GroupService {
         }
 
         mapper.deleteGroup(id);
-        core.writeLog(info, OperateType.DELETE, "用户组管理", id, group);
+        LogClient.writeLog(info, BUSINESS, OperateType.DELETE, id, group);
 
         return ReplyHelper.success();
     }
@@ -191,7 +192,7 @@ public class GroupServiceImpl implements GroupService {
         }
 
         mapper.addMembers(id, userIds);
-        core.writeLog(info, OperateType.INSERT, "用户组管理", id, userIds);
+        LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, userIds);
 
         return ReplyHelper.success();
     }
@@ -212,7 +213,7 @@ public class GroupServiceImpl implements GroupService {
         }
 
         mapper.removeMembers(id, userIds);
-        core.writeLog(info, OperateType.DELETE, "用户组管理", id, userIds);
+        LogClient.writeLog(info, BUSINESS, OperateType.DELETE, id, userIds);
 
         return ReplyHelper.success();
     }
@@ -228,11 +229,7 @@ public class GroupServiceImpl implements GroupService {
      */
     @Override
     public Reply getGroupLogs(String tenantId, String keyword, int page, int size) {
-        PageHelper.startPage(page, size);
-        List<Log> logs = core.getLogs(tenantId, "用户组管理", keyword);
-        PageInfo<Log> pageInfo = new PageInfo<>(logs);
-
-        return ReplyHelper.success(logs, pageInfo.getTotal());
+        return client.getLogs(BUSINESS, keyword, page, size);
     }
 
     /**
@@ -243,12 +240,7 @@ public class GroupServiceImpl implements GroupService {
      */
     @Override
     public Reply getGroupLog(String id) {
-        Log log = core.getLog(id);
-        if (log == null) {
-            return ReplyHelper.fail("ID不存在,未读取数据");
-        }
-
-        return ReplyHelper.success(log);
+        return client.getLog(id);
     }
 
     /**
