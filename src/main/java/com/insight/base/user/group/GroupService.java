@@ -101,13 +101,12 @@ public interface GroupService {
     /**
      * 获取日志列表
      *
-     * @param tenantId 租户ID
-     * @param keyword  查询关键词
-     * @param page     分页页码
-     * @param size     每页记录数
+     * @param keyword 查询关键词
+     * @param page    分页页码
+     * @param size    每页记录数
      * @return Reply
      */
-    Reply getGroupLogs(String tenantId, String keyword, int page, int size);
+    Reply getGroupLogs(String keyword, int page, int size);
 
     /**
      * 获取日志详情
