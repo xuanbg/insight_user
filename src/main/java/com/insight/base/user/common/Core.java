@@ -120,8 +120,8 @@ public class Core {
      */
     private String newUserCode(String tenantId) {
         boolean isTenant = tenantId != null;
+        String group = isTenant ? "Base:User:" + tenantId : "Base:User";
         String format = isTenant ? "#6" : "IU#8";
-        String group = "User" + (isTenant ? ":" + tenantId : "");
         while (true) {
             String code = Generator.newCode(format, group, !isTenant);
             int count = mapper.getUserCount(tenantId, code);
