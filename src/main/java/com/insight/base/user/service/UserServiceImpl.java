@@ -248,7 +248,7 @@ public class UserServiceImpl implements UserService {
         }
 
         String password = dto.getPassword();
-        Redis.set(key, "password", password);
+        Redis.setHash(key, "password", password);
         mapper.updatePassword(id, password);
 
         return ReplyHelper.success();
@@ -281,7 +281,7 @@ public class UserServiceImpl implements UserService {
 
         // 更新密码
         String password = dto.getPassword();
-        Redis.set(key, "password", password);
+        Redis.setHash(key, "password", password);
         mapper.updatePassword(id, password);
 
         // 构造登录数据并返回Token
@@ -320,7 +320,7 @@ public class UserServiceImpl implements UserService {
             return reply;
         }
 
-        Redis.set("User:" + id, "payPassword", password);
+        Redis.setHash("User:" + id, "payPassword", password);
         mapper.updatePayPassword(id, password);
 
         return ReplyHelper.success();

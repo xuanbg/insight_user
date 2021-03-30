@@ -215,7 +215,7 @@ public class ManageServiceImpl implements ManageService {
         // 更新缓存
         String key = "User:" + id;
         if (Redis.hasKey(key)) {
-            Redis.set(key, "invalid", status);
+            Redis.setHash(key, "invalid", status);
         }
 
         mapper.updateStatus(id, status);
@@ -247,7 +247,7 @@ public class ManageServiceImpl implements ManageService {
         mapper.updatePassword(id, password);
         String key = "User:" + id;
         if (Redis.hasKey(key)) {
-            Redis.set(key, "password", password);
+            Redis.setHash(key, "password", password);
         }
 
         LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, user);
