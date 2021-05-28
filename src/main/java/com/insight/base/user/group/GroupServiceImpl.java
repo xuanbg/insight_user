@@ -85,7 +85,7 @@ public class GroupServiceImpl implements GroupService {
      */
     @Override
     public Reply newGroup(LoginInfo info, GroupDto dto) {
-        Long id = creator.nextId(7);
+        Long id = creator.nextId(5);
         Long tenantId = info.getTenantId();
         dto.setId(id);
         dto.setTenantId(tenantId);
