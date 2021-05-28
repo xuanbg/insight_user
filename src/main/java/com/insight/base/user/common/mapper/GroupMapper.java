@@ -90,9 +90,9 @@ public interface GroupMapper {
      * @param id      用户组ID
      * @param userIds 用户ID集合
      */
-    @Insert("<script>insert ibu_group_member (id, group_id, user_id) values " +
+    @Insert("<script>insert ibu_group_member (group_id, user_id) values " +
             "<foreach collection = \"list\" item = \"item\" index = \"index\" separator = \",\">" +
-            "(replace(uuid(), '-', ''), #{id}, #{item})</foreach>;</script>")
+            "(#{id}, #{item})</foreach>;</script>")
     void addMembers(@Param("id") Long id, @Param("list") List<Long> userIds);
 
     /**
