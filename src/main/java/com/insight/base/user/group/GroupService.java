@@ -3,6 +3,7 @@ package com.insight.base.user.group;
 import com.insight.base.user.common.dto.GroupDto;
 import com.insight.utils.pojo.LoginInfo;
 import com.insight.utils.pojo.Reply;
+import com.insight.utils.pojo.SearchDto;
 
 import java.util.List;
 
@@ -17,12 +18,10 @@ public interface GroupService {
      * 查询用户组列表
      *
      * @param tenantId 租户ID
-     * @param keyword  查询关键词
-     * @param page     分页页码
-     * @param size     每页记录数
+     * @param search   查询实体类
      * @return Reply
      */
-    Reply getGroups(String tenantId, String keyword, int page, int size);
+    Reply getGroups(Long tenantId, SearchDto search);
 
     /**
      * 获取用户组详情
@@ -30,7 +29,7 @@ public interface GroupService {
      * @param id 用户组ID
      * @return Reply
      */
-    Reply getGroup(String id);
+    Reply getGroup(Long id);
 
     /**
      * 新增用户组
@@ -57,18 +56,16 @@ public interface GroupService {
      * @param id   用户组ID
      * @return Reply
      */
-    Reply deleteGroup(LoginInfo info, String id);
+    Reply deleteGroup(LoginInfo info, Long id);
 
     /**
      * 查询用户组成员
      *
-     * @param id      用户组ID
-     * @param keyword 查询关键词
-     * @param page    分页页码
-     * @param size    每页记录数
+     * @param id     用户组ID
+     * @param search 查询实体类
      * @return Reply
      */
-    Reply getMembers(String id, String keyword, int page, int size);
+    Reply getMembers(Long id, SearchDto search);
 
     /**
      * 查询用户组可用用户列表
@@ -76,7 +73,7 @@ public interface GroupService {
      * @param id 用户组ID
      * @return Reply
      */
-    Reply getOthers(String id);
+    Reply getOthers(Long id);
 
     /**
      * 添加用户组成员
@@ -86,7 +83,7 @@ public interface GroupService {
      * @param userIds 用户ID集合
      * @return Reply
      */
-    Reply addMembers(LoginInfo info, String id, List<String> userIds);
+    Reply addMembers(LoginInfo info, Long id, List<Long> userIds);
 
     /**
      * 移除用户组成员
@@ -96,17 +93,15 @@ public interface GroupService {
      * @param userIds 用户ID集合
      * @return Reply
      */
-    Reply removeMembers(LoginInfo info, String id, List<String> userIds);
+    Reply removeMembers(LoginInfo info, Long id, List<Long> userIds);
 
     /**
      * 获取日志列表
      *
-     * @param keyword 查询关键词
-     * @param page    分页页码
-     * @param size    每页记录数
+     * @param search 查询实体类
      * @return Reply
      */
-    Reply getGroupLogs(String keyword, int page, int size);
+    Reply getGroupLogs(SearchDto search);
 
     /**
      * 获取日志详情
@@ -114,5 +109,5 @@ public interface GroupService {
      * @param id 日志ID
      * @return Reply
      */
-    Reply getGroupLog(String id);
+    Reply getGroupLog(Long id);
 }

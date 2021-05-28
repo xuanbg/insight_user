@@ -4,6 +4,7 @@ import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
 import com.insight.utils.pojo.LoginInfo;
 import com.insight.utils.pojo.Reply;
+import com.insight.utils.pojo.SearchDto;
 import com.insight.utils.pojo.User;
 
 /**
@@ -18,12 +19,10 @@ public interface ManageService {
      *
      * @param tenantId 租户ID
      * @param all      是否查询全部用户
-     * @param keyword  查询关键词
-     * @param page     分页页码
-     * @param size     每页记录数
+     * @param search   查询实体类
      * @return Reply
      */
-    Reply getUsers(String tenantId, boolean all, String keyword, int page, int size);
+    Reply getUsers(Long tenantId, boolean all, SearchDto search);
 
     /**
      * 获取用户详情
@@ -31,7 +30,7 @@ public interface ManageService {
      * @param id 用户ID
      * @return Reply
      */
-    Reply getUser(String id);
+    Reply getUser(Long id);
 
     /**
      * 获取用户功能授权
@@ -39,7 +38,7 @@ public interface ManageService {
      * @param id 用户ID
      * @return Reply
      */
-    Reply getUserPermit(String id);
+    Reply getUserPermit(Long id);
 
     /**
      * 新增用户
@@ -66,7 +65,7 @@ public interface ManageService {
      * @param id   用户ID
      * @return Reply
      */
-    Reply deleteUser(LoginInfo info, String id);
+    Reply deleteUser(LoginInfo info, Long id);
 
     /**
      * 改变用户禁用/启用状态
@@ -76,7 +75,7 @@ public interface ManageService {
      * @param status 禁用/启用状态
      * @return Reply
      */
-    Reply changeUserStatus(LoginInfo info, String id, boolean status);
+    Reply changeUserStatus(LoginInfo info, Long id, boolean status);
 
     /**
      * 重置用户密码
@@ -103,7 +102,7 @@ public interface ManageService {
      * @param id   用户ID
      * @return Reply
      */
-    Reply inviteUser(LoginInfo info, String id);
+    Reply inviteUser(LoginInfo info, Long id);
 
     /**
      * 清退用户
@@ -112,17 +111,15 @@ public interface ManageService {
      * @param id   用户ID
      * @return Reply
      */
-    Reply removeUser(LoginInfo info, String id);
+    Reply removeUser(LoginInfo info, Long id);
 
     /**
      * 获取日志列表
      *
-     * @param keyword  查询关键词
-     * @param page     分页页码
-     * @param size     每页记录数
+     * @param search 查询实体类
      * @return Reply
      */
-    Reply getUserLogs(String keyword, int page, int size);
+    Reply getUserLogs(SearchDto search);
 
     /**
      * 获取日志详情
@@ -130,5 +127,5 @@ public interface ManageService {
      * @param id 日志ID
      * @return Reply
      */
-    Reply getUserLog(String id);
+    Reply getUserLog(Long id);
 }

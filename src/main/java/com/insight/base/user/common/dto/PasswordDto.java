@@ -1,21 +1,18 @@
 package com.insight.base.user.common.dto;
 
-import com.insight.utils.Json;
-
-import java.io.Serializable;
+import com.insight.utils.pojo.BaseXo;
 
 /**
  * @author 宣炳刚
  * @date 2019-09-06
  * @remark 密码DTO
  */
-public class PasswordDto implements Serializable {
-    private static final long serialVersionUID = -1L;
+public class PasswordDto extends BaseXo {
 
     /**
      * 用户ID
      */
-    private String id;
+    private Long id;
 
     /**
      * 验证参数,MD5(type + mobile + code)
@@ -35,18 +32,18 @@ public class PasswordDto implements Serializable {
     /**
      * 应用ID
      */
-    private String appId;
+    private Long appId;
 
     /**
      * 租户ID
      */
-    private String tenantId;
+    private Long tenantId;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -74,24 +71,19 @@ public class PasswordDto implements Serializable {
         this.old = old;
     }
 
-    public String getAppId() {
+    public Long getAppId() {
         return appId;
     }
 
-    public void setAppId(String appId) {
+    public void setAppId(Long appId) {
         this.appId = appId;
     }
 
-    public String getTenantId() {
+    public Long getTenantId() {
         return tenantId;
     }
 
-    public void setTenantId(String tenantId) {
+    public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
-    }
-
-    @Override
-    public String toString(){
-        return Json.toJson(this);
     }
 }

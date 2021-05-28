@@ -1,21 +1,18 @@
 package com.insight.base.user.common.dto;
 
-import com.insight.utils.Json;
-
-import java.io.Serializable;
+import com.insight.utils.pojo.BaseXo;
 
 /**
  * @author 宣炳刚
  * @date 2019/12/4
  * @remark 用户组列表DTO
  */
-public class GroupListDto implements Serializable {
-    private static final long serialVersionUID = -1L;
+public class GroupListDto extends BaseXo {
 
     /**
      * 用户组ID
      */
-    private String id;
+    private Long id;
 
     /**
      * 用户组编码
@@ -37,11 +34,11 @@ public class GroupListDto implements Serializable {
      */
     private Boolean isBuiltin;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -75,10 +72,5 @@ public class GroupListDto implements Serializable {
 
     public void setBuiltin(Boolean builtin) {
         isBuiltin = builtin;
-    }
-
-    @Override
-    public String toString() {
-        return Json.toJson(this);
     }
 }

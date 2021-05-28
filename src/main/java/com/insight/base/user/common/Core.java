@@ -3,6 +3,7 @@ package com.insight.base.user.common;
 import com.insight.base.user.common.mapper.UserMapper;
 import com.insight.utils.Generator;
 import com.insight.utils.ReplyHelper;
+import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
 import com.insight.utils.pojo.Reply;
 import com.insight.utils.pojo.User;
@@ -18,14 +19,17 @@ import java.time.LocalDateTime;
  */
 @Component
 public class Core {
+    private final SnowflakeCreator creator;
     private final UserMapper mapper;
 
     /**
      * 构造方法
      *
-     * @param mapper UserMapper
+     * @param creator 雪花算法ID生成器
+     * @param mapper  UserMapper
      */
-    public Core(UserMapper mapper) {
+    public Core(SnowflakeCreator creator, UserMapper mapper) {
+        this.creator = creator;
         this.mapper = mapper;
     }
 
@@ -36,11 +40,11 @@ public class Core {
      * @param tenantId 租户ID
      */
     @Transactional
-    public void addUser(User user, String tenantId) {
+    public void addUser(User user, Long tenantId) {
         // 补完ID
-        String userId = user.getId();
-        if (userId == null || userId.isEmpty()) {
-            user.setId(Util.uuid());
+        Long userId = user.getId();
+        if (userId == null) {
+            user.setId(creator.nextId(3));
         }
 
         // 生成用户编码
@@ -69,15 +73,15 @@ public class Core {
         // 补完其它属性
         user.setInvalid(false);
         user.setCreatedTime(LocalDateTime.now());
-        String creatorId = user.getCreatorId();
-        if (creatorId == null || creatorId.isEmpty()) {
+        Long creatorId = user.getCreatorId();
+        if (creatorId == null) {
             user.setCreator(user.getName());
             user.setCreatorId(user.getId());
         }
 
         // 持久化数据
         mapper.addUser(user);
-        if (tenantId == null || tenantId.isEmpty()) {
+        if (tenantId == null) {
             return;
         }
 
@@ -93,7 +97,7 @@ public class Core {
      * @param email   邮箱
      * @return Reply
      */
-    public Reply matchUser(String userId, String account, String mobile, String email) {
+    public Reply matchUser(Long userId, String account, String mobile, String email) {
         int count = mapper.matchUsers(userId, account);
         if (count > 0) {
             return ReplyHelper.invalidParam("账号[" + account + "]已被使用");
@@ -118,7 +122,7 @@ public class Core {
      * @param tenantId 租户ID
      * @return 用户编码
      */
-    private String newUserCode(String tenantId) {
+    private String newUserCode(Long tenantId) {
         boolean isTenant = tenantId != null;
         String group = isTenant ? "Base:User:" + tenantId : "Base:User";
         String format = isTenant ? "#6" : "IU#8";

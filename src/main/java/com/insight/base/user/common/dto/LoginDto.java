@@ -1,26 +1,23 @@
 package com.insight.base.user.common.dto;
 
-import com.insight.utils.Json;
-
-import java.io.Serializable;
+import com.insight.utils.pojo.BaseXo;
 
 /**
  * @author 宣炳刚
  * @date 2017/9/7
  * @remark 登录数据DTO
  */
-public class LoginDto implements Serializable {
-    private static final long serialVersionUID = -1L;
+public class LoginDto extends BaseXo {
 
     /**
      * 应用ID
      */
-    private String appId;
+    private Long appId;
 
     /**
      * 租户ID
      */
-    private String tenantId;
+    private Long tenantId;
 
     /**
      * 登录账号
@@ -32,19 +29,19 @@ public class LoginDto implements Serializable {
      */
     private String signature;
 
-    public String getAppId() {
+    public Long getAppId() {
         return appId;
     }
 
-    public void setAppId(String appId) {
+    public void setAppId(Long appId) {
         this.appId = appId;
     }
 
-    public String getTenantId() {
+    public Long getTenantId() {
         return tenantId;
     }
 
-    public void setTenantId(String tenantId) {
+    public void setTenantId(Long tenantId) {
         this.tenantId = tenantId;
     }
 
@@ -62,10 +59,5 @@ public class LoginDto implements Serializable {
 
     public void setSignature(String signature) {
         this.signature = signature;
-    }
-
-    @Override
-    public String toString() {
-        return Json.toJson(this);
     }
 }

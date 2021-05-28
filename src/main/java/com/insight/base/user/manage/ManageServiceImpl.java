@@ -12,6 +12,7 @@ import com.insight.base.user.common.dto.UserListDto;
 import com.insight.base.user.common.mapper.UserMapper;
 import com.insight.utils.Redis;
 import com.insight.utils.ReplyHelper;
+import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
 import com.insight.utils.pojo.*;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ import java.util.List;
 @org.springframework.stereotype.Service
 public class ManageServiceImpl implements ManageService {
     private static final String BUSINESS = "用户管理";
+    private final SnowflakeCreator creator;
     private final UserMapper mapper;
     private final LogServiceClient client;
     private final Core core;
@@ -33,11 +35,13 @@ public class ManageServiceImpl implements ManageService {
     /**
      * 构造方法
      *
-     * @param mapper UserMapper
-     * @param client LogServiceClient
-     * @param core   Core
+     * @param creator 雪花算法ID生成器
+     * @param mapper  UserMapper
+     * @param client  LogServiceClient
+     * @param core    Core
      */
-    public ManageServiceImpl(UserMapper mapper, LogServiceClient client, Core core) {
+    public ManageServiceImpl(SnowflakeCreator creator, UserMapper mapper, LogServiceClient client, Core core) {
+        this.creator = creator;
         this.mapper = mapper;
         this.client = client;
         this.core = core;
@@ -48,19 +52,17 @@ public class ManageServiceImpl implements ManageService {
      *
      * @param tenantId 租户ID
      * @param all      是否查询全部用户
-     * @param keyword  查询关键词
-     * @param page     分页页码
-     * @param size     每页记录数
+     * @param search   查询实体类
      * @return Reply
      */
     @Override
-    public Reply getUsers(String tenantId, boolean all, String keyword, int page, int size) {
-        if (tenantId != null && all && keyword == null) {
+    public Reply getUsers(Long tenantId, boolean all, SearchDto search) {
+        if (tenantId != null && all && search.getKeyword() == null) {
             return ReplyHelper.invalidParam("查询关键词不能为空");
         }
 
-        PageHelper.startPage(page, size);
-        List<UserListDto> users = mapper.getUsers(all ? null : tenantId, keyword);
+        PageHelper.startPage(search.getPage(), search.getSize());
+        List<UserListDto> users = mapper.getUsers(all ? null : tenantId, search.getKeyword());
         PageInfo<UserListDto> pageInfo = new PageInfo<>(users);
 
         return ReplyHelper.success(users, pageInfo.getTotal());
@@ -73,7 +75,7 @@ public class ManageServiceImpl implements ManageService {
      * @return Reply
      */
     @Override
-    public Reply getUser(String id) {
+    public Reply getUser(Long id) {
         UserDto user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未读取数据");
@@ -89,7 +91,7 @@ public class ManageServiceImpl implements ManageService {
      * @return Reply
      */
     @Override
-    public Reply getUserPermit(String id) {
+    public Reply getUserPermit(Long id) {
         UserDto user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未读取数据");
@@ -108,14 +110,14 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public Reply newUser(LoginInfo info, User dto) {
-        String id = Util.uuid();
+        Long id = creator.nextId(3);
         Reply reply = core.matchUser(id, dto.getAccount(), dto.getMobile(), dto.getEmail());
         if (reply != null) {
             return reply;
         }
 
         dto.setId(id);
-        String tenantId = info.getTenantId();
+        Long tenantId = info.getTenantId();
         core.addUser(dto, tenantId);
         LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, dto);
 
@@ -131,7 +133,7 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public Reply editUser(LoginInfo info, UserDto dto) {
-        String id = dto.getId();
+        Long id = dto.getId();
         UserDto user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -176,7 +178,7 @@ public class ManageServiceImpl implements ManageService {
      * @return Reply
      */
     @Override
-    public Reply deleteUser(LoginInfo info, String id) {
+    public Reply deleteUser(LoginInfo info, Long id) {
         UserDto user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未删除数据");
@@ -206,7 +208,7 @@ public class ManageServiceImpl implements ManageService {
      * @return Reply
      */
     @Override
-    public Reply changeUserStatus(LoginInfo info, String id, boolean status) {
+    public Reply changeUserStatus(LoginInfo info, Long id, boolean status) {
         UserDto user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -233,7 +235,7 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public Reply resetPassword(LoginInfo info, PasswordDto dto) {
-        String id = dto.getId();
+        Long id = dto.getId();
         UserDto user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -264,7 +266,7 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public Reply getInviteUsers(LoginInfo info, String keyword) {
-        String tenantId = info.getTenantId();
+        Long tenantId = info.getTenantId();
         if (tenantId == null) {
             return ReplyHelper.invalidParam("租户ID不能为空");
         }
@@ -288,9 +290,9 @@ public class ManageServiceImpl implements ManageService {
      * @return Reply
      */
     @Override
-    public Reply inviteUser(LoginInfo info, String id) {
-        String tenantId = info.getTenantId();
-        if (tenantId == null || tenantId.isEmpty()) {
+    public Reply inviteUser(LoginInfo info, Long id) {
+        Long tenantId = info.getTenantId();
+        if (tenantId == null) {
             return ReplyHelper.invalidParam("租户ID不存在,请以租户身份登录");
         }
 
@@ -316,8 +318,8 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     @Transactional
-    public Reply removeUser(LoginInfo info, String id) {
-        String tenantId = info.getTenantId();
+    public Reply removeUser(LoginInfo info, Long id) {
+        Long tenantId = info.getTenantId();
         mapper.removeRelation(tenantId, id);
         mapper.removeGroupRelation(tenantId, id);
         mapper.removeOrganizeRelation(tenantId, id);
@@ -329,14 +331,12 @@ public class ManageServiceImpl implements ManageService {
     /**
      * 获取日志列表
      *
-     * @param keyword  查询关键词
-     * @param page     分页页码
-     * @param size     每页记录数
+     * @param search 查询实体类
      * @return Reply
      */
     @Override
-    public Reply getUserLogs(String keyword, int page, int size) {
-        return client.getLogs(BUSINESS, keyword, page, size);
+    public Reply getUserLogs(SearchDto search) {
+        return client.getLogs(BUSINESS, search.getKeyword(), search.getPage(), search.getSize());
     }
 
     /**
@@ -346,7 +346,7 @@ public class ManageServiceImpl implements ManageService {
      * @return Reply
      */
     @Override
-    public Reply getUserLog(String id) {
+    public Reply getUserLog(Long id) {
         return client.getLog(id);
     }
 }

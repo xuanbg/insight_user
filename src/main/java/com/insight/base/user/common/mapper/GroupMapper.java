@@ -25,7 +25,7 @@ public interface GroupMapper {
     @Select("<script>select id, code, name, remark, is_builtin from ibu_group where tenant_id = #{tenantId} " +
             "<if test = 'key != null'>and (code = #{key} or name like concat('%',#{key},'%')) </if>" +
             "order by created_time</script>")
-    List<GroupListDto> getGroups(@Param("tenantId") String tenantId, @Param("key") String key);
+    List<GroupListDto> getGroups(@Param("tenantId") Long tenantId, @Param("key") String key);
 
     /**
      * 获取用户组详情
@@ -34,7 +34,7 @@ public interface GroupMapper {
      * @return 用户组详情
      */
     @Select("select * from ibu_group where id = #{id};")
-    GroupDto getGroup(String id);
+    GroupDto getGroup(Long id);
 
     /**
      * 新增用户组
@@ -59,7 +59,7 @@ public interface GroupMapper {
      * @param id 用户组ID
      */
     @Delete("delete g, m from ibu_group g left join ibu_group_member m on m.group_id = g.id where g.id = #{id};")
-    void deleteGroup(String id);
+    void deleteGroup(Long id);
 
     /**
      * 查询用户组成员
@@ -71,7 +71,7 @@ public interface GroupMapper {
     @Select("<script>select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_group_member m join ibu_user u on u.id = m.user_id " +
             "<if test = 'key != null'>and (u.code = #{key} or u.account = #{key} or u.name like concat('%',#{key},'%')) </if>" +
             "where m.group_id = #{id} order by u.created_time</script>")
-    List<UserListDto> getMembers(@Param("id") String id, @Param("key") String key);
+    List<UserListDto> getMembers(@Param("id") Long id, @Param("key") String key);
 
     /**
      * 查询用户组可用用户列表
@@ -82,7 +82,7 @@ public interface GroupMapper {
     @Select("select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_user u " +
             "join ibt_tenant_user t on t.user_id = u.id join ibu_group g on g.tenant_id = t.tenant_id and g.id = #{id} " +
             "left join ibu_group_member m on m.group_id = g.id and m.user_id = u.id where isnull(m.id)")
-    List<UserListDto> getOthers(String id);
+    List<UserListDto> getOthers(Long id);
 
     /**
      * 添加用户组成员
@@ -93,7 +93,7 @@ public interface GroupMapper {
     @Insert("<script>insert ibu_group_member (id, group_id, user_id) values " +
             "<foreach collection = \"list\" item = \"item\" index = \"index\" separator = \",\">" +
             "(replace(uuid(), '-', ''), #{id}, #{item})</foreach>;</script>")
-    void addMembers(@Param("id") String id, @Param("list") List<String> userIds);
+    void addMembers(@Param("id") Long id, @Param("list") List<Long> userIds);
 
     /**
      * 移除用户组成员
@@ -104,7 +104,7 @@ public interface GroupMapper {
     @Delete("<script>delete from ibu_group_member where group_id = #{id} and user_id in " +
             "(<foreach collection = \"list\" item = \"item\" index = \"index\" separator = \",\">" +
             "#{item}</foreach>);</script>")
-    void removeMembers(@Param("id") String id, @Param("list") List<String> userIds);
+    void removeMembers(@Param("id") Long id, @Param("list") List<Long> userIds);
 
     /**
      * 获取指定租户下指定编码的用户组数量
@@ -114,5 +114,5 @@ public interface GroupMapper {
      * @return 用户组数量
      */
     @Select("select count(*) from ibu_group where tenant_id = #{tenantId} and code = #{code}")
-    int getGroupCount(@Param("tenantId") String tenantId, @Param("code") String code);
+    int getGroupCount(@Param("tenantId") Long tenantId, @Param("code") String code);
 }

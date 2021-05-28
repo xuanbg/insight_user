@@ -8,7 +8,10 @@ import com.insight.base.user.common.dto.MobileDto;
 import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
 import com.insight.base.user.common.mapper.UserMapper;
-import com.insight.utils.*;
+import com.insight.utils.Redis;
+import com.insight.utils.ReplyHelper;
+import com.insight.utils.SnowflakeCreator;
+import com.insight.utils.Util;
 import com.insight.utils.pojo.Reply;
 import com.insight.utils.pojo.User;
 
@@ -19,6 +22,7 @@ import com.insight.utils.pojo.User;
  */
 @org.springframework.stereotype.Service
 public class UserServiceImpl implements UserService {
+    private final SnowflakeCreator creator;
     private final UserMapper mapper;
     private final MessageClient client;
     private final AuthClient authClient;
@@ -27,12 +31,14 @@ public class UserServiceImpl implements UserService {
     /**
      * 构造方法
      *
+     * @param creator    雪花算法ID生成器
      * @param mapper     UserMapper
      * @param client     MessageClient
      * @param authClient AuthClient
      * @param core       Core
      */
-    public UserServiceImpl(UserMapper mapper, MessageClient client, AuthClient authClient, Core core) {
+    public UserServiceImpl(SnowflakeCreator creator, UserMapper mapper, MessageClient client, AuthClient authClient, Core core) {
+        this.creator = creator;
         this.mapper = mapper;
         this.client = client;
         this.authClient = authClient;
@@ -46,7 +52,7 @@ public class UserServiceImpl implements UserService {
      * @return Reply
      */
     @Override
-    public Reply getUser(String id) {
+    public Reply getUser(Long id) {
         UserDto user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未读取数据");
@@ -64,7 +70,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Reply register(User dto) {
         // 验证账号|手机号|邮箱是否已存在
-        String id = Util.uuid();
+        Long id = creator.nextId(3);
         Reply reply = core.matchUser(id, dto.getAccount(), dto.getMobile(), dto.getEmail());
         if (reply != null) {
             return reply;
@@ -95,7 +101,7 @@ public class UserServiceImpl implements UserService {
      * @return Reply
      */
     @Override
-    public Reply updateName(String id, String name) {
+    public Reply updateName(Long id, String name) {
         UserDto user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -115,7 +121,7 @@ public class UserServiceImpl implements UserService {
      * @return Reply
      */
     @Override
-    public Reply updateMobile(String id, MobileDto dto) {
+    public Reply updateMobile(Long id, MobileDto dto) {
         UserDto user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -164,7 +170,7 @@ public class UserServiceImpl implements UserService {
      * @return Reply
      */
     @Override
-    public Reply updateEmail(String id, String email) {
+    public Reply updateEmail(Long id, String email) {
         UserDto user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -194,7 +200,7 @@ public class UserServiceImpl implements UserService {
      * @return Reply
      */
     @Override
-    public Reply updateHeadImg(String id, String headImg) {
+    public Reply updateHeadImg(Long id, String headImg) {
         UserDto user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -214,7 +220,7 @@ public class UserServiceImpl implements UserService {
      * @return Reply
      */
     @Override
-    public Reply updateRemark(String id, String remark) {
+    public Reply updateRemark(Long id, String remark) {
         UserDto user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -234,7 +240,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Reply changePassword(PasswordDto dto) {
-        String id = dto.getId();
+        Long id = dto.getId();
         UserDto user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -275,7 +281,7 @@ public class UserServiceImpl implements UserService {
         }
 
         // 获取旧密码用于计算签名
-        String id = Redis.get("ID:" + mobile);
+        Long id = Long.valueOf(Redis.get("ID:" + mobile));
         String key = "User:" + id;
         String pw = Redis.get(key, "password");
 
@@ -309,7 +315,7 @@ public class UserServiceImpl implements UserService {
             return ReplyHelper.invalidParam("支付密码不能为空");
         }
 
-        String id = dto.getId();
+        Long id = dto.getId();
         UserDto user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -334,7 +340,7 @@ public class UserServiceImpl implements UserService {
      * @return Reply
      */
     @Override
-    public Reply verifyPayPw(String id, String key) {
+    public Reply verifyPayPw(Long id, String key) {
         String payPassword = Redis.get("User:" + id, "payPassword");
         if (payPassword == null || payPassword.isEmpty()) {
             return ReplyHelper.fail("当前未设置支付密码,请先设置支付密码");

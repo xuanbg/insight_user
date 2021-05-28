@@ -6,6 +6,7 @@ import com.insight.utils.Json;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.pojo.LoginInfo;
 import com.insight.utils.pojo.Reply;
+import com.insight.utils.pojo.SearchDto;
 import com.insight.utils.pojo.User;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,19 +35,16 @@ public class ManageController {
     /**
      * 查询用户列表
      *
-     * @param info    用户关键信息
-     * @param all     是否查询全部用户
-     * @param keyword 查询关键词
-     * @param page    分页页码
-     * @param size    每页记录数
+     * @param info   用户关键信息
+     * @param all    是否查询全部用户
+     * @param search 查询实体类
      * @return Reply
      */
     @GetMapping("/v1.0/users")
-    public Reply getUsers(@RequestHeader("loginInfo") String info, @RequestParam(defaultValue = "false") boolean all, @RequestParam(required = false) String keyword,
-                          @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "20") int size) {
+    public Reply getUsers(@RequestHeader("loginInfo") String info, @RequestParam(defaultValue = "false") boolean all, SearchDto search) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.getUsers(loginInfo.getTenantId(), all, keyword, page, size);
+        return service.getUsers(loginInfo.getTenantId(), all, search);
     }
 
     /**
@@ -56,8 +54,8 @@ public class ManageController {
      * @return Reply
      */
     @GetMapping("/v1.0/users/{id}")
-    public Reply getUser(@PathVariable String id) {
-        if (id == null || id.isEmpty()) {
+    public Reply getUser(@PathVariable Long id) {
+        if (id == null) {
             return ReplyHelper.invalidParam();
         }
 
@@ -71,8 +69,8 @@ public class ManageController {
      * @return Reply
      */
     @GetMapping("/v1.0/users/{id}/functions")
-    public Reply getUserPermit(@PathVariable String id) {
-        if (id == null || id.isEmpty()) {
+    public Reply getUserPermit(@PathVariable Long id) {
+        if (id == null) {
             return ReplyHelper.invalidParam();
         }
 
@@ -115,7 +113,7 @@ public class ManageController {
      * @return Reply
      */
     @DeleteMapping("/v1.0/users")
-    public Reply deleteUser(@RequestHeader("loginInfo") String info, @RequestBody String id) {
+    public Reply deleteUser(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.deleteUser(loginInfo, id);
@@ -129,7 +127,7 @@ public class ManageController {
      * @return Reply
      */
     @PutMapping("/v1.0/users/disable")
-    public Reply disableUser(@RequestHeader("loginInfo") String info, @RequestBody String id) {
+    public Reply disableUser(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.changeUserStatus(loginInfo, id, true);
@@ -143,7 +141,7 @@ public class ManageController {
      * @return Reply
      */
     @PutMapping("/v1.0/users/enable")
-    public Reply enableUser(@RequestHeader("loginInfo") String info, @RequestBody String id) {
+    public Reply enableUser(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.changeUserStatus(loginInfo, id, false);
@@ -185,7 +183,7 @@ public class ManageController {
      * @return Reply
      */
     @PostMapping("/v1.0/users/relation")
-    public Reply inviteUser(@RequestHeader("loginInfo") String info, @RequestBody String id) {
+    public Reply inviteUser(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.inviteUser(loginInfo, id);
@@ -199,7 +197,7 @@ public class ManageController {
      * @return Reply
      */
     @DeleteMapping("/v1.0/users/relation")
-    public Reply removeUser(@RequestHeader("loginInfo") String info, @RequestBody String id) {
+    public Reply removeUser(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.removeUser(loginInfo, id);
@@ -208,14 +206,12 @@ public class ManageController {
     /**
      * 获取日志列表
      *
-     * @param keyword 查询关键词
-     * @param page    分页页码
-     * @param size    每页记录数
+     * @param search 查询实体类
      * @return Reply
      */
     @GetMapping("/v1.0/users/logs")
-    public Reply getUserLogs(@RequestParam(required = false) String keyword, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "20") int size) {
-        return service.getUserLogs(keyword, page, size);
+    public Reply getUserLogs(SearchDto search) {
+        return service.getUserLogs(search);
     }
 
     /**
@@ -225,8 +221,8 @@ public class ManageController {
      * @return Reply
      */
     @GetMapping("/v1.0/users/logs/{id}")
-    Reply getUserLog(@PathVariable String id) {
-        if (id == null || id.isEmpty()) {
+    Reply getUserLog(@PathVariable Long id) {
+        if (id == null) {
             return ReplyHelper.invalidParam();
         }
 

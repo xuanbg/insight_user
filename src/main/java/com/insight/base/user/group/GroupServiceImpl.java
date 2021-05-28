@@ -10,10 +10,11 @@ import com.insight.base.user.common.dto.UserListDto;
 import com.insight.base.user.common.mapper.GroupMapper;
 import com.insight.utils.Generator;
 import com.insight.utils.ReplyHelper;
-import com.insight.utils.Util;
+import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.pojo.LoginInfo;
 import com.insight.utils.pojo.OperateType;
 import com.insight.utils.pojo.Reply;
+import com.insight.utils.pojo.SearchDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -26,16 +27,19 @@ import java.util.List;
 @org.springframework.stereotype.Service
 public class GroupServiceImpl implements GroupService {
     private static final String BUSINESS = "用户组管理";
+    private final SnowflakeCreator creator;
     private final GroupMapper mapper;
     private final LogServiceClient client;
 
     /**
      * 构造方法
      *
-     * @param mapper GroupMapper
-     * @param client LogServiceClient
+     * @param creator 雪花算法ID生成器
+     * @param mapper  GroupMapper
+     * @param client  LogServiceClient
      */
-    public GroupServiceImpl(GroupMapper mapper, LogServiceClient client) {
+    public GroupServiceImpl(SnowflakeCreator creator, GroupMapper mapper, LogServiceClient client) {
+        this.creator = creator;
         this.mapper = mapper;
         this.client = client;
     }
@@ -44,15 +48,13 @@ public class GroupServiceImpl implements GroupService {
      * 查询用户组列表
      *
      * @param tenantId 租户ID
-     * @param keyword  查询关键词
-     * @param page     分页页码
-     * @param size     每页记录数
+     * @param search   查询实体类
      * @return Reply
      */
     @Override
-    public Reply getGroups(String tenantId, String keyword, int page, int size) {
-        PageHelper.startPage(page, size);
-        List<GroupListDto> groups = mapper.getGroups(tenantId, keyword);
+    public Reply getGroups(Long tenantId, SearchDto search) {
+        PageHelper.startPage(search.getPage(), search.getSize());
+        List<GroupListDto> groups = mapper.getGroups(tenantId, search.getKeyword());
         PageInfo<GroupListDto> pageInfo = new PageInfo<>(groups);
 
         return ReplyHelper.success(groups, pageInfo.getTotal());
@@ -65,7 +67,7 @@ public class GroupServiceImpl implements GroupService {
      * @return Reply
      */
     @Override
-    public Reply getGroup(String id) {
+    public Reply getGroup(Long id) {
         GroupDto group = mapper.getGroup(id);
         if (group == null) {
             return ReplyHelper.fail("ID不存在,未读取数据");
@@ -83,8 +85,8 @@ public class GroupServiceImpl implements GroupService {
      */
     @Override
     public Reply newGroup(LoginInfo info, GroupDto dto) {
-        String id = Util.uuid();
-        String tenantId = info.getTenantId();
+        Long id = creator.nextId(7);
+        Long tenantId = info.getTenantId();
         dto.setId(id);
         dto.setTenantId(tenantId);
         dto.setCode(newGroupCode(tenantId));
@@ -108,7 +110,7 @@ public class GroupServiceImpl implements GroupService {
      */
     @Override
     public Reply editGroup(LoginInfo info, GroupDto dto) {
-        String id = dto.getId();
+        Long id = dto.getId();
         GroupDto group = mapper.getGroup(id);
         if (group == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -128,7 +130,7 @@ public class GroupServiceImpl implements GroupService {
      * @return Reply
      */
     @Override
-    public Reply deleteGroup(LoginInfo info, String id) {
+    public Reply deleteGroup(LoginInfo info, Long id) {
         GroupDto group = mapper.getGroup(id);
         if (group == null) {
             return ReplyHelper.fail("ID不存在,未删除数据");
@@ -143,21 +145,19 @@ public class GroupServiceImpl implements GroupService {
     /**
      * 查询用户组成员
      *
-     * @param id      用户组ID
-     * @param keyword 查询关键词
-     * @param page    分页页码
-     * @param size    每页记录数
+     * @param id     用户组ID
+     * @param search 查询实体类
      * @return Reply
      */
     @Override
-    public Reply getMembers(String id, String keyword, int page, int size) {
+    public Reply getMembers(Long id, SearchDto search) {
         GroupDto group = mapper.getGroup(id);
         if (group == null) {
             return ReplyHelper.fail("ID不存在,未读取数据");
         }
 
-        PageHelper.startPage(page, size);
-        List<UserListDto> members = mapper.getMembers(id, keyword);
+        PageHelper.startPage(search.getPage(), search.getSize());
+        List<UserListDto> members = mapper.getMembers(id, search.getKeyword());
         PageInfo<UserListDto> pageInfo = new PageInfo<>(members);
 
         return ReplyHelper.success(members, pageInfo.getTotal());
@@ -170,7 +170,7 @@ public class GroupServiceImpl implements GroupService {
      * @return Reply
      */
     @Override
-    public Reply getOthers(String id) {
+    public Reply getOthers(Long id) {
         List<UserListDto> users = mapper.getOthers(id);
 
         return ReplyHelper.success(users);
@@ -185,7 +185,7 @@ public class GroupServiceImpl implements GroupService {
      * @return Reply
      */
     @Override
-    public Reply addMembers(LoginInfo info, String id, List<String> userIds) {
+    public Reply addMembers(LoginInfo info, Long id, List<Long> userIds) {
         GroupDto group = mapper.getGroup(id);
         if (group == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
@@ -206,7 +206,7 @@ public class GroupServiceImpl implements GroupService {
      * @return Reply
      */
     @Override
-    public Reply removeMembers(LoginInfo info, String id, List<String> userIds) {
+    public Reply removeMembers(LoginInfo info, Long id, List<Long> userIds) {
         GroupDto group = mapper.getGroup(id);
         if (group == null) {
             return ReplyHelper.fail("ID不存在,未删除数据");
@@ -221,14 +221,12 @@ public class GroupServiceImpl implements GroupService {
     /**
      * 获取日志列表
      *
-     * @param keyword 查询关键词
-     * @param page    分页页码
-     * @param size    每页记录数
+     * @param search 查询实体类
      * @return Reply
      */
     @Override
-    public Reply getGroupLogs(String keyword, int page, int size) {
-        return client.getLogs(BUSINESS, keyword, page, size);
+    public Reply getGroupLogs(SearchDto search) {
+        return client.getLogs(BUSINESS, search.getKeyword(), search.getPage(), search.getSize());
     }
 
     /**
@@ -238,7 +236,7 @@ public class GroupServiceImpl implements GroupService {
      * @return Reply
      */
     @Override
-    public Reply getGroupLog(String id) {
+    public Reply getGroupLog(Long id) {
         return client.getLog(id);
     }
 
@@ -248,7 +246,7 @@ public class GroupServiceImpl implements GroupService {
      * @param tenantId 租户ID
      * @return 用户组编码
      */
-    private String newGroupCode(String tenantId) {
+    private String newGroupCode(Long tenantId) {
         String group = "UserGroup:" + tenantId;
         while (true) {
             String code = Generator.newCode("#4", group, false);

@@ -1,21 +1,18 @@
 package com.insight.base.user.common.dto;
 
-import com.insight.utils.Json;
-
-import java.io.Serializable;
+import com.insight.utils.pojo.BaseXo;
 
 /**
  * @author 宣炳刚
  * @date 2019/10/31
  * @remark
  */
-public class UserListDto implements Serializable {
-    private static final long serialVersionUID = -1L;
+public class UserListDto extends BaseXo {
 
     /**
      * 用户ID
      */
-    private String id;
+    private Long id;
 
     /**
      * 用户编码
@@ -52,11 +49,11 @@ public class UserListDto implements Serializable {
      */
     private Boolean isInvalid;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -114,10 +111,5 @@ public class UserListDto implements Serializable {
 
     public void setInvalid(Boolean invalid) {
         isInvalid = invalid;
-    }
-
-    @Override
-    public String toString() {
-        return Json.toJson(this);
     }
 }

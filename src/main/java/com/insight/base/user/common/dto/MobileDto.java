@@ -1,16 +1,13 @@
 package com.insight.base.user.common.dto;
 
-import com.insight.utils.Json;
-
-import java.io.Serializable;
+import com.insight.utils.pojo.BaseXo;
 
 /**
  * @author 宣炳刚
  * @date 2019-09-06
  * @remark 手机验证码DTO
  */
-public class MobileDto implements Serializable {
-    private static final long serialVersionUID = -1L;
+public class MobileDto extends BaseXo {
 
     /**
      * 手机号
@@ -36,10 +33,5 @@ public class MobileDto implements Serializable {
 
     public void setKey(String key) {
         this.key = key;
-    }
-
-    @Override
-    public String toString(){
-        return Json.toJson(this);
     }
 }

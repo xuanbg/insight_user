@@ -29,7 +29,7 @@ public interface UserMapper {
             "<if test = 'tenantId != null'>join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} </if>" +
             "<if test = 'key != null'>where u.code = #{key} or u.account = #{key} or u.mobile = #{key} or u.name like concat('%',#{key},'%') </if>" +
             "order by u.created_time</script>")
-    List<UserListDto> getUsers(@Param("tenantId") String tenantId, @Param("key") String key);
+    List<UserListDto> getUsers(@Param("tenantId") Long tenantId, @Param("key") String key);
 
     /**
      * 获取用户详情
@@ -40,7 +40,7 @@ public interface UserMapper {
     @Results({@Result(property = "openId", column = "open_id", javaType = Map.class, typeHandler = JsonTypeHandler.class)})
     @Select("select id, code, name, account, mobile, email, union_id, open_id, head_img, remark, is_builtin, is_invalid, creator, creator_id, created_time " +
             "from ibu_user where id = #{id};")
-    UserDto getUser(String id);
+    UserDto getUser(Long id);
 
     /**
      * 获取用户功能授权
@@ -61,7 +61,7 @@ public interface UserMapper {
             "case min(p.permit) when 0 then '禁止' else '允许' end as remark, min(p.permit) as permit " +
             "from ibv_user_roles r join ibr_role_permit p on p.role_id = r.role_id join ibs_function f on f.id = p.function_id " +
             "where r.user_id = #{id} group by f.id) t order by t.`index`;")
-    List<FuncPermitDto> getUserPermit(String id);
+    List<FuncPermitDto> getUserPermit(Long id);
 
     /**
      * 新增用户
@@ -80,7 +80,7 @@ public interface UserMapper {
      * @return 用户数
      */
     @Select("select count(*) from ibu_user where (account = #{key} or mobile = #{key} or email = #{key}) and id != #{id};")
-    int matchUsers(@Param("id") String id, @Param("key") String key);
+    int matchUsers(@Param("id") Long id, @Param("key") String key);
 
     /**
      * 获取指定租户下指定编码的用户数量
@@ -92,7 +92,7 @@ public interface UserMapper {
     @Select("<script>select count(*) from ibu_user u " +
             "<if test = 'tenantId != null'>join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} </if>" +
             "where u.code = #{code};</script>")
-    int getUserCount(@Param("tenantId") String tenantId, @Param("code") String code);
+    int getUserCount(@Param("tenantId") Long tenantId, @Param("code") String code);
 
     /**
      * 匹配租户下的用户数
@@ -102,7 +102,7 @@ public interface UserMapper {
      * @return 用户数
      */
     @Select("select count(*) from ibt_tenant_user where tenant_id = #{tenantId} and user_id = #{userId};")
-    int matchRelation(@Param("tenantId") String tenantId, @Param("userId") String userId);
+    int matchRelation(@Param("tenantId") Long tenantId, @Param("userId") Long userId);
 
     /**
      * 更新用户
@@ -119,7 +119,7 @@ public interface UserMapper {
      * @param password 新密码
      */
     @Update("update ibu_user set password = #{password} where id = #{id};")
-    void updatePassword(String id, String password);
+    void updatePassword(Long id, String password);
 
     /**
      * 重置密码
@@ -128,7 +128,7 @@ public interface UserMapper {
      * @param password 新密码
      */
     @Update("update ibu_user set pay_password = #{password} where id = #{id};")
-    void updatePayPassword(String id, String password);
+    void updatePayPassword(Long id, String password);
 
     /**
      * 禁用/启用用户
@@ -137,7 +137,7 @@ public interface UserMapper {
      * @param status 禁用/启用状态
      */
     @Update("update ibu_user set is_invalid = #{status} where id = #{id};")
-    void updateStatus(String id, boolean status);
+    void updateStatus(Long id, boolean status);
 
     /**
      * 删除用户
@@ -147,7 +147,7 @@ public interface UserMapper {
     @Delete("delete u, g, t, o, r from ibu_user u left join ibu_group_member g on g.user_id = u.id " +
             "left join ibt_tenant_user t on t.user_id = u.id left join ibo_organize_member o on o.user_id = u.id " +
             "left join ibr_role_member r on r.member_id = u.id and r.type = 1 where u.id = #{id};")
-    void deleteUser(String id);
+    void deleteUser(Long id);
 
     /**
      * 获取可邀请用户列表
@@ -159,7 +159,7 @@ public interface UserMapper {
     @Select("select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_user u " +
             "left join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} " +
             "where isnull(r.id) and (u.account = #{key} or u.mobile = #{key} or u.`name` like concat('%',#{key},'%'))")
-    List<UserListDto> getOtherUsers(@Param("tenantId") String tenantId, @Param("key") String key);
+    List<UserListDto> getOtherUsers(@Param("tenantId") Long tenantId, @Param("key") String key);
 
     /**
      * 新增租户-用户关系
@@ -168,7 +168,7 @@ public interface UserMapper {
      * @param userId   用户ID
      */
     @Insert("insert ibt_tenant_user(id, tenant_id, user_id) values (replace(uuid(), '-', ''), #{tenantId}, #{userId});")
-    void addRelation(@Param("tenantId") String tenantId, @Param("userId") String userId);
+    void addRelation(@Param("tenantId") Long tenantId, @Param("userId") Long userId);
 
     /**
      * 删除租户-用户关系
@@ -176,7 +176,7 @@ public interface UserMapper {
      * @param userId   用户ID
      */
     @Delete("delete from ibt_tenant_user where tenant_id = #{tenantId} and user_id = #{userId};")
-    void removeRelation(@Param("tenantId") String tenantId, @Param("userId") String userId);
+    void removeRelation(@Param("tenantId") Long tenantId, @Param("userId") Long userId);
 
     /**
      * 删除租户-角色关系
@@ -184,7 +184,7 @@ public interface UserMapper {
      * @param userId   用户ID
      */
     @Delete("delete m from ibr_role r join ibr_role_member m on m.role_id = r.id and m.type = 1 and m.member_id = #{userId} where r.tenant_id = #{tenantId};")
-    void removeRoleRelation(@Param("tenantId") String tenantId, @Param("userId") String userId);
+    void removeRoleRelation(@Param("tenantId") Long tenantId, @Param("userId") Long userId);
 
     /**
      * 删除租户-用户组关系
@@ -192,7 +192,7 @@ public interface UserMapper {
      * @param userId   用户ID
      */
     @Delete("delete m from ibu_group g join ibu_group_member m on m.group_id = g.id and m.user_id = #{userId} where g.tenant_id = #{tenantId};")
-    void removeGroupRelation(@Param("tenantId") String tenantId, @Param("userId") String userId);
+    void removeGroupRelation(@Param("tenantId") Long tenantId, @Param("userId") Long userId);
 
     /**
      * 删除租户-组织机构关系
@@ -200,5 +200,5 @@ public interface UserMapper {
      * @param userId   用户ID
      */
     @Delete("delete m from ibo_organize o join ibo_organize_member m on m.post_id = o.id and m.user_id = #{userId} where o.tenant_id = #{tenantId};")
-    void removeOrganizeRelation(@Param("tenantId") String tenantId, @Param("userId") String userId);
+    void removeOrganizeRelation(@Param("tenantId") Long tenantId, @Param("userId") Long userId);
 }

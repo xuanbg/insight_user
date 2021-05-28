@@ -5,6 +5,7 @@ import com.insight.utils.Json;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.pojo.LoginInfo;
 import com.insight.utils.pojo.Reply;
+import com.insight.utils.pojo.SearchDto;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -33,18 +34,15 @@ public class GroupController {
     /**
      * 查询用户组列表
      *
-     * @param info    用户关键信息
-     * @param keyword 查询关键词
-     * @param page    分页页码
-     * @param size    每页记录数
+     * @param info   用户关键信息
+     * @param search 查询实体类
      * @return Reply
      */
     @GetMapping("/v1.0/groups")
-    public Reply getGroups(@RequestHeader("loginInfo") String info, @RequestParam(required = false) String keyword,
-                           @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "20") int size) {
+    public Reply getGroups(@RequestHeader("loginInfo") String info, SearchDto search) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.getGroups(loginInfo.getTenantId(), keyword, page, size);
+        return service.getGroups(loginInfo.getTenantId(), search);
     }
 
     /**
@@ -54,8 +52,8 @@ public class GroupController {
      * @return Reply
      */
     @GetMapping("/v1.0/groups/{id}")
-    public Reply getGroup(@PathVariable String id) {
-        if (id == null || id.isEmpty()) {
+    public Reply getGroup(@PathVariable Long id) {
+        if (id == null) {
             return ReplyHelper.invalidParam();
         }
 
@@ -98,7 +96,7 @@ public class GroupController {
      * @return Reply
      */
     @DeleteMapping("/v1.0/groups")
-    public Reply deleteGroup(@RequestHeader("loginInfo") String info, @RequestBody String id) {
+    public Reply deleteGroup(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.deleteGroup(loginInfo, id);
@@ -107,16 +105,13 @@ public class GroupController {
     /**
      * 查询用户组成员
      *
-     * @param id      用户组ID
-     * @param keyword 查询关键词
-     * @param page    分页页码
-     * @param size    每页记录数
+     * @param id     用户组ID
+     * @param search 查询实体类
      * @return Reply
      */
     @GetMapping("/v1.0/groups/{id}/members")
-    public Reply getMembers(@PathVariable String id, @RequestParam(required = false) String keyword,
-                            @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "20") int size) {
-        return service.getMembers(id, keyword, page, size);
+    public Reply getMembers(@PathVariable Long id, SearchDto search) {
+        return service.getMembers(id, search);
     }
 
     /**
@@ -126,7 +121,7 @@ public class GroupController {
      * @return Reply
      */
     @GetMapping("/v1.0/groups/{id}/others")
-    public Reply getOthers(@PathVariable String id) {
+    public Reply getOthers(@PathVariable Long id) {
         return service.getOthers(id);
     }
 
@@ -139,7 +134,7 @@ public class GroupController {
      * @return Reply
      */
     @PostMapping("/v1.0/groups/{id}/members")
-    public Reply addMembers(@RequestHeader("loginInfo") String info, @PathVariable String id, @RequestBody List<String> userIds) {
+    public Reply addMembers(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody List<Long> userIds) {
         if (userIds == null || userIds.isEmpty()) {
             return ReplyHelper.invalidParam("请选择需要添加的成员");
         }
@@ -157,7 +152,7 @@ public class GroupController {
      * @return Reply
      */
     @DeleteMapping("/v1.0/groups/{id}/members")
-    public Reply removeMembers(@RequestHeader("loginInfo") String info, @PathVariable String id, @RequestBody List<String> userIds) {
+    public Reply removeMembers(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody List<Long> userIds) {
         if (userIds == null || userIds.isEmpty()) {
             return ReplyHelper.invalidParam("请选择需要移除的成员");
         }
@@ -169,14 +164,12 @@ public class GroupController {
     /**
      * 获取日志列表
      *
-     * @param keyword 查询关键词
-     * @param page    分页页码
-     * @param size    每页记录数
+     * @param search 查询实体类
      * @return Reply
      */
     @GetMapping("/v1.0/groups/logs")
-    public Reply getGroupLogs(@RequestParam(required = false) String keyword, @RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "20") int size) {
-        return service.getGroupLogs(keyword, page, size);
+    public Reply getGroupLogs(SearchDto search) {
+        return service.getGroupLogs(search);
     }
 
     /**
@@ -186,8 +179,8 @@ public class GroupController {
      * @return Reply
      */
     @GetMapping("/v1.0/groups/logs/{id}")
-    public Reply getGroupLog(@PathVariable String id) {
-        if (id == null || id.isEmpty()) {
+    public Reply getGroupLog(@PathVariable Long id) {
+        if (id == null) {
             return ReplyHelper.invalidParam();
         }
 

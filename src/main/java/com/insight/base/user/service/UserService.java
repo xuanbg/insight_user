@@ -18,7 +18,7 @@ public interface UserService {
      * @param id 用户ID
      * @return Reply
      */
-    Reply getUser(String id);
+    Reply getUser(Long id);
 
     /**
      * 注册用户
@@ -35,7 +35,7 @@ public interface UserService {
      * @param name 用户昵称
      * @return Reply
      */
-    Reply updateName(String id, String name);
+    Reply updateName(Long id, String name);
 
     /**
      * 更新用户手机号
@@ -44,7 +44,7 @@ public interface UserService {
      * @param dto 手机验证码DTO
      * @return Reply
      */
-    Reply updateMobile(String id, MobileDto dto);
+    Reply updateMobile(Long id, MobileDto dto);
 
     /**
      * 更新用户Email
@@ -53,7 +53,7 @@ public interface UserService {
      * @param email Email
      * @return Reply
      */
-    Reply updateEmail(String id, String email);
+    Reply updateEmail(Long id, String email);
 
     /**
      * 更新用户头像
@@ -62,7 +62,7 @@ public interface UserService {
      * @param headImg 头像
      * @return Reply
      */
-    Reply updateHeadImg(String id, String headImg);
+    Reply updateHeadImg(Long id, String headImg);
 
     /**
      * 更新用户备注
@@ -71,7 +71,7 @@ public interface UserService {
      * @param remark 备注
      * @return Reply
      */
-    Reply updateRemark(String id, String remark);
+    Reply updateRemark(Long id, String remark);
 
     /**
      * 修改密码
@@ -104,5 +104,5 @@ public interface UserService {
      * @param key 支付密码(MD5)
      * @return Reply
      */
-    Reply verifyPayPw(String id, String key);
+    Reply verifyPayPw(Long id, String key);
 }

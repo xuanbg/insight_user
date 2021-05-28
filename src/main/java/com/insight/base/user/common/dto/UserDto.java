@@ -1,9 +1,8 @@
 package com.insight.base.user.common.dto;
 
-import com.insight.utils.Json;
+import com.insight.utils.pojo.BaseXo;
 
 import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -12,14 +11,12 @@ import java.util.Map;
  * @date 2018/1/4
  * @remark 用户实体类
  */
-public class UserDto implements Serializable {
-    private static final long serialVersionUID = -1L;
+public class UserDto extends BaseXo {
 
     /**
      * 用户ID
      */
-    @NotEmpty(message = "用户ID不能为空")
-    private String id;
+    private Long id;
 
     /**
      * 用户编码
@@ -86,18 +83,18 @@ public class UserDto implements Serializable {
     /**
      * 创建人ID
      */
-    private String creatorId;
+    private Long creatorId;
 
     /**
      * 创建时间
      */
     private LocalDateTime createdTime;
 
-    public String getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -197,11 +194,11 @@ public class UserDto implements Serializable {
         this.creator = creator;
     }
 
-    public String getCreatorId() {
+    public Long getCreatorId() {
         return creatorId;
     }
 
-    public void setCreatorId(String creatorId) {
+    public void setCreatorId(Long creatorId) {
         this.creatorId = creatorId;
     }
 
@@ -211,10 +208,5 @@ public class UserDto implements Serializable {
 
     public void setCreatedTime(LocalDateTime createdTime) {
         this.createdTime = createdTime;
-    }
-
-    @Override
-    public String toString() {
-        return Json.toJson(this);
     }
 }
