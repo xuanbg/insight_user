@@ -71,7 +71,7 @@ public interface UserMapper {
      *
      * @param user 用户DTO
      */
-    @Insert("insert ibu_user(id, u.type, code, name, account, mobile, email, union_id, password, head_img, remark, is_builtin, creator, creator_id, created_time) values " +
+    @Insert("insert ibu_user(id, type, code, name, account, mobile, email, union_id, password, head_img, remark, is_builtin, creator, creator_id, created_time) values " +
             "(#{id}, #{type}, #{code}, #{name}, #{account}, #{mobile}, #{email}, #{unionId}, #{password}, #{headImg}, #{remark}, #{isBuiltin}, #{creator}, #{creatorId}, #{createdTime});")
     void addUser(User user);
 
