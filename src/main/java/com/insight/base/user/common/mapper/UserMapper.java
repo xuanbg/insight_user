@@ -41,7 +41,7 @@ public interface UserMapper {
      * @return 用户详情
      */
     @Results({@Result(property = "openId", column = "open_id", javaType = Map.class, typeHandler = JsonTypeHandler.class)})
-    @Select("select id, u.type, code, name, account, mobile, email, union_id, open_id, head_img, remark, is_builtin, is_invalid, creator, creator_id, created_time " +
+    @Select("select id, type, code, name, account, mobile, email, union_id, open_id, head_img, remark, is_builtin, is_invalid, creator, creator_id, created_time " +
             "from ibu_user where id = #{id};")
     UserDto getUser(Long id);
 
