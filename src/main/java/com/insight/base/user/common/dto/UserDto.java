@@ -103,6 +103,14 @@ public class UserDto extends BaseXo {
         this.id = id;
     }
 
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
     public String getCode() {
         return code;
     }
