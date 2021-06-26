@@ -19,6 +19,11 @@ public class UserDto extends BaseXo {
     private Long id;
 
     /**
+     * 用户类型:0.外部用户, 1.平台用户
+     */
+    private Integer type;
+
+    /**
      * 用户编码
      */
     private String code;

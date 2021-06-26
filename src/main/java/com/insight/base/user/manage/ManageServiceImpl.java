@@ -62,7 +62,7 @@ public class ManageServiceImpl implements ManageService {
         }
 
         PageHelper.startPage(search.getPage(), search.getSize());
-        List<UserListDto> users = mapper.getUsers(all ? null : tenantId, search.getKeyword());
+        List<UserListDto> users = mapper.getUsers(all ? null : tenantId, search.getType(), search.getKeyword());
         PageInfo<UserListDto> pageInfo = new PageInfo<>(users);
 
         return ReplyHelper.success(users, pageInfo.getTotal());
@@ -118,6 +118,9 @@ public class ManageServiceImpl implements ManageService {
 
         dto.setId(id);
         Long tenantId = info.getTenantId();
+        dto.setType(tenantId == null ? 1 : 0);
+        dto.setCreator(info.getUserName());
+        dto.setCreatorId(info.getUserId());
         core.addUser(dto, tenantId);
         LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, dto);
 

@@ -87,6 +87,7 @@ public class UserServiceImpl implements UserService {
         }
 
         dto.setId(id);
+        dto.setType(0);
         dto.setCode(null);
         core.addUser(dto, null);
 

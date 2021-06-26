@@ -22,14 +22,17 @@ public interface UserMapper {
      * 获取用户列表
      *
      * @param tenantId 租户ID
+     * @param type     用户类型
      * @param key      查询关键词
      * @return 用户列表
      */
-    @Select("<script>select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_user u " +
+    @Select("<script>select u.id, u.type, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_user u " +
             "<if test = 'tenantId != null'>join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} </if>" +
-            "<if test = 'key != null'>where u.code = #{key} or u.account = #{key} or u.mobile = #{key} or u.name like concat('%',#{key},'%') </if>" +
+            "where 0=0 " +
+            "<if test = 'type != null'>and u.type = #{type} </if>" +
+            "<if test = 'key != null'>and u.code = #{key} or u.account = #{key} or u.mobile = #{key} or u.name like concat('%',#{key},'%') </if>" +
             "order by u.created_time</script>")
-    List<UserListDto> getUsers(@Param("tenantId") Long tenantId, @Param("key") String key);
+    List<UserListDto> getUsers(@Param("tenantId") Long tenantId, @Param("type") Integer type, @Param("key") String key);
 
     /**
      * 获取用户详情
@@ -38,7 +41,7 @@ public interface UserMapper {
      * @return 用户详情
      */
     @Results({@Result(property = "openId", column = "open_id", javaType = Map.class, typeHandler = JsonTypeHandler.class)})
-    @Select("select id, code, name, account, mobile, email, union_id, open_id, head_img, remark, is_builtin, is_invalid, creator, creator_id, created_time " +
+    @Select("select id, u.type, code, name, account, mobile, email, union_id, open_id, head_img, remark, is_builtin, is_invalid, creator, creator_id, created_time " +
             "from ibu_user where id = #{id};")
     UserDto getUser(Long id);
 
@@ -68,8 +71,8 @@ public interface UserMapper {
      *
      * @param user 用户DTO
      */
-    @Insert("insert ibu_user(id, code, name, account, mobile, email, union_id, password, head_img, remark, is_builtin, creator, creator_id, created_time) values " +
-            "(#{id}, #{code}, #{name}, #{account}, #{mobile}, #{email}, #{unionId}, #{password}, #{headImg}, #{remark}, #{isBuiltin}, #{creator}, #{creatorId}, #{createdTime});")
+    @Insert("insert ibu_user(id, u.type, code, name, account, mobile, email, union_id, password, head_img, remark, is_builtin, creator, creator_id, created_time) values " +
+            "(#{id}, #{type}, #{code}, #{name}, #{account}, #{mobile}, #{email}, #{unionId}, #{password}, #{headImg}, #{remark}, #{isBuiltin}, #{creator}, #{creatorId}, #{createdTime});")
     void addUser(User user);
 
     /**
@@ -156,7 +159,7 @@ public interface UserMapper {
      * @param key      查询关键词
      * @return 用户列表
      */
-    @Select("select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_user u " +
+    @Select("select u.id, u.type, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_user u " +
             "left join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} " +
             "where isnull(r.id) and (u.account = #{key} or u.mobile = #{key} or u.`name` like concat('%',#{key},'%'))")
     List<UserListDto> getOtherUsers(@Param("tenantId") Long tenantId, @Param("key") String key);
@@ -172,6 +175,7 @@ public interface UserMapper {
 
     /**
      * 删除租户-用户关系
+     *
      * @param tenantId 租户ID
      * @param userId   用户ID
      */
@@ -180,6 +184,7 @@ public interface UserMapper {
 
     /**
      * 删除租户-角色关系
+     *
      * @param tenantId 租户ID
      * @param userId   用户ID
      */
@@ -188,6 +193,7 @@ public interface UserMapper {
 
     /**
      * 删除租户-用户组关系
+     *
      * @param tenantId 租户ID
      * @param userId   用户ID
      */
@@ -196,6 +202,7 @@ public interface UserMapper {
 
     /**
      * 删除租户-组织机构关系
+     *
      * @param tenantId 租户ID
      * @param userId   用户ID
      */

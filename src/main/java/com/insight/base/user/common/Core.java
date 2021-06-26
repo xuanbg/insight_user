@@ -47,6 +47,12 @@ public class Core {
             user.setId(creator.nextId(3));
         }
 
+        // 补完类型
+        Integer type = user.getType();
+        if (type == null) {
+            user.setType(0);
+        }
+
         // 生成用户编码
         String code = newUserCode(tenantId);
         user.setCode(code);
