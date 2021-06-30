@@ -263,7 +263,7 @@ curl -X "POST" "http://192.168.236.8:6200/base/user/manage/v1.0/users" \
 
 请求方法：**PUT**
 
-接口URL：**/base/user/manage/v1.0/users**
+接口URL：**/base/user/manage/v1.0/users/{id}**
 
 请求参数如下：
 
@@ -279,14 +279,13 @@ curl -X "POST" "http://192.168.236.8:6200/base/user/manage/v1.0/users" \
 请求示例：
 
 ```bash
-curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users" \
+curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users/299b7d142d624238a7b66300ab3b4f5a" \
      -H 'Accept: application/json' \
      -H 'Accept-Encoding: gzip, identity' \
      -H 'Authorization: eyJpZCI6IjY3MTg2ZDc4OTNjZTQ0Y2NiODBiN2Q3MGNmYWY1NTFiIiwic2VjcmV0IjoiYzk2MjJiMTM0NTI3NDQ2YWFkODU1MDM3OWFlOGM1MjYifQ==' \
      -H 'Content-Type: application/json' \
      -d $'{
   "email": "xan.brian@gmail.com",
-  "id": "299b7d142d624238a7b66300ab3b4f5a",
   "account": "test",
   "mobile": "13958085908",
   "name": "测试",
@@ -314,7 +313,7 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users" \
 
 请求方法：**DELETE**
 
-接口URL：**/base/user/manage/v1.0/users**
+接口URL：**/base/user/manage/v1.0/users/{id}**
 
 请求参数如下：
 
@@ -325,12 +324,11 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users" \
 请求示例：
 
 ```bash
-curl -X "DELETE" "http://192.168.236.8:6200/base/user/manage/v1.0/users" \
+curl -X "DELETE" "http://192.168.236.8:6200/base/user/manage/v1.0/users/299b7d142d624238a7b66300ab3b4f5a" \
      -H 'Accept: application/json' \
      -H 'Accept-Encoding: gzip, identity' \
      -H 'Authorization: eyJpZCI6IjY3MTg2ZDc4OTNjZTQ0Y2NiODBiN2Q3MGNmYWY1NTFiIiwic2VjcmV0IjoiYzk2MjJiMTM0NTI3NDQ2YWFkODU1MDM3OWFlOGM1MjYifQ==' \
      -H 'Content-Type: application/json' \
-     -d "299b7d142d624238a7b66300ab3b4f5a"
 ```
 
 返回结果示例：
@@ -353,7 +351,7 @@ curl -X "DELETE" "http://192.168.236.8:6200/base/user/manage/v1.0/users" \
 
 请求方法：**PUT**
 
-接口URL：**/base/user/manage/v1.0/users/disable**
+接口URL：**/base/user/manage/v1.0/users/{id}/disable**
 
 请求参数如下：
 
@@ -364,12 +362,11 @@ curl -X "DELETE" "http://192.168.236.8:6200/base/user/manage/v1.0/users" \
 请求示例：
 
 ```bash
-curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users/disable" \
+curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users/299b7d142d624238a7b66300ab3b4f5a/disable" \
      -H 'Accept: application/json' \
      -H 'Accept-Encoding: gzip, identity' \
      -H 'Authorization: eyJpZCI6IjY3MTg2ZDc4OTNjZTQ0Y2NiODBiN2Q3MGNmYWY1NTFiIiwic2VjcmV0IjoiYzk2MjJiMTM0NTI3NDQ2YWFkODU1MDM3OWFlOGM1MjYifQ==' \
      -H 'Content-Type: application/json' \
-     -d "299b7d142d624238a7b66300ab3b4f5a"
 ```
 
 返回结果示例：
@@ -392,7 +389,7 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users/disable" \
 
 请求方法：**PUT**
 
-接口URL：**/base/user/manage/v1.0/users/enable**
+接口URL：**/base/user/manage/v1.0/users/{id}/enable**
 
 请求参数如下：
 
@@ -403,12 +400,11 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users/disable" \
 请求示例：
 
 ```bash
-curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users/enable" \
+curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users/299b7d142d624238a7b66300ab3b4f5a/enable" \
      -H 'Accept: application/json' \
      -H 'Accept-Encoding: gzip, identity' \
      -H 'Authorization: eyJpZCI6IjY3MTg2ZDc4OTNjZTQ0Y2NiODBiN2Q3MGNmYWY1NTFiIiwic2VjcmV0IjoiYzk2MjJiMTM0NTI3NDQ2YWFkODU1MDM3OWFlOGM1MjYifQ==' \
      -H 'Content-Type: application/json' \
-     -d "299b7d142d624238a7b66300ab3b4f5a"
 ```
 
 返回结果示例：
@@ -431,7 +427,7 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users/enable" \
 
 请求方法：**PUT**
 
-接口URL：**/base/user/manage/v1.0/users/password**
+接口URL：**/base/user/manage/v1.0/users/{id}/password**
 
 请求参数如下：
 
@@ -443,14 +439,11 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users/enable" \
 请求示例：
 
 ```bash
-curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users/password" \
+curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users/299b7d142d624238a7b66300ab3b4f5a/password" \
      -H 'Accept: application/json' \
      -H 'Accept-Encoding: gzip, identity' \
      -H 'Authorization: eyJpZCI6IjY3MTg2ZDc4OTNjZTQ0Y2NiODBiN2Q3MGNmYWY1NTFiIiwic2VjcmV0IjoiYzk2MjJiMTM0NTI3NDQ2YWFkODU1MDM3OWFlOGM1MjYifQ==' \
      -H 'Content-Type: application/json' \
-     -d $'{
-  "id": "299b7d142d624238a7b66300ab3b4f5a"
-}'
 ```
 
 返回结果示例：
@@ -473,7 +466,7 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users/password" \
 
 请求方法：**POST**
 
-接口URL：**/base/user/manage/v1.0/users/relation**
+接口URL：**/base/user/manage/v1.0/users/{id}/relation**
 
 请求参数如下：
 
@@ -484,12 +477,11 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users/password" \
 请求示例：
 
 ```bash
-curl -X "POST" "http://192.168.236.8:6200/base/user/manage/v1.0/users/relation" \
+curl -X "POST" "http://192.168.236.8:6200/base/user/manage/v1.0/users/299b7d142d624238a7b66300ab3b4f5a/relation" \
      -H 'Accept: application/json' \
      -H 'Accept-Encoding: gzip, identity' \
      -H 'Authorization: eyJpZCI6IjY3MTg2ZDc4OTNjZTQ0Y2NiODBiN2Q3MGNmYWY1NTFiIiwic2VjcmV0IjoiYzk2MjJiMTM0NTI3NDQ2YWFkODU1MDM3OWFlOGM1MjYifQ==' \
      -H 'Content-Type: application/json' \
-     -d "299b7d142d624238a7b66300ab3b4f5a"
 ```
 
 返回结果示例：
