@@ -98,8 +98,9 @@ public class ManageController {
      * @param dto  用户DTO
      * @return Reply
      */
-    @PutMapping("/v1.0/users")
-    public Reply editUser(@RequestHeader("loginInfo") String info, @Valid @RequestBody UserDto dto) {
+    @PutMapping("/v1.0/users/{id}")
+    public Reply editUser(@RequestHeader("loginInfo") String info, @PathVariable Long id, @Valid @RequestBody UserDto dto) {
+        dto.setId(id);
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.editUser(loginInfo, dto);
@@ -112,8 +113,8 @@ public class ManageController {
      * @param id   用户ID
      * @return Reply
      */
-    @DeleteMapping("/v1.0/users")
-    public Reply deleteUser(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
+    @DeleteMapping("/v1.0/users/{id}")
+    public Reply deleteUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.deleteUser(loginInfo, id);
@@ -126,8 +127,8 @@ public class ManageController {
      * @param id   用户ID
      * @return Reply
      */
-    @PutMapping("/v1.0/users/disable")
-    public Reply disableUser(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
+    @PutMapping("/v1.0/users/{id}/disable")
+    public Reply disableUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.changeUserStatus(loginInfo, id, true);
@@ -140,8 +141,8 @@ public class ManageController {
      * @param id   用户ID
      * @return Reply
      */
-    @PutMapping("/v1.0/users/enable")
-    public Reply enableUser(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
+    @PutMapping("/v1.0/users/{id}/enable")
+    public Reply enableUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.changeUserStatus(loginInfo, id, false);
@@ -154,8 +155,9 @@ public class ManageController {
      * @param dto  密码DTO
      * @return Reply
      */
-    @PutMapping("/v1.0/users/password")
-    public Reply resetPassword(@RequestHeader("loginInfo") String info, @RequestBody PasswordDto dto) {
+    @PutMapping("/v1.0/users/{id}/password")
+    public Reply resetPassword(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody PasswordDto dto) {
+        dto.setId(id);
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.resetPassword(loginInfo, dto);
@@ -182,8 +184,8 @@ public class ManageController {
      * @param id   用户ID
      * @return Reply
      */
-    @PostMapping("/v1.0/users/relation")
-    public Reply inviteUser(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
+    @PostMapping("/v1.0/users/{id}/relation")
+    public Reply inviteUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.inviteUser(loginInfo, id);
@@ -196,8 +198,8 @@ public class ManageController {
      * @param id   用户ID
      * @return Reply
      */
-    @DeleteMapping("/v1.0/users/relation")
-    public Reply removeUser(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
+    @DeleteMapping("/v1.0/users/{id}/relation")
+    public Reply removeUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.removeUser(loginInfo, id);
