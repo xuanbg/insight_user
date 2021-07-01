@@ -3,7 +3,6 @@ package com.insight.base.user.manage;
 import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
 import com.insight.utils.Json;
-import com.insight.utils.ReplyHelper;
 import com.insight.utils.pojo.LoginInfo;
 import com.insight.utils.pojo.Reply;
 import com.insight.utils.pojo.SearchDto;
@@ -55,10 +54,6 @@ public class ManageController {
      */
     @GetMapping("/v1.0/users/{id}")
     public Reply getUser(@PathVariable Long id) {
-        if (id == null) {
-            return ReplyHelper.invalidParam();
-        }
-
         return service.getUser(id);
     }
 
@@ -70,10 +65,6 @@ public class ManageController {
      */
     @GetMapping("/v1.0/users/{id}/functions")
     public Reply getUserPermit(@PathVariable Long id) {
-        if (id == null) {
-            return ReplyHelper.invalidParam();
-        }
-
         return service.getUserPermit(id);
     }
 
@@ -100,8 +91,8 @@ public class ManageController {
      */
     @PutMapping("/v1.0/users/{id}")
     public Reply editUser(@RequestHeader("loginInfo") String info, @PathVariable Long id, @Valid @RequestBody UserDto dto) {
-        dto.setId(id);
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+        dto.setId(id);
 
         return service.editUser(loginInfo, dto);
     }
@@ -157,8 +148,8 @@ public class ManageController {
      */
     @PutMapping("/v1.0/users/{id}/password")
     public Reply resetPassword(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody PasswordDto dto) {
-        dto.setId(id);
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+        dto.setId(id);
 
         return service.resetPassword(loginInfo, dto);
     }
@@ -224,10 +215,6 @@ public class ManageController {
      */
     @GetMapping("/v1.0/users/logs/{id}")
     Reply getUserLog(@PathVariable Long id) {
-        if (id == null) {
-            return ReplyHelper.invalidParam();
-        }
-
         return service.getUserLog(id);
     }
 }

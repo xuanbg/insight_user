@@ -53,10 +53,6 @@ public class GroupController {
      */
     @GetMapping("/v1.0/groups/{id}")
     public Reply getGroup(@PathVariable Long id) {
-        if (id == null) {
-            return ReplyHelper.invalidParam();
-        }
-
         return service.getGroup(id);
     }
 
@@ -78,12 +74,14 @@ public class GroupController {
      * 编辑用户组
      *
      * @param info 用户关键信息
+     * @param id   用户组ID
      * @param dto  用户组DTO
      * @return Reply
      */
-    @PutMapping("/v1.0/groups")
-    public Reply editGroup(@RequestHeader("loginInfo") String info, @Valid @RequestBody GroupDto dto) {
+    @PutMapping("/v1.0/groups/{id}")
+    public Reply editGroup(@RequestHeader("loginInfo") String info, @PathVariable Long id, @Valid @RequestBody GroupDto dto) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+        dto.setId(id);
 
         return service.editGroup(loginInfo, dto);
     }
@@ -95,8 +93,8 @@ public class GroupController {
      * @param id   用户组ID
      * @return Reply
      */
-    @DeleteMapping("/v1.0/groups")
-    public Reply deleteGroup(@RequestHeader("loginInfo") String info, @RequestBody Long id) {
+    @DeleteMapping("/v1.0/groups/{id}")
+    public Reply deleteGroup(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.deleteGroup(loginInfo, id);
@@ -135,11 +133,8 @@ public class GroupController {
      */
     @PostMapping("/v1.0/groups/{id}/members")
     public Reply addMembers(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody List<Long> userIds) {
-        if (userIds == null || userIds.isEmpty()) {
-            return ReplyHelper.invalidParam("请选择需要添加的成员");
-        }
-
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+
         return service.addMembers(loginInfo, id, userIds);
     }
 
@@ -180,10 +175,6 @@ public class GroupController {
      */
     @GetMapping("/v1.0/groups/logs/{id}")
     public Reply getGroupLog(@PathVariable Long id) {
-        if (id == null) {
-            return ReplyHelper.invalidParam();
-        }
-
         return service.getGroupLog(id);
     }
 }
