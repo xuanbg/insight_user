@@ -6,7 +6,6 @@ import com.insight.utils.Json;
 import com.insight.utils.pojo.LoginInfo;
 import com.insight.utils.pojo.Reply;
 import com.insight.utils.pojo.SearchDto;
-import com.insight.utils.pojo.User;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -76,7 +75,7 @@ public class ManageController {
      * @return Reply
      */
     @PostMapping("/v1.0/users")
-    public Reply newUser(@RequestHeader("loginInfo") String info, @Valid @RequestBody User dto) {
+    public Reply newUser(@RequestHeader("loginInfo") String info, @Valid @RequestBody UserDto dto) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.newUser(loginInfo, dto);

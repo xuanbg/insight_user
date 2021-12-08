@@ -3,10 +3,7 @@ package com.insight.base.user.service;
 import com.insight.base.user.common.Core;
 import com.insight.base.user.common.client.AuthClient;
 import com.insight.base.user.common.client.MessageClient;
-import com.insight.base.user.common.dto.LoginDto;
-import com.insight.base.user.common.dto.MobileDto;
-import com.insight.base.user.common.dto.PasswordDto;
-import com.insight.base.user.common.dto.UserDto;
+import com.insight.base.user.common.dto.*;
 import com.insight.base.user.common.mapper.UserMapper;
 import com.insight.utils.Redis;
 import com.insight.utils.ReplyHelper;
@@ -53,7 +50,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Reply getUser(Long id) {
-        UserDto user = mapper.getUser(id);
+        UserVo user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未读取数据");
         }
@@ -68,7 +65,7 @@ public class UserServiceImpl implements UserService {
      * @return Reply
      */
     @Override
-    public Reply register(User dto) {
+    public Reply register(UserDto dto) {
         // 验证账号|手机号|邮箱是否已存在
         Long id = creator.nextId(3);
         Reply reply = core.matchUser(id, dto.getAccount(), dto.getMobile(), dto.getEmail());
@@ -89,7 +86,7 @@ public class UserServiceImpl implements UserService {
         dto.setId(id);
         dto.setType(0);
         dto.setCode(null);
-        core.addUser(dto, null);
+        core.addUser(dto);
 
         return ReplyHelper.created(id);
     }
@@ -103,13 +100,13 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Reply updateName(Long id, String name) {
-        UserDto user = mapper.getUser(id);
+        UserVo user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
         }
 
         user.setName(name);
-        mapper.updateUser(user);
+        mapper.updateUser(user.convert(User.class));
 
         return ReplyHelper.success();
     }
@@ -123,7 +120,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Reply updateMobile(Long id, MobileDto dto) {
-        UserDto user = mapper.getUser(id);
+        UserVo user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
         }
@@ -158,7 +155,7 @@ public class UserServiceImpl implements UserService {
 
         // 持久化数据
         user.setMobile(mobile);
-        mapper.updateUser(user);
+        mapper.updateUser(user.convert(User.class));
 
         return ReplyHelper.success();
     }
@@ -172,7 +169,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Reply updateEmail(Long id, String email) {
-        UserDto user = mapper.getUser(id);
+        UserVo user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
         }
@@ -188,7 +185,7 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setEmail(email);
-        mapper.updateUser(user);
+        mapper.updateUser(user.convert(User.class));
 
         return ReplyHelper.success();
     }
@@ -202,13 +199,13 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Reply updateHeadImg(Long id, String headImg) {
-        UserDto user = mapper.getUser(id);
+        UserVo user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
         }
 
         user.setHeadImg(headImg);
-        mapper.updateUser(user);
+        mapper.updateUser(user.convert(User.class));
 
         return ReplyHelper.success();
     }
@@ -222,13 +219,13 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Reply updateRemark(Long id, String remark) {
-        UserDto user = mapper.getUser(id);
+        UserVo user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
         }
 
         user.setRemark(remark);
-        mapper.updateUser(user);
+        mapper.updateUser(user.convert(User.class));
 
         return ReplyHelper.success();
     }
@@ -242,7 +239,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Reply changePassword(PasswordDto dto) {
         Long id = dto.getId();
-        UserDto user = mapper.getUser(id);
+        UserVo user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
         }
@@ -317,7 +314,7 @@ public class UserServiceImpl implements UserService {
         }
 
         Long id = dto.getId();
-        UserDto user = mapper.getUser(id);
+        UserVo user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
         }

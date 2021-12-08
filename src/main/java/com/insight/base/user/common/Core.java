@@ -1,12 +1,12 @@
 package com.insight.base.user.common;
 
+import com.insight.base.user.common.dto.UserDto;
 import com.insight.base.user.common.mapper.UserMapper;
 import com.insight.utils.Generator;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
 import com.insight.utils.pojo.Reply;
-import com.insight.utils.pojo.User;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,11 +36,10 @@ public class Core {
     /**
      * 新增用户
      *
-     * @param user     用户DTO
-     * @param tenantId 租户ID
+     * @param user 用户DTO
      */
     @Transactional
-    public void addUser(User user, Long tenantId) {
+    public void addUser(UserDto user) {
         // 补完ID
         Long userId = user.getId();
         if (userId == null) {
@@ -54,6 +53,7 @@ public class Core {
         }
 
         // 生成用户编码
+        Long tenantId = user.getTenantId();
         String code = newUserCode(tenantId);
         user.setCode(code);
 

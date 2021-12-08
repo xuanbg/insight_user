@@ -2,11 +2,11 @@ package com.insight.base.user.service;
 
 import com.insight.base.user.common.dto.MobileDto;
 import com.insight.base.user.common.dto.PasswordDto;
+import com.insight.base.user.common.dto.UserDto;
 import com.insight.utils.Json;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.pojo.LoginInfo;
 import com.insight.utils.pojo.Reply;
-import com.insight.utils.pojo.User;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -49,7 +49,7 @@ public class UserController {
      * @return Reply
      */
     @PostMapping("/v1.0/users")
-    public Reply register(@RequestBody User dto) {
+    public Reply register(@RequestBody UserDto dto) {
         return service.register(dto);
     }
 

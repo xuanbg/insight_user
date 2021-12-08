@@ -5,10 +5,7 @@ import com.github.pagehelper.PageInfo;
 import com.insight.base.user.common.Core;
 import com.insight.base.user.common.client.LogClient;
 import com.insight.base.user.common.client.LogServiceClient;
-import com.insight.base.user.common.dto.FuncPermitDto;
-import com.insight.base.user.common.dto.PasswordDto;
-import com.insight.base.user.common.dto.UserDto;
-import com.insight.base.user.common.dto.UserListDto;
+import com.insight.base.user.common.dto.*;
 import com.insight.base.user.common.mapper.UserMapper;
 import com.insight.utils.Redis;
 import com.insight.utils.ReplyHelper;
@@ -76,7 +73,7 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public Reply getUser(Long id) {
-        UserDto user = mapper.getUser(id);
+        UserVo user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未读取数据");
         }
@@ -92,7 +89,7 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public Reply getUserPermit(Long id) {
-        UserDto user = mapper.getUser(id);
+        UserVo user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未读取数据");
         }
@@ -109,7 +106,7 @@ public class ManageServiceImpl implements ManageService {
      * @return Reply
      */
     @Override
-    public Reply newUser(LoginInfo info, User dto) {
+    public Reply newUser(LoginInfo info, UserDto dto) {
         Long id = creator.nextId(3);
         Reply reply = core.matchUser(id, dto.getAccount(), dto.getMobile(), dto.getEmail());
         if (reply != null) {
@@ -118,10 +115,11 @@ public class ManageServiceImpl implements ManageService {
 
         dto.setId(id);
         Long tenantId = info.getTenantId();
+        dto.setTenantId(tenantId);
         dto.setType(tenantId == null ? 1 : 0);
         dto.setCreator(info.getUserName());
         dto.setCreatorId(info.getUserId());
-        core.addUser(dto, tenantId);
+        core.addUser(dto);
         LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, dto);
 
         return ReplyHelper.created(id);
@@ -137,7 +135,7 @@ public class ManageServiceImpl implements ManageService {
     @Override
     public Reply editUser(LoginInfo info, UserDto dto) {
         Long id = dto.getId();
-        UserDto user = mapper.getUser(id);
+        UserVo user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
         }
@@ -182,7 +180,7 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public Reply deleteUser(LoginInfo info, Long id) {
-        UserDto user = mapper.getUser(id);
+        UserVo user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未删除数据");
         }
@@ -212,7 +210,7 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public Reply changeUserStatus(LoginInfo info, Long id, boolean status) {
-        UserDto user = mapper.getUser(id);
+        UserVo user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
         }
@@ -239,7 +237,7 @@ public class ManageServiceImpl implements ManageService {
     @Override
     public Reply resetPassword(LoginInfo info, PasswordDto dto) {
         Long id = dto.getId();
-        UserDto user = mapper.getUser(id);
+        UserVo user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
         }
@@ -299,7 +297,7 @@ public class ManageServiceImpl implements ManageService {
             return ReplyHelper.invalidParam("租户ID不存在,请以租户身份登录");
         }
 
-        UserDto user = mapper.getUser(id);
+        UserVo user = mapper.getUser(id);
         if (user == null) {
             return ReplyHelper.fail("ID不存在,未更新数据");
         }

@@ -2,8 +2,8 @@ package com.insight.base.user.service;
 
 import com.insight.base.user.common.dto.MobileDto;
 import com.insight.base.user.common.dto.PasswordDto;
+import com.insight.base.user.common.dto.UserDto;
 import com.insight.utils.pojo.Reply;
-import com.insight.utils.pojo.User;
 
 /**
  * @author 宣炳刚
@@ -26,7 +26,7 @@ public interface UserService {
      * @param dto 用户DTO
      * @return Reply
      */
-    Reply register(User dto);
+    Reply register(UserDto dto);
 
     /**
      * 更新用户昵称

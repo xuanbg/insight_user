@@ -5,7 +5,6 @@ import com.insight.base.user.common.dto.UserDto;
 import com.insight.utils.pojo.LoginInfo;
 import com.insight.utils.pojo.Reply;
 import com.insight.utils.pojo.SearchDto;
-import com.insight.utils.pojo.User;
 
 /**
  * @author 宣炳刚
@@ -47,7 +46,7 @@ public interface ManageService {
      * @param dto  用户DTO
      * @return Reply
      */
-    Reply newUser(LoginInfo info, User dto);
+    Reply newUser(LoginInfo info, UserDto dto);
 
     /**
      * 编辑用户

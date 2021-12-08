@@ -1,8 +1,8 @@
 package com.insight.base.user.common.mapper;
 
 import com.insight.base.user.common.dto.FuncPermitDto;
-import com.insight.base.user.common.dto.UserDto;
 import com.insight.base.user.common.dto.UserListDto;
+import com.insight.base.user.common.dto.UserVo;
 import com.insight.utils.common.JsonTypeHandler;
 import com.insight.utils.pojo.User;
 import org.apache.ibatis.annotations.*;
@@ -43,7 +43,7 @@ public interface UserMapper {
     @Results({@Result(property = "openId", column = "open_id", javaType = Map.class, typeHandler = JsonTypeHandler.class)})
     @Select("select id, type, code, name, account, mobile, email, union_id, open_id, head_img, remark, is_builtin, is_invalid, creator, creator_id, created_time " +
             "from ibu_user where id = #{id};")
-    UserDto getUser(Long id);
+    UserVo getUser(Long id);
 
     /**
      * 获取用户功能授权
@@ -113,7 +113,7 @@ public interface UserMapper {
      * @param user 用户DTO
      */
     @Update("update ibu_user set name = #{name}, account = #{account}, mobile = #{mobile}, email = #{email}, head_img = #{headImg}, remark = #{remark} where id = #{id};")
-    void updateUser(UserDto user);
+    void updateUser(User user);
 
     /**
      * 更新密码

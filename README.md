@@ -221,6 +221,7 @@ curl "http://192.168.236.8:6200/base/user/manage/v1.0/users/815ee690d6a443cb938d
 
 |类型|属性|是否必需|属性说明|
 | ------------ | ------------ | ------------ | ------------ |
+|Long|tenantId|否|租户ID(学校ID)|
 |String|name|是|姓名/昵称|
 |String|account|是|登录账号|
 |String|password|是|登录密码(MD5)|
