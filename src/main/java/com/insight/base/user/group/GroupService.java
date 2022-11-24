@@ -1,9 +1,9 @@
 package com.insight.base.user.group;
 
 import com.insight.base.user.common.dto.GroupDto;
-import com.insight.utils.pojo.LoginInfo;
-import com.insight.utils.pojo.Reply;
-import com.insight.utils.pojo.SearchDto;
+import com.insight.utils.pojo.auth.LoginInfo;
+import com.insight.utils.pojo.base.Reply;
+import com.insight.utils.pojo.base.Search;
 
 import java.util.List;
 
@@ -17,11 +17,10 @@ public interface GroupService {
     /**
      * 查询用户组列表
      *
-     * @param tenantId 租户ID
      * @param search   查询实体类
      * @return Reply
      */
-    Reply getGroups(Long tenantId, SearchDto search);
+    Reply getGroups(Search search);
 
     /**
      * 获取用户组详情
@@ -61,11 +60,10 @@ public interface GroupService {
     /**
      * 查询用户组成员
      *
-     * @param id     用户组ID
      * @param search 查询实体类
      * @return Reply
      */
-    Reply getMembers(Long id, SearchDto search);
+    Reply getMembers(Search search);
 
     /**
      * 查询用户组可用用户列表
@@ -101,7 +99,7 @@ public interface GroupService {
      * @param search 查询实体类
      * @return Reply
      */
-    Reply getGroupLogs(SearchDto search);
+    Reply getGroupLogs(Search search);
 
     /**
      * 获取日志详情

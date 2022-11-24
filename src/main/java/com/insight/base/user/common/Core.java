@@ -6,7 +6,7 @@ import com.insight.utils.Generator;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
-import com.insight.utils.pojo.Reply;
+import com.insight.utils.pojo.base.Reply;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 

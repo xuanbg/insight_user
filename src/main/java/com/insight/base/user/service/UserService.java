@@ -3,7 +3,7 @@ package com.insight.base.user.service;
 import com.insight.base.user.common.dto.MobileDto;
 import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
-import com.insight.utils.pojo.Reply;
+import com.insight.utils.pojo.base.Reply;
 
 /**
  * @author 宣炳刚

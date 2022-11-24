@@ -1,20 +1,18 @@
 package com.insight.base.user.group;
 
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.insight.base.user.common.client.LogClient;
 import com.insight.base.user.common.client.LogServiceClient;
 import com.insight.base.user.common.dto.GroupDto;
-import com.insight.base.user.common.dto.GroupListDto;
 import com.insight.base.user.common.dto.UserListDto;
 import com.insight.base.user.common.mapper.GroupMapper;
 import com.insight.utils.Generator;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.SnowflakeCreator;
-import com.insight.utils.pojo.LoginInfo;
 import com.insight.utils.pojo.OperateType;
-import com.insight.utils.pojo.Reply;
-import com.insight.utils.pojo.SearchDto;
+import com.insight.utils.pojo.auth.LoginInfo;
+import com.insight.utils.pojo.base.Reply;
+import com.insight.utils.pojo.base.Search;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,17 +45,16 @@ public class GroupServiceImpl implements GroupService {
     /**
      * 查询用户组列表
      *
-     * @param tenantId 租户ID
      * @param search   查询实体类
      * @return Reply
      */
     @Override
-    public Reply getGroups(Long tenantId, SearchDto search) {
-        PageHelper.startPage(search.getPage(), search.getSize());
-        List<GroupListDto> groups = mapper.getGroups(tenantId, search.getKeyword());
-        PageInfo<GroupListDto> pageInfo = new PageInfo<>(groups);
+    public Reply getGroups(Search search) {
+        var page = PageHelper.startPage(search.getPageNum(), search.getPageSize())
+                .setOrderBy(search.getOrderBy()).doSelectPage(() -> mapper.getGroups(search));
 
-        return ReplyHelper.success(groups, pageInfo.getTotal());
+        var total = page.getTotal();
+        return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
     }
 
     /**
@@ -145,22 +142,21 @@ public class GroupServiceImpl implements GroupService {
     /**
      * 查询用户组成员
      *
-     * @param id     用户组ID
      * @param search 查询实体类
      * @return Reply
      */
     @Override
-    public Reply getMembers(Long id, SearchDto search) {
-        GroupDto group = mapper.getGroup(id);
+    public Reply getMembers(Search search) {
+        GroupDto group = mapper.getGroup(search.getId());
         if (group == null) {
             return ReplyHelper.fail("ID不存在,未读取数据");
         }
 
-        PageHelper.startPage(search.getPage(), search.getSize());
-        List<UserListDto> members = mapper.getMembers(id, search.getKeyword());
-        PageInfo<UserListDto> pageInfo = new PageInfo<>(members);
+        var page = PageHelper.startPage(search.getPageNum(), search.getPageSize())
+                .setOrderBy(search.getOrderBy()).doSelectPage(() -> mapper.getMembers(search));
 
-        return ReplyHelper.success(members, pageInfo.getTotal());
+        var total = page.getTotal();
+        return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
     }
 
     /**
@@ -225,8 +221,8 @@ public class GroupServiceImpl implements GroupService {
      * @return Reply
      */
     @Override
-    public Reply getGroupLogs(SearchDto search) {
-        return client.getLogs(BUSINESS, search.getKeyword(), search.getPage(), search.getSize());
+    public Reply getGroupLogs(Search search) {
+        return client.getLogs(BUSINESS, search.getKeyword(), search.getPageNum(), search.getPageSize());
     }
 
     /**

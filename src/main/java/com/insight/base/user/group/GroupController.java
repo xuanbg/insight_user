@@ -3,9 +3,9 @@ package com.insight.base.user.group;
 import com.insight.base.user.common.dto.GroupDto;
 import com.insight.utils.Json;
 import com.insight.utils.ReplyHelper;
-import com.insight.utils.pojo.LoginInfo;
-import com.insight.utils.pojo.Reply;
-import com.insight.utils.pojo.SearchDto;
+import com.insight.utils.pojo.auth.LoginInfo;
+import com.insight.utils.pojo.base.Reply;
+import com.insight.utils.pojo.base.Search;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -39,10 +39,11 @@ public class GroupController {
      * @return Reply
      */
     @GetMapping("/v1.0/groups")
-    public Reply getGroups(@RequestHeader("loginInfo") String info, SearchDto search) {
+    public Reply getGroups(@RequestHeader("loginInfo") String info, Search search) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.getGroups(loginInfo.getTenantId(), search);
+        search.setTenantId(loginInfo.getTenantId());
+        return service.getGroups(search);
     }
 
     /**
@@ -108,8 +109,9 @@ public class GroupController {
      * @return Reply
      */
     @GetMapping("/v1.0/groups/{id}/members")
-    public Reply getMembers(@PathVariable Long id, SearchDto search) {
-        return service.getMembers(id, search);
+    public Reply getMembers(@PathVariable Long id, Search search) {
+        search.setId(id);
+        return service.getMembers(search);
     }
 
     /**
@@ -163,7 +165,7 @@ public class GroupController {
      * @return Reply
      */
     @GetMapping("/v1.0/groups/logs")
-    public Reply getGroupLogs(SearchDto search) {
+    public Reply getGroupLogs(Search search) {
         return service.getGroupLogs(search);
     }
 

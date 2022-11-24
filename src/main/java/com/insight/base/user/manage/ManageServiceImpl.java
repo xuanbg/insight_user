@@ -1,17 +1,22 @@
 package com.insight.base.user.manage;
 
 import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import com.insight.base.user.common.Core;
 import com.insight.base.user.common.client.LogClient;
 import com.insight.base.user.common.client.LogServiceClient;
-import com.insight.base.user.common.dto.*;
+import com.insight.base.user.common.dto.FuncPermitDto;
+import com.insight.base.user.common.dto.PasswordDto;
+import com.insight.base.user.common.dto.UserDto;
+import com.insight.base.user.common.dto.UserVo;
 import com.insight.base.user.common.mapper.UserMapper;
 import com.insight.utils.Redis;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
-import com.insight.utils.pojo.*;
+import com.insight.utils.pojo.OperateType;
+import com.insight.utils.pojo.auth.LoginInfo;
+import com.insight.utils.pojo.base.Reply;
+import com.insight.utils.pojo.base.Search;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -47,22 +52,20 @@ public class ManageServiceImpl implements ManageService {
     /**
      * 查询用户列表
      *
-     * @param tenantId 租户ID
-     * @param all      是否查询全部用户
      * @param search   查询实体类
      * @return Reply
      */
     @Override
-    public Reply getUsers(Long tenantId, boolean all, SearchDto search) {
-        if (tenantId != null && all && search.getKeyword() == null) {
+    public Reply getUsers(Search search) {
+        if (search.getTenantId() != null && search.getInvalid() && search.getKeyword() == null) {
             return ReplyHelper.invalidParam("查询关键词不能为空");
         }
 
-        PageHelper.startPage(search.getPage(), search.getSize());
-        List<UserListDto> users = mapper.getUsers(all ? null : tenantId, search.getType(), search.getKeyword());
-        PageInfo<UserListDto> pageInfo = new PageInfo<>(users);
+        var page = PageHelper.startPage(search.getPageNum(), search.getPageSize())
+                .setOrderBy(search.getOrderBy()).doSelectPage(() -> mapper.getUsers(search));
 
-        return ReplyHelper.success(users, pageInfo.getTotal());
+        var total = page.getTotal();
+        return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
     }
 
     /**
@@ -261,26 +264,25 @@ public class ManageServiceImpl implements ManageService {
     /**
      * 获取可邀请用户列表
      *
-     * @param info    用户关键信息
-     * @param keyword 查询关键词
+     * @param search 查询关键词
      * @return Reply
      */
     @Override
-    public Reply getInviteUsers(LoginInfo info, String keyword) {
-        Long tenantId = info.getTenantId();
+    public Reply getInviteUsers(Search search) {
+        Long tenantId = search.getTenantId();
         if (tenantId == null) {
             return ReplyHelper.invalidParam("租户ID不能为空");
         }
 
-        if (keyword == null) {
+        if (Util.isEmpty(search.getKeyword())) {
             return ReplyHelper.invalidParam("查询关键词不能为空");
         }
 
-        PageHelper.startPage(1, 20);
-        List<UserListDto> users = mapper.getOtherUsers(tenantId, keyword);
-        PageInfo<UserListDto> pageInfo = new PageInfo<>(users);
+        var page = PageHelper.startPage(search.getPageNum(), search.getPageSize())
+                .setOrderBy(search.getOrderBy()).doSelectPage(() -> mapper.getOtherUsers(search));
 
-        return ReplyHelper.success(users);
+        var total = page.getTotal();
+        return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
     }
 
     /**
@@ -336,8 +338,8 @@ public class ManageServiceImpl implements ManageService {
      * @return Reply
      */
     @Override
-    public Reply getUserLogs(SearchDto search) {
-        return client.getLogs(BUSINESS, search.getKeyword(), search.getPage(), search.getSize());
+    public Reply getUserLogs(Search search) {
+        return client.getLogs(BUSINESS, search.getKeyword(), search.getPageNum(), search.getPageSize());
     }
 
     /**

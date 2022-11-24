@@ -3,6 +3,7 @@ package com.insight.base.user.common.mapper;
 import com.insight.base.user.common.dto.GroupDto;
 import com.insight.base.user.common.dto.GroupListDto;
 import com.insight.base.user.common.dto.UserListDto;
+import com.insight.utils.pojo.base.Search;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -18,14 +19,13 @@ public interface GroupMapper {
     /**
      * 获取用户组列表
      *
-     * @param tenantId 租户ID
-     * @param key      查询关键词
+     * @param search      查询关键词
      * @return 用户组列表
      */
     @Select("<script>select id, code, name, remark, is_builtin from ibu_group where tenant_id = #{tenantId} " +
-            "<if test = 'key != null'>and (code = #{key} or name like concat('%',#{key},'%')) </if>" +
-            "order by created_time</script>")
-    List<GroupListDto> getGroups(@Param("tenantId") Long tenantId, @Param("key") String key);
+            "<if test = 'keyword != null'>and (code = #{keyword} or name like concat('%',#{keyword},'%')) </if>" +
+            "</script>")
+    List<GroupListDto> getGroups(Search search);
 
     /**
      * 获取用户组详情
@@ -64,14 +64,13 @@ public interface GroupMapper {
     /**
      * 查询用户组成员
      *
-     * @param id  用户组ID
-     * @param key 查询关键词
+     * @param search 查询关键词
      * @return 用户组成员集合
      */
     @Select("<script>select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_group_member m join ibu_user u on u.id = m.user_id " +
-            "<if test = 'key != null'>and (u.code = #{key} or u.account = #{key} or u.name like concat('%',#{key},'%')) </if>" +
-            "where m.group_id = #{id} order by u.created_time</script>")
-    List<UserListDto> getMembers(@Param("id") Long id, @Param("key") String key);
+            "<if test = 'keyword != null'>and (u.code = #{keyword} or u.account = #{keyword} or u.name like concat('%',#{keyword},'%')) </if>" +
+            "where m.group_id = #{id}</script>")
+    List<UserListDto> getMembers(Search search);
 
     /**
      * 查询用户组可用用户列表

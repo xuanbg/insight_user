@@ -4,7 +4,8 @@ import com.insight.base.user.common.dto.FuncPermitDto;
 import com.insight.base.user.common.dto.UserListDto;
 import com.insight.base.user.common.dto.UserVo;
 import com.insight.utils.common.JsonTypeHandler;
-import com.insight.utils.pojo.User;
+import com.insight.utils.pojo.base.Search;
+import com.insight.utils.pojo.user.User;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -21,18 +22,16 @@ public interface UserMapper {
     /**
      * 获取用户列表
      *
-     * @param tenantId 租户ID
-     * @param type     用户类型
-     * @param key      查询关键词
+     * @param search   查询实体类
      * @return 用户列表
      */
     @Select("<script>select u.id, u.type, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_user u " +
             "<if test = 'tenantId != null'>join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} </if>" +
             "where 0=0 " +
             "<if test = 'type != null'>and u.type = #{type} </if>" +
-            "<if test = 'key != null'>and u.code = #{key} or u.account = #{key} or u.mobile = #{key} or u.name like concat('%',#{key},'%') </if>" +
-            "order by u.created_time</script>")
-    List<UserListDto> getUsers(@Param("tenantId") Long tenantId, @Param("type") Integer type, @Param("key") String key);
+            "<if test = 'keyword != null'>and u.code = #{keyword} or u.account = #{keyword} or u.mobile = #{keyword} or u.name like concat('%',#{keyword},'%') </if>" +
+            "</script>")
+    List<UserListDto> getUsers(Search search);
 
     /**
      * 获取用户详情
@@ -155,14 +154,13 @@ public interface UserMapper {
     /**
      * 获取可邀请用户列表
      *
-     * @param tenantId 租户ID
-     * @param key      查询关键词
+     * @param search 查询关键词
      * @return 用户列表
      */
     @Select("select u.id, u.type, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_user u " +
             "left join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} " +
-            "where isnull(r.id) and (u.account = #{key} or u.mobile = #{key} or u.`name` like concat('%',#{key},'%'))")
-    List<UserListDto> getOtherUsers(@Param("tenantId") Long tenantId, @Param("key") String key);
+            "where isnull(r.id) and (u.account = #{keyword} or u.mobile = #{keyword} or u.`name` like concat('%',#{keyword},'%'))")
+    List<UserListDto> getOtherUsers(Search search);
 
     /**
      * 新增租户-用户关系

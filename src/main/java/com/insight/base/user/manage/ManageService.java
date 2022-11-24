@@ -2,9 +2,9 @@ package com.insight.base.user.manage;
 
 import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
-import com.insight.utils.pojo.LoginInfo;
-import com.insight.utils.pojo.Reply;
-import com.insight.utils.pojo.SearchDto;
+import com.insight.utils.pojo.auth.LoginInfo;
+import com.insight.utils.pojo.base.Reply;
+import com.insight.utils.pojo.base.Search;
 
 /**
  * @author 宣炳刚
@@ -16,12 +16,10 @@ public interface ManageService {
     /**
      * 查询用户列表
      *
-     * @param tenantId 租户ID
-     * @param all      是否查询全部用户
      * @param search   查询实体类
      * @return Reply
      */
-    Reply getUsers(Long tenantId, boolean all, SearchDto search);
+    Reply getUsers(Search search);
 
     /**
      * 获取用户详情
@@ -88,11 +86,10 @@ public interface ManageService {
     /**
      * 获取可邀请用户列表
      *
-     * @param info    用户关键信息
-     * @param keyword 查询关键词
+     * @param search 查询关键词
      * @return Reply
      */
-    Reply getInviteUsers(LoginInfo info, String keyword);
+    Reply getInviteUsers(Search search);
 
     /**
      * 邀请用户
@@ -118,7 +115,7 @@ public interface ManageService {
      * @param search 查询实体类
      * @return Reply
      */
-    Reply getUserLogs(SearchDto search);
+    Reply getUserLogs(Search search);
 
     /**
      * 获取日志详情

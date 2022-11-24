@@ -9,8 +9,8 @@ import com.insight.utils.Redis;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
-import com.insight.utils.pojo.Reply;
-import com.insight.utils.pojo.User;
+import com.insight.utils.pojo.base.Reply;
+import com.insight.utils.pojo.user.User;
 
 /**
  * @author 宣炳刚

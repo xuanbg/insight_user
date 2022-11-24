@@ -1,6 +1,6 @@
 package com.insight.base.user.common.dto;
 
-import com.insight.utils.pojo.User;
+import com.insight.utils.pojo.user.User;
 
 /**
  * @author 宣炳刚

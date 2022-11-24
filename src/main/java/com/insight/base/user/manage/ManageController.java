@@ -3,9 +3,9 @@ package com.insight.base.user.manage;
 import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
 import com.insight.utils.Json;
-import com.insight.utils.pojo.LoginInfo;
-import com.insight.utils.pojo.Reply;
-import com.insight.utils.pojo.SearchDto;
+import com.insight.utils.pojo.auth.LoginInfo;
+import com.insight.utils.pojo.base.Reply;
+import com.insight.utils.pojo.base.Search;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -39,10 +39,12 @@ public class ManageController {
      * @return Reply
      */
     @GetMapping("/v1.0/users")
-    public Reply getUsers(@RequestHeader("loginInfo") String info, @RequestParam(defaultValue = "false") boolean all, SearchDto search) {
+    public Reply getUsers(@RequestHeader("loginInfo") String info, @RequestParam(defaultValue = "false") boolean all, Search search) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.getUsers(loginInfo.getTenantId(), all, search);
+        search.setTenantId(loginInfo.getTenantId());
+        search.setInvalid(all);
+        return service.getUsers(search);
     }
 
     /**
@@ -157,14 +159,15 @@ public class ManageController {
      * 获取可邀请用户列表
      *
      * @param info    用户关键信息
-     * @param keyword 查询关键词
+     * @param search 查询关键词
      * @return Reply
      */
     @GetMapping("/v1.0/users/others")
-    public Reply getInviteUsers(@RequestHeader("loginInfo") String info, @RequestParam String keyword) {
+    public Reply getInviteUsers(@RequestHeader("loginInfo") String info, Search search) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.getInviteUsers(loginInfo, keyword);
+        search.setTenantId(loginInfo.getTenantId());
+        return service.getInviteUsers(search);
     }
 
     /**
@@ -202,7 +205,7 @@ public class ManageController {
      * @return Reply
      */
     @GetMapping("/v1.0/users/logs")
-    public Reply getUserLogs(SearchDto search) {
+    public Reply getUserLogs(Search search) {
         return service.getUserLogs(search);
     }
 
