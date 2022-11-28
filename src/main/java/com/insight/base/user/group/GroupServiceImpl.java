@@ -9,10 +9,11 @@ import com.insight.base.user.common.mapper.GroupMapper;
 import com.insight.utils.Generator;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.SnowflakeCreator;
-import com.insight.utils.pojo.OperateType;
 import com.insight.utils.pojo.auth.LoginInfo;
+import com.insight.utils.pojo.base.BusinessException;
 import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.base.Search;
+import com.insight.utils.pojo.message.OperateType;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -64,13 +65,13 @@ public class GroupServiceImpl implements GroupService {
      * @return Reply
      */
     @Override
-    public Reply getGroup(Long id) {
+    public GroupDto getGroup(Long id) {
         GroupDto group = mapper.getGroup(id);
         if (group == null) {
-            return ReplyHelper.fail("ID不存在,未读取数据");
+            throw new BusinessException("ID不存在,未读取数据");
         }
 
-        return ReplyHelper.success(group);
+        return group;
     }
 
     /**
@@ -81,7 +82,7 @@ public class GroupServiceImpl implements GroupService {
      * @return Reply
      */
     @Override
-    public Reply newGroup(LoginInfo info, GroupDto dto) {
+    public Long newGroup(LoginInfo info, GroupDto dto) {
         Long id = creator.nextId(5);
         Long tenantId = info.getTenantId();
         dto.setId(id);
@@ -95,7 +96,7 @@ public class GroupServiceImpl implements GroupService {
         mapper.addGroup(dto);
         LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, dto);
 
-        return ReplyHelper.created(id);
+        return id;
     }
 
     /**
@@ -103,20 +104,17 @@ public class GroupServiceImpl implements GroupService {
      *
      * @param info 用户关键信息
      * @param dto  用户组DTO
-     * @return Reply
      */
     @Override
-    public Reply editGroup(LoginInfo info, GroupDto dto) {
+    public void editGroup(LoginInfo info, GroupDto dto) {
         Long id = dto.getId();
         GroupDto group = mapper.getGroup(id);
         if (group == null) {
-            return ReplyHelper.fail("ID不存在,未更新数据");
+            throw new BusinessException("ID不存在,未更新数据");
         }
 
         mapper.updateGroup(dto);
         LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, dto);
-
-        return ReplyHelper.success();
     }
 
     /**
@@ -124,19 +122,16 @@ public class GroupServiceImpl implements GroupService {
      *
      * @param info 用户关键信息
      * @param id   用户组ID
-     * @return Reply
      */
     @Override
-    public Reply deleteGroup(LoginInfo info, Long id) {
+    public void deleteGroup(LoginInfo info, Long id) {
         GroupDto group = mapper.getGroup(id);
         if (group == null) {
-            return ReplyHelper.fail("ID不存在,未删除数据");
+            throw new BusinessException("ID不存在,未删除数据");
         }
 
         mapper.deleteGroup(id);
         LogClient.writeLog(info, BUSINESS, OperateType.DELETE, id, group);
-
-        return ReplyHelper.success();
     }
 
     /**
@@ -149,7 +144,7 @@ public class GroupServiceImpl implements GroupService {
     public Reply getMembers(Search search) {
         GroupDto group = mapper.getGroup(search.getId());
         if (group == null) {
-            return ReplyHelper.fail("ID不存在,未读取数据");
+            throw new BusinessException("ID不存在,未读取数据");
         }
 
         var page = PageHelper.startPage(search.getPageNum(), search.getPageSize())
@@ -166,10 +161,8 @@ public class GroupServiceImpl implements GroupService {
      * @return Reply
      */
     @Override
-    public Reply getOthers(Long id) {
-        List<UserListDto> users = mapper.getOthers(id);
-
-        return ReplyHelper.success(users);
+    public List<UserListDto> getOthers(Long id) {
+        return mapper.getOthers(id);
     }
 
     /**
@@ -178,19 +171,16 @@ public class GroupServiceImpl implements GroupService {
      * @param info    用户关键信息
      * @param id      用户组ID
      * @param userIds 用户ID集合
-     * @return Reply
      */
     @Override
-    public Reply addMembers(LoginInfo info, Long id, List<Long> userIds) {
+    public void addMembers(LoginInfo info, Long id, List<Long> userIds) {
         GroupDto group = mapper.getGroup(id);
         if (group == null) {
-            return ReplyHelper.fail("ID不存在,未更新数据");
+            throw new BusinessException("ID不存在,未更新数据");
         }
 
         mapper.addMembers(id, userIds);
         LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, userIds);
-
-        return ReplyHelper.success();
     }
 
     /**
@@ -199,19 +189,16 @@ public class GroupServiceImpl implements GroupService {
      * @param info    用户关键信息
      * @param id      用户组ID
      * @param userIds 用户ID集合
-     * @return Reply
      */
     @Override
-    public Reply removeMembers(LoginInfo info, Long id, List<Long> userIds) {
+    public void removeMembers(LoginInfo info, Long id, List<Long> userIds) {
         GroupDto group = mapper.getGroup(id);
         if (group == null) {
-            return ReplyHelper.fail("ID不存在,未删除数据");
+            throw new BusinessException("ID不存在,未删除数据");
         }
 
         mapper.removeMembers(id, userIds);
         LogClient.writeLog(info, BUSINESS, OperateType.DELETE, id, userIds);
-
-        return ReplyHelper.success();
     }
 
     /**

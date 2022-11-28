@@ -3,7 +3,7 @@ package com.insight.base.user.common.mapper;
 import com.insight.base.user.common.dto.FuncPermitDto;
 import com.insight.base.user.common.dto.UserListDto;
 import com.insight.base.user.common.dto.UserVo;
-import com.insight.utils.common.JsonTypeHandler;
+import com.insight.utils.pojo.base.JsonTypeHandler;
 import com.insight.utils.pojo.base.Search;
 import com.insight.utils.pojo.user.User;
 import org.apache.ibatis.annotations.*;

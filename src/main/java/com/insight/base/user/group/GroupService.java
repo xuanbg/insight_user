@@ -1,6 +1,7 @@
 package com.insight.base.user.group;
 
 import com.insight.base.user.common.dto.GroupDto;
+import com.insight.base.user.common.dto.UserListDto;
 import com.insight.utils.pojo.auth.LoginInfo;
 import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.base.Search;
@@ -28,7 +29,7 @@ public interface GroupService {
      * @param id 用户组ID
      * @return Reply
      */
-    Reply getGroup(Long id);
+    GroupDto getGroup(Long id);
 
     /**
      * 新增用户组
@@ -37,25 +38,23 @@ public interface GroupService {
      * @param dto  用户组DTO
      * @return Reply
      */
-    Reply newGroup(LoginInfo info, GroupDto dto);
+    Long newGroup(LoginInfo info, GroupDto dto);
 
     /**
      * 编辑用户组
      *
      * @param info 用户关键信息
      * @param dto  用户组DTO
-     * @return Reply
      */
-    Reply editGroup(LoginInfo info, GroupDto dto);
+    void editGroup(LoginInfo info, GroupDto dto);
 
     /**
      * 删除用户组
      *
      * @param info 用户关键信息
      * @param id   用户组ID
-     * @return Reply
      */
-    Reply deleteGroup(LoginInfo info, Long id);
+    void deleteGroup(LoginInfo info, Long id);
 
     /**
      * 查询用户组成员
@@ -71,7 +70,7 @@ public interface GroupService {
      * @param id 用户组ID
      * @return Reply
      */
-    Reply getOthers(Long id);
+    List<UserListDto> getOthers(Long id);
 
     /**
      * 添加用户组成员
@@ -79,9 +78,8 @@ public interface GroupService {
      * @param info    用户关键信息
      * @param id      用户组ID
      * @param userIds 用户ID集合
-     * @return Reply
      */
-    Reply addMembers(LoginInfo info, Long id, List<Long> userIds);
+    void addMembers(LoginInfo info, Long id, List<Long> userIds);
 
     /**
      * 移除用户组成员
@@ -89,9 +87,8 @@ public interface GroupService {
      * @param info    用户关键信息
      * @param id      用户组ID
      * @param userIds 用户ID集合
-     * @return Reply
      */
-    Reply removeMembers(LoginInfo info, Long id, List<Long> userIds);
+    void removeMembers(LoginInfo info, Long id, List<Long> userIds);
 
     /**
      * 获取日志列表

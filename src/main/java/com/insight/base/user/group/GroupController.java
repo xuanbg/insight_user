@@ -1,9 +1,10 @@
 package com.insight.base.user.group;
 
 import com.insight.base.user.common.dto.GroupDto;
+import com.insight.base.user.common.dto.UserListDto;
 import com.insight.utils.Json;
-import com.insight.utils.ReplyHelper;
 import com.insight.utils.pojo.auth.LoginInfo;
+import com.insight.utils.pojo.base.BusinessException;
 import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.base.Search;
 import org.springframework.web.bind.annotation.*;
@@ -53,7 +54,7 @@ public class GroupController {
      * @return Reply
      */
     @GetMapping("/v1.0/groups/{id}")
-    public Reply getGroup(@PathVariable Long id) {
+    public GroupDto getGroup(@PathVariable Long id) {
         return service.getGroup(id);
     }
 
@@ -65,7 +66,7 @@ public class GroupController {
      * @return Reply
      */
     @PostMapping("/v1.0/groups")
-    public Reply newGroup(@RequestHeader("loginInfo") String info, @Valid @RequestBody GroupDto dto) {
+    public Long newGroup(@RequestHeader("loginInfo") String info, @Valid @RequestBody GroupDto dto) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.newGroup(loginInfo, dto);
@@ -77,14 +78,13 @@ public class GroupController {
      * @param info 用户关键信息
      * @param id   用户组ID
      * @param dto  用户组DTO
-     * @return Reply
      */
     @PutMapping("/v1.0/groups/{id}")
-    public Reply editGroup(@RequestHeader("loginInfo") String info, @PathVariable Long id, @Valid @RequestBody GroupDto dto) {
+    public void editGroup(@RequestHeader("loginInfo") String info, @PathVariable Long id, @Valid @RequestBody GroupDto dto) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
         dto.setId(id);
 
-        return service.editGroup(loginInfo, dto);
+        service.editGroup(loginInfo, dto);
     }
 
     /**
@@ -92,13 +92,12 @@ public class GroupController {
      *
      * @param info 用户关键信息
      * @param id   用户组ID
-     * @return Reply
      */
     @DeleteMapping("/v1.0/groups/{id}")
-    public Reply deleteGroup(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
+    public void deleteGroup(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.deleteGroup(loginInfo, id);
+        service.deleteGroup(loginInfo, id);
     }
 
     /**
@@ -121,7 +120,7 @@ public class GroupController {
      * @return Reply
      */
     @GetMapping("/v1.0/groups/{id}/others")
-    public Reply getOthers(@PathVariable Long id) {
+    public List<UserListDto> getOthers(@PathVariable Long id) {
         return service.getOthers(id);
     }
 
@@ -131,13 +130,12 @@ public class GroupController {
      * @param info    用户关键信息
      * @param id      用户组ID
      * @param userIds 用户ID集合
-     * @return Reply
      */
     @PostMapping("/v1.0/groups/{id}/members")
-    public Reply addMembers(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody List<Long> userIds) {
+    public void addMembers(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody List<Long> userIds) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.addMembers(loginInfo, id, userIds);
+        service.addMembers(loginInfo, id, userIds);
     }
 
     /**
@@ -146,16 +144,15 @@ public class GroupController {
      * @param info    用户关键信息
      * @param id      用户组ID
      * @param userIds 用户ID集合
-     * @return Reply
      */
     @DeleteMapping("/v1.0/groups/{id}/members")
-    public Reply removeMembers(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody List<Long> userIds) {
+    public void removeMembers(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody List<Long> userIds) {
         if (userIds == null || userIds.isEmpty()) {
-            return ReplyHelper.invalidParam("请选择需要移除的成员");
+            throw new BusinessException("请选择需要移除的成员");
         }
 
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
-        return service.removeMembers(loginInfo, id, userIds);
+        service.removeMembers(loginInfo, id, userIds);
     }
 
     /**

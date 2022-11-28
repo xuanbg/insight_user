@@ -1,10 +1,14 @@
 package com.insight.base.user.manage;
 
+import com.insight.base.user.common.dto.FuncPermitDto;
 import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
+import com.insight.base.user.common.dto.UserVo;
 import com.insight.utils.pojo.auth.LoginInfo;
 import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.base.Search;
+
+import java.util.List;
 
 /**
  * @author 宣炳刚
@@ -27,7 +31,7 @@ public interface ManageService {
      * @param id 用户ID
      * @return Reply
      */
-    Reply getUser(Long id);
+    UserVo getUser(Long id);
 
     /**
      * 获取用户功能授权
@@ -35,7 +39,7 @@ public interface ManageService {
      * @param id 用户ID
      * @return Reply
      */
-    Reply getUserPermit(Long id);
+    List<FuncPermitDto> getUserPermit(Long id);
 
     /**
      * 新增用户
@@ -44,25 +48,23 @@ public interface ManageService {
      * @param dto  用户DTO
      * @return Reply
      */
-    Reply newUser(LoginInfo info, UserDto dto);
+    Long newUser(LoginInfo info, UserDto dto);
 
     /**
      * 编辑用户
      *
      * @param info 用户关键信息
      * @param dto  用户DTO
-     * @return Reply
      */
-    Reply editUser(LoginInfo info, UserDto dto);
+    void editUser(LoginInfo info, UserDto dto);
 
     /**
      * 删除用户
      *
      * @param info 用户关键信息
      * @param id   用户ID
-     * @return Reply
      */
-    Reply deleteUser(LoginInfo info, Long id);
+    void deleteUser(LoginInfo info, Long id);
 
     /**
      * 改变用户禁用/启用状态
@@ -70,18 +72,16 @@ public interface ManageService {
      * @param info   用户关键信息
      * @param id     用户ID
      * @param status 禁用/启用状态
-     * @return Reply
      */
-    Reply changeUserStatus(LoginInfo info, Long id, boolean status);
+    void changeUserStatus(LoginInfo info, Long id, boolean status);
 
     /**
      * 重置用户密码
      *
      * @param info 用户关键信息
      * @param dto  密码DTO
-     * @return Reply
      */
-    Reply resetPassword(LoginInfo info, PasswordDto dto);
+    void resetPassword(LoginInfo info, PasswordDto dto);
 
     /**
      * 获取可邀请用户列表
@@ -96,18 +96,16 @@ public interface ManageService {
      *
      * @param info 用户关键信息
      * @param id   用户ID
-     * @return Reply
      */
-    Reply inviteUser(LoginInfo info, Long id);
+    void inviteUser(LoginInfo info, Long id);
 
     /**
      * 清退用户
      *
      * @param info 用户关键信息
      * @param id   用户ID
-     * @return Reply
      */
-    Reply removeUser(LoginInfo info, Long id);
+    void removeUser(LoginInfo info, Long id);
 
     /**
      * 获取日志列表

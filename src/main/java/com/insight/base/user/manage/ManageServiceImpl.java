@@ -13,10 +13,11 @@ import com.insight.utils.Redis;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
-import com.insight.utils.pojo.OperateType;
 import com.insight.utils.pojo.auth.LoginInfo;
+import com.insight.utils.pojo.base.BusinessException;
 import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.base.Search;
+import com.insight.utils.pojo.message.OperateType;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -58,7 +59,7 @@ public class ManageServiceImpl implements ManageService {
     @Override
     public Reply getUsers(Search search) {
         if (search.getTenantId() != null && search.getInvalid() && search.getKeyword() == null) {
-            return ReplyHelper.invalidParam("查询关键词不能为空");
+            throw new BusinessException("查询关键词不能为空");
         }
 
         var page = PageHelper.startPage(search.getPageNum(), search.getPageSize())
@@ -75,13 +76,13 @@ public class ManageServiceImpl implements ManageService {
      * @return Reply
      */
     @Override
-    public Reply getUser(Long id) {
+    public UserVo getUser(Long id) {
         UserVo user = mapper.getUser(id);
         if (user == null) {
-            return ReplyHelper.fail("ID不存在,未读取数据");
+            throw new BusinessException("ID不存在,未读取数据");
         }
 
-        return ReplyHelper.success(user);
+        return user;
     }
 
     /**
@@ -91,14 +92,13 @@ public class ManageServiceImpl implements ManageService {
      * @return Reply
      */
     @Override
-    public Reply getUserPermit(Long id) {
+    public List<FuncPermitDto> getUserPermit(Long id) {
         UserVo user = mapper.getUser(id);
         if (user == null) {
-            return ReplyHelper.fail("ID不存在,未读取数据");
+            throw new BusinessException("ID不存在,未读取数据");
         }
 
-        List<FuncPermitDto> list = mapper.getUserPermit(id);
-        return ReplyHelper.success(list);
+        return mapper.getUserPermit(id);
     }
 
     /**
@@ -109,12 +109,9 @@ public class ManageServiceImpl implements ManageService {
      * @return Reply
      */
     @Override
-    public Reply newUser(LoginInfo info, UserDto dto) {
+    public Long newUser(LoginInfo info, UserDto dto) {
         Long id = creator.nextId(3);
-        Reply reply = core.matchUser(id, dto.getAccount(), dto.getMobile(), dto.getEmail());
-        if (reply != null) {
-            return reply;
-        }
+        core.matchUser(id, dto.getAccount(), dto.getMobile(), dto.getEmail());
 
         dto.setId(id);
         Long tenantId = info.getTenantId();
@@ -125,7 +122,7 @@ public class ManageServiceImpl implements ManageService {
         core.addUser(dto);
         LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, dto);
 
-        return ReplyHelper.created(id);
+        return id;
     }
 
     /**
@@ -133,23 +130,19 @@ public class ManageServiceImpl implements ManageService {
      *
      * @param info 用户关键信息
      * @param dto  用户DTO
-     * @return Reply
      */
     @Override
-    public Reply editUser(LoginInfo info, UserDto dto) {
+    public void editUser(LoginInfo info, UserDto dto) {
         Long id = dto.getId();
         UserVo user = mapper.getUser(id);
         if (user == null) {
-            return ReplyHelper.fail("ID不存在,未更新数据");
+            throw new BusinessException("ID不存在,未更新数据");
         }
 
         String account = dto.getAccount();
         String mobile = dto.getMobile();
         String email = dto.getEmail();
-        Reply reply = core.matchUser(id, account, mobile, email);
-        if (reply != null) {
-            return reply;
-        }
+        core.matchUser(id, account, mobile, email);
 
         // 清理失效缓存数据
         String oldAccount = user.getAccount();
@@ -170,8 +163,6 @@ public class ManageServiceImpl implements ManageService {
         // 更新数据
         mapper.updateUser(dto);
         LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, dto);
-
-        return ReplyHelper.success();
     }
 
     /**
@@ -179,13 +170,12 @@ public class ManageServiceImpl implements ManageService {
      *
      * @param info 用户关键信息
      * @param id   用户ID
-     * @return Reply
      */
     @Override
-    public Reply deleteUser(LoginInfo info, Long id) {
+    public void deleteUser(LoginInfo info, Long id) {
         UserVo user = mapper.getUser(id);
         if (user == null) {
-            return ReplyHelper.fail("ID不存在,未删除数据");
+            throw new BusinessException("ID不存在,未删除数据");
         }
 
         // 清理缓存
@@ -199,8 +189,6 @@ public class ManageServiceImpl implements ManageService {
         // 删除数据
         mapper.deleteUser(id);
         LogClient.writeLog(info, BUSINESS, OperateType.DELETE, id, user);
-
-        return ReplyHelper.success();
     }
 
     /**
@@ -209,13 +197,12 @@ public class ManageServiceImpl implements ManageService {
      * @param info   用户关键信息
      * @param id     用户ID
      * @param status 禁用/启用状态
-     * @return Reply
      */
     @Override
-    public Reply changeUserStatus(LoginInfo info, Long id, boolean status) {
+    public void changeUserStatus(LoginInfo info, Long id, boolean status) {
         UserVo user = mapper.getUser(id);
         if (user == null) {
-            return ReplyHelper.fail("ID不存在,未更新数据");
+            throw new BusinessException("ID不存在,未更新数据");
         }
 
         // 更新缓存
@@ -226,8 +213,6 @@ public class ManageServiceImpl implements ManageService {
 
         mapper.updateStatus(id, status);
         LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, user);
-
-        return ReplyHelper.success();
     }
 
     /**
@@ -235,14 +220,13 @@ public class ManageServiceImpl implements ManageService {
      *
      * @param info 用户关键信息
      * @param dto  密码DTO
-     * @return Reply
      */
     @Override
-    public Reply resetPassword(LoginInfo info, PasswordDto dto) {
+    public void resetPassword(LoginInfo info, PasswordDto dto) {
         Long id = dto.getId();
         UserVo user = mapper.getUser(id);
         if (user == null) {
-            return ReplyHelper.fail("ID不存在,未更新数据");
+            throw new BusinessException("ID不存在,未更新数据");
         }
 
         String password = dto.getPassword();
@@ -257,8 +241,6 @@ public class ManageServiceImpl implements ManageService {
         }
 
         LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, user);
-
-        return ReplyHelper.success();
     }
 
     /**
@@ -271,11 +253,11 @@ public class ManageServiceImpl implements ManageService {
     public Reply getInviteUsers(Search search) {
         Long tenantId = search.getTenantId();
         if (tenantId == null) {
-            return ReplyHelper.invalidParam("租户ID不能为空");
+            throw new BusinessException("租户ID不能为空");
         }
 
         if (Util.isEmpty(search.getKeyword())) {
-            return ReplyHelper.invalidParam("查询关键词不能为空");
+            throw new BusinessException("查询关键词不能为空");
         }
 
         var page = PageHelper.startPage(search.getPageNum(), search.getPageSize())
@@ -290,26 +272,23 @@ public class ManageServiceImpl implements ManageService {
      *
      * @param info 用户关键信息
      * @param id   用户ID
-     * @return Reply
      */
     @Override
-    public Reply inviteUser(LoginInfo info, Long id) {
+    public void inviteUser(LoginInfo info, Long id) {
         Long tenantId = info.getTenantId();
         if (tenantId == null) {
-            return ReplyHelper.invalidParam("租户ID不存在,请以租户身份登录");
+            throw new BusinessException("租户ID不存在,请以租户身份登录");
         }
 
         UserVo user = mapper.getUser(id);
         if (user == null) {
-            return ReplyHelper.fail("ID不存在,未更新数据");
+            throw new BusinessException("ID不存在,未更新数据");
         }
 
         int count = mapper.matchRelation(tenantId, id);
         if (count == 0) {
             mapper.addRelation(tenantId, id);
         }
-
-        return ReplyHelper.success();
     }
 
     /**
@@ -317,18 +296,15 @@ public class ManageServiceImpl implements ManageService {
      *
      * @param info 用户关键信息
      * @param id   用户ID
-     * @return Reply
      */
     @Override
     @Transactional
-    public Reply removeUser(LoginInfo info, Long id) {
+    public void removeUser(LoginInfo info, Long id) {
         Long tenantId = info.getTenantId();
         mapper.removeRelation(tenantId, id);
         mapper.removeGroupRelation(tenantId, id);
         mapper.removeOrganizeRelation(tenantId, id);
         mapper.removeRoleRelation(tenantId, id);
-
-        return ReplyHelper.success();
     }
 
     /**

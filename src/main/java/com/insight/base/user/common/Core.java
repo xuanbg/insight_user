@@ -3,10 +3,9 @@ package com.insight.base.user.common;
 import com.insight.base.user.common.dto.UserDto;
 import com.insight.base.user.common.mapper.UserMapper;
 import com.insight.utils.Generator;
-import com.insight.utils.ReplyHelper;
 import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
-import com.insight.utils.pojo.base.Reply;
+import com.insight.utils.pojo.base.BusinessException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -101,25 +100,22 @@ public class Core {
      * @param account 登录账号
      * @param mobile  手机号
      * @param email   邮箱
-     * @return Reply
      */
-    public Reply matchUser(Long userId, String account, String mobile, String email) {
+    public void matchUser(Long userId, String account, String mobile, String email) {
         int count = mapper.matchUsers(userId, account);
         if (count > 0) {
-            return ReplyHelper.invalidParam("账号[" + account + "]已被使用");
+            throw new BusinessException("账号[" + account + "]已被使用");
         }
 
         count = mapper.matchUsers(userId, mobile);
         if (count > 0) {
-            return ReplyHelper.invalidParam("手机号[" + mobile + "]已被使用");
+            throw new BusinessException("手机号[" + mobile + "]已被使用");
         }
 
         count = mapper.matchUsers(userId, email);
         if (count > 0) {
-            return ReplyHelper.invalidParam("Email[" + email + "]已被使用");
+            throw new BusinessException("Email[" + email + "]已被使用");
         }
-
-        return null;
     }
 
     /**

@@ -1,7 +1,9 @@
 package com.insight.base.user.manage;
 
+import com.insight.base.user.common.dto.FuncPermitDto;
 import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
+import com.insight.base.user.common.dto.UserVo;
 import com.insight.utils.Json;
 import com.insight.utils.pojo.auth.LoginInfo;
 import com.insight.utils.pojo.base.Reply;
@@ -9,6 +11,7 @@ import com.insight.utils.pojo.base.Search;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * @author 宣炳刚
@@ -54,7 +57,7 @@ public class ManageController {
      * @return Reply
      */
     @GetMapping("/v1.0/users/{id}")
-    public Reply getUser(@PathVariable Long id) {
+    public UserVo getUser(@PathVariable Long id) {
         return service.getUser(id);
     }
 
@@ -65,7 +68,7 @@ public class ManageController {
      * @return Reply
      */
     @GetMapping("/v1.0/users/{id}/functions")
-    public Reply getUserPermit(@PathVariable Long id) {
+    public List<FuncPermitDto> getUserPermit(@PathVariable Long id) {
         return service.getUserPermit(id);
     }
 
@@ -77,7 +80,7 @@ public class ManageController {
      * @return Reply
      */
     @PostMapping("/v1.0/users")
-    public Reply newUser(@RequestHeader("loginInfo") String info, @Valid @RequestBody UserDto dto) {
+    public Long newUser(@RequestHeader("loginInfo") String info, @Valid @RequestBody UserDto dto) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         return service.newUser(loginInfo, dto);
@@ -88,14 +91,13 @@ public class ManageController {
      *
      * @param info 用户关键信息
      * @param dto  用户DTO
-     * @return Reply
      */
     @PutMapping("/v1.0/users/{id}")
-    public Reply editUser(@RequestHeader("loginInfo") String info, @PathVariable Long id, @Valid @RequestBody UserDto dto) {
+    public void editUser(@RequestHeader("loginInfo") String info, @PathVariable Long id, @Valid @RequestBody UserDto dto) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
         dto.setId(id);
 
-        return service.editUser(loginInfo, dto);
+        service.editUser(loginInfo, dto);
     }
 
     /**
@@ -103,13 +105,12 @@ public class ManageController {
      *
      * @param info 用户关键信息
      * @param id   用户ID
-     * @return Reply
      */
     @DeleteMapping("/v1.0/users/{id}")
-    public Reply deleteUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
+    public void deleteUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.deleteUser(loginInfo, id);
+        service.deleteUser(loginInfo, id);
     }
 
     /**
@@ -117,13 +118,12 @@ public class ManageController {
      *
      * @param info 用户关键信息
      * @param id   用户ID
-     * @return Reply
      */
     @PutMapping("/v1.0/users/{id}/disable")
-    public Reply disableUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
+    public void disableUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.changeUserStatus(loginInfo, id, true);
+        service.changeUserStatus(loginInfo, id, true);
     }
 
     /**
@@ -131,13 +131,12 @@ public class ManageController {
      *
      * @param info 用户关键信息
      * @param id   用户ID
-     * @return Reply
      */
     @PutMapping("/v1.0/users/{id}/enable")
-    public Reply enableUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
+    public void enableUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.changeUserStatus(loginInfo, id, false);
+        service.changeUserStatus(loginInfo, id, false);
     }
 
     /**
@@ -145,20 +144,19 @@ public class ManageController {
      *
      * @param info 用户关键信息
      * @param dto  密码DTO
-     * @return Reply
      */
     @PutMapping("/v1.0/users/{id}/password")
-    public Reply resetPassword(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody PasswordDto dto) {
+    public void resetPassword(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody PasswordDto dto) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
         dto.setId(id);
 
-        return service.resetPassword(loginInfo, dto);
+        service.resetPassword(loginInfo, dto);
     }
 
     /**
      * 获取可邀请用户列表
      *
-     * @param info    用户关键信息
+     * @param info   用户关键信息
      * @param search 查询关键词
      * @return Reply
      */
@@ -175,13 +173,12 @@ public class ManageController {
      *
      * @param info 用户关键信息
      * @param id   用户ID
-     * @return Reply
      */
     @PostMapping("/v1.0/users/{id}/relation")
-    public Reply inviteUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
+    public void inviteUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.inviteUser(loginInfo, id);
+        service.inviteUser(loginInfo, id);
     }
 
     /**
@@ -189,13 +186,12 @@ public class ManageController {
      *
      * @param info 用户关键信息
      * @param id   用户ID
-     * @return Reply
      */
     @DeleteMapping("/v1.0/users/{id}/relation")
-    public Reply removeUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
+    public void removeUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-        return service.removeUser(loginInfo, id);
+        service.removeUser(loginInfo, id);
     }
 
     /**

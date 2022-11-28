@@ -3,6 +3,7 @@ package com.insight.base.user.service;
 import com.insight.base.user.common.dto.MobileDto;
 import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
+import com.insight.base.user.common.dto.UserVo;
 import com.insight.utils.pojo.base.Reply;
 
 /**
@@ -18,7 +19,7 @@ public interface UserService {
      * @param id 用户ID
      * @return Reply
      */
-    Reply getUser(Long id);
+    UserVo getUser(Long id);
 
     /**
      * 注册用户
@@ -26,60 +27,54 @@ public interface UserService {
      * @param dto 用户DTO
      * @return Reply
      */
-    Reply register(UserDto dto);
+    Long register(UserDto dto);
 
     /**
      * 更新用户昵称
      *
      * @param id   用户ID
      * @param name 用户昵称
-     * @return Reply
      */
-    Reply updateName(Long id, String name);
+    void updateName(Long id, String name);
 
     /**
      * 更新用户手机号
      *
      * @param id  用户ID
      * @param dto 手机验证码DTO
-     * @return Reply
      */
-    Reply updateMobile(Long id, MobileDto dto);
+    void updateMobile(Long id, MobileDto dto);
 
     /**
      * 更新用户Email
      *
      * @param id    用户ID
      * @param email Email
-     * @return Reply
      */
-    Reply updateEmail(Long id, String email);
+    void updateEmail(Long id, String email);
 
     /**
      * 更新用户头像
      *
      * @param id      用户ID
      * @param headImg 头像
-     * @return Reply
      */
-    Reply updateHeadImg(Long id, String headImg);
+    void updateHeadImg(Long id, String headImg);
 
     /**
      * 更新用户备注
      *
      * @param id     用户ID
      * @param remark 备注
-     * @return Reply
      */
-    Reply updateRemark(Long id, String remark);
+    void updateRemark(Long id, String remark);
 
     /**
      * 修改密码
      *
      * @param dto 密码DTO
-     * @return Reply
      */
-    Reply changePassword(PasswordDto dto);
+    void changePassword(PasswordDto dto);
 
     /**
      * 重置密码
@@ -93,16 +88,14 @@ public interface UserService {
      * 设置支付密码
      *
      * @param dto 密码DTO
-     * @return Reply
      */
-    Reply setPayPassword(PasswordDto dto);
+    void setPayPassword(PasswordDto dto);
 
     /**
      * 验证支付密码(供服务调用)
      *
      * @param id  用户ID
      * @param key 支付密码(MD5)
-     * @return Reply
      */
-    Reply verifyPayPw(Long id, String key);
+    void verifyPayPw(Long id, String key);
 }

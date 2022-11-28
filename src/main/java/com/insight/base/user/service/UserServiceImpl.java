@@ -6,9 +6,9 @@ import com.insight.base.user.common.client.MessageClient;
 import com.insight.base.user.common.dto.*;
 import com.insight.base.user.common.mapper.UserMapper;
 import com.insight.utils.Redis;
-import com.insight.utils.ReplyHelper;
 import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
+import com.insight.utils.pojo.base.BusinessException;
 import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.user.User;
 
@@ -49,13 +49,13 @@ public class UserServiceImpl implements UserService {
      * @return Reply
      */
     @Override
-    public Reply getUser(Long id) {
+    public UserVo getUser(Long id) {
         UserVo user = mapper.getUser(id);
         if (user == null) {
-            return ReplyHelper.fail("ID不存在,未读取数据");
+            throw new BusinessException("ID不存在,未读取数据");
         }
 
-        return ReplyHelper.success(user);
+        return user;
     }
 
     /**
@@ -65,22 +65,16 @@ public class UserServiceImpl implements UserService {
      * @return Reply
      */
     @Override
-    public Reply register(UserDto dto) {
+    public Long register(UserDto dto) {
         // 验证账号|手机号|邮箱是否已存在
         Long id = creator.nextId(3);
-        Reply reply = core.matchUser(id, dto.getAccount(), dto.getMobile(), dto.getEmail());
-        if (reply != null) {
-            return reply;
-        }
+        core.matchUser(id, dto.getAccount(), dto.getMobile(), dto.getEmail());
 
         // 验证验证码是否正确
         String code = dto.getCode();
         if (code != null && !code.isEmpty()) {
             String key = Util.md5("1" + dto.getMobile() + code);
-            reply = client.verifySmsCode(key);
-            if (!reply.getSuccess()) {
-                return reply;
-            }
+            client.verifySmsCode(key);
         }
 
         dto.setId(id);
@@ -88,7 +82,7 @@ public class UserServiceImpl implements UserService {
         dto.setCode(null);
         core.addUser(dto);
 
-        return ReplyHelper.created(id);
+        return id;
     }
 
     /**
@@ -96,19 +90,16 @@ public class UserServiceImpl implements UserService {
      *
      * @param id   用户ID
      * @param name 用户昵称
-     * @return Reply
      */
     @Override
-    public Reply updateName(Long id, String name) {
+    public void updateName(Long id, String name) {
         UserVo user = mapper.getUser(id);
         if (user == null) {
-            return ReplyHelper.fail("ID不存在,未更新数据");
+            throw new BusinessException("ID不存在,未更新数据");
         }
 
         user.setName(name);
         mapper.updateUser(user.convert(User.class));
-
-        return ReplyHelper.success();
     }
 
     /**
@@ -116,29 +107,28 @@ public class UserServiceImpl implements UserService {
      *
      * @param id  用户ID
      * @param dto 手机验证码DTO
-     * @return Reply
      */
     @Override
-    public Reply updateMobile(Long id, MobileDto dto) {
+    public void updateMobile(Long id, MobileDto dto) {
         UserVo user = mapper.getUser(id);
         if (user == null) {
-            return ReplyHelper.fail("ID不存在,未更新数据");
+            throw new BusinessException("ID不存在,未更新数据");
         }
 
         String mobile = dto.getMobile();
         String oldMobile = user.getMobile();
         if (mobile == null && oldMobile == null) {
-            return ReplyHelper.success();
+            return;
         }
 
         if (mobile != null) {
             if (oldMobile != null) {
-                return ReplyHelper.invalidParam("已绑定手机号,请先解除绑定");
+                throw new BusinessException("已绑定手机号,请先解除绑定");
             }
 
             int count = mapper.matchUsers(id, mobile);
             if (count > 0) {
-                return ReplyHelper.invalidParam("手机号[" + mobile + "]已被使用");
+                throw new BusinessException("手机号[" + mobile + "]已被使用");
             }
         }
 
@@ -146,7 +136,7 @@ public class UserServiceImpl implements UserService {
         String key = dto.getKey();
         Reply reply = client.verifySmsCode(key);
         if (!reply.getSuccess()) {
-            return reply;
+            throw new BusinessException(reply.getMessage());
         }
 
         if (oldMobile != null && !oldMobile.isEmpty()) {
@@ -156,8 +146,6 @@ public class UserServiceImpl implements UserService {
         // 持久化数据
         user.setMobile(mobile);
         mapper.updateUser(user.convert(User.class));
-
-        return ReplyHelper.success();
     }
 
     /**
@@ -165,18 +153,17 @@ public class UserServiceImpl implements UserService {
      *
      * @param id    用户ID
      * @param email Email
-     * @return Reply
      */
     @Override
-    public Reply updateEmail(Long id, String email) {
+    public void updateEmail(Long id, String email) {
         UserVo user = mapper.getUser(id);
         if (user == null) {
-            return ReplyHelper.fail("ID不存在,未更新数据");
+            throw new BusinessException("ID不存在,未更新数据");
         }
 
         int count = mapper.matchUsers(id, email);
         if (count > 0) {
-            return ReplyHelper.invalidParam("Email[" + email + "]已被使用");
+            throw new BusinessException("Email[" + email + "]已被使用");
         }
 
         String oldEmail = user.getEmail();
@@ -186,8 +173,6 @@ public class UserServiceImpl implements UserService {
 
         user.setEmail(email);
         mapper.updateUser(user.convert(User.class));
-
-        return ReplyHelper.success();
     }
 
     /**
@@ -195,19 +180,16 @@ public class UserServiceImpl implements UserService {
      *
      * @param id      用户ID
      * @param headImg 头像
-     * @return Reply
      */
     @Override
-    public Reply updateHeadImg(Long id, String headImg) {
+    public void updateHeadImg(Long id, String headImg) {
         UserVo user = mapper.getUser(id);
         if (user == null) {
-            return ReplyHelper.fail("ID不存在,未更新数据");
+            throw new BusinessException("ID不存在,未更新数据");
         }
 
         user.setHeadImg(headImg);
         mapper.updateUser(user.convert(User.class));
-
-        return ReplyHelper.success();
     }
 
     /**
@@ -215,47 +197,41 @@ public class UserServiceImpl implements UserService {
      *
      * @param id     用户ID
      * @param remark 备注
-     * @return Reply
      */
     @Override
-    public Reply updateRemark(Long id, String remark) {
+    public void updateRemark(Long id, String remark) {
         UserVo user = mapper.getUser(id);
         if (user == null) {
-            return ReplyHelper.fail("ID不存在,未更新数据");
+            throw new BusinessException("ID不存在,未更新数据");
         }
 
         user.setRemark(remark);
         mapper.updateUser(user.convert(User.class));
-
-        return ReplyHelper.success();
     }
 
     /**
      * 修改密码
      *
      * @param dto 密码DTO
-     * @return Reply
      */
     @Override
-    public Reply changePassword(PasswordDto dto) {
+    public void changePassword(PasswordDto dto) {
         Long id = dto.getId();
         UserVo user = mapper.getUser(id);
         if (user == null) {
-            return ReplyHelper.fail("ID不存在,未更新数据");
+            throw new BusinessException("ID不存在,未更新数据");
         }
 
         String key = "User:" + id;
         String pw = Redis.get(key, "password");
         String old = dto.getOld();
         if (old == null || old.isEmpty() || !old.equals(pw)) {
-            return ReplyHelper.invalidParam("原密码错误,请输入正确的原密码");
+            throw new BusinessException("原密码错误,请输入正确的原密码");
         }
 
         String password = dto.getPassword();
         Redis.setHash(key, "password", password);
         mapper.updatePassword(id, password);
-
-        return ReplyHelper.success();
     }
 
     /**
@@ -304,30 +280,27 @@ public class UserServiceImpl implements UserService {
      * 设置支付密码
      *
      * @param dto 密码DTO
-     * @return Reply
      */
     @Override
-    public Reply setPayPassword(PasswordDto dto) {
+    public void setPayPassword(PasswordDto dto) {
         String password = dto.getPassword();
         if (password == null || password.isEmpty()) {
-            return ReplyHelper.invalidParam("支付密码不能为空");
+            throw new BusinessException("支付密码不能为空");
         }
 
         Long id = dto.getId();
         UserVo user = mapper.getUser(id);
         if (user == null) {
-            return ReplyHelper.fail("ID不存在,未更新数据");
+            throw new BusinessException("ID不存在,未更新数据");
         }
 
         Reply reply = client.verifySmsCode(dto.getKey());
         if (!reply.getSuccess()) {
-            return reply;
+            throw new BusinessException(reply.getMessage());
         }
 
         Redis.setHash("User:" + id, "payPassword", password);
         mapper.updatePayPassword(id, password);
-
-        return ReplyHelper.success();
     }
 
     /**
@@ -335,15 +308,16 @@ public class UserServiceImpl implements UserService {
      *
      * @param id  用户ID
      * @param key 支付密码(MD5)
-     * @return Reply
      */
     @Override
-    public Reply verifyPayPw(Long id, String key) {
+    public void verifyPayPw(Long id, String key) {
         String payPassword = Redis.get("User:" + id, "payPassword");
         if (payPassword == null || payPassword.isEmpty()) {
-            return ReplyHelper.fail("当前未设置支付密码,请先设置支付密码");
+            throw new BusinessException("当前未设置支付密码,请先设置支付密码");
         }
 
-        return payPassword.equals(key) ? ReplyHelper.success() : ReplyHelper.invalidParam("支付密码错误");
+        if (!payPassword.equals(key)) {
+            throw new BusinessException("支付密码错误");
+        }
     }
 }
