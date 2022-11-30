@@ -25,7 +25,7 @@ public interface UserMapper {
      * @param search   查询实体类
      * @return 用户列表
      */
-    @Select("<script>select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_user u " +
+    @Select("<script>select u.id, u.`type`, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_user u " +
             "<if test = 'tenantId != null'>join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} </if>" +
             "where 0=0 " +
             "<if test = 'keyword != null'>and u.code = #{keyword} or u.account = #{keyword} or u.mobile = #{keyword} or u.name like concat('%',#{keyword},'%') </if>" +
@@ -69,8 +69,8 @@ public interface UserMapper {
      *
      * @param user 用户DTO
      */
-    @Insert("insert ibu_user(id, code, name, account, mobile, email, union_id, password, head_img, remark, is_builtin, creator, creator_id, created_time) values " +
-            "(#{id}, #{code}, #{name}, #{account}, #{mobile}, #{email}, #{unionId}, #{password}, #{headImg}, #{remark}, #{isBuiltin}, #{creator}, #{creatorId}, #{createdTime});")
+    @Insert("insert ibu_user(id, `type`, code, name, account, mobile, email, union_id, password, head_img, remark, is_builtin, creator, creator_id, created_time) values " +
+            "(#{id}, #{type}, #{code}, #{name}, #{account}, #{mobile}, #{email}, #{unionId}, #{password}, #{headImg}, #{remark}, #{isBuiltin}, #{creator}, #{creatorId}, #{createdTime});")
     void addUser(User user);
 
     /**
@@ -167,7 +167,7 @@ public interface UserMapper {
      * @param tenantId 租户ID
      * @param userId   用户ID
      */
-    @Insert("insert ibt_tenant_user(id, tenant_id, user_id) values (replace(uuid(), '-', ''), #{tenantId}, #{userId});")
+    @Insert("insert ibt_tenant_user(tenant_id, user_id) values (#{tenantId}, #{userId});")
     void addRelation(@Param("tenantId") Long tenantId, @Param("userId") Long userId);
 
     /**
