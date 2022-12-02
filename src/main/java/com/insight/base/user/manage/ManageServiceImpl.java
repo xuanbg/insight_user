@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.insight.base.user.common.Core;
 import com.insight.base.user.common.client.LogClient;
 import com.insight.base.user.common.client.LogServiceClient;
+import com.insight.base.user.common.client.OrgClient;
 import com.insight.base.user.common.dto.FuncPermitDto;
 import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
@@ -14,9 +15,7 @@ import com.insight.utils.ReplyHelper;
 import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
 import com.insight.utils.pojo.auth.LoginInfo;
-import com.insight.utils.pojo.base.BusinessException;
-import com.insight.utils.pojo.base.Reply;
-import com.insight.utils.pojo.base.Search;
+import com.insight.utils.pojo.base.*;
 import com.insight.utils.pojo.message.OperateType;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,20 +31,23 @@ public class ManageServiceImpl implements ManageService {
     private static final String BUSINESS = "用户管理";
     private final SnowflakeCreator creator;
     private final UserMapper mapper;
-    private final LogServiceClient client;
+    private final LogServiceClient logClient;
+    private final OrgClient client;
     private final Core core;
 
     /**
      * 构造方法
      *
-     * @param creator 雪花算法ID生成器
-     * @param mapper  UserMapper
-     * @param client  LogServiceClient
-     * @param core    Core
+     * @param creator   雪花算法ID生成器
+     * @param mapper    UserMapper
+     * @param logClient LogServiceClient
+     * @param client    Feign客户端
+     * @param core      Core
      */
-    public ManageServiceImpl(SnowflakeCreator creator, UserMapper mapper, LogServiceClient client, Core core) {
+    public ManageServiceImpl(SnowflakeCreator creator, UserMapper mapper, LogServiceClient logClient, OrgClient client, Core core) {
         this.creator = creator;
         this.mapper = mapper;
+        this.logClient = logClient;
         this.client = client;
         this.core = core;
     }
@@ -53,13 +55,19 @@ public class ManageServiceImpl implements ManageService {
     /**
      * 查询用户列表
      *
-     * @param search   查询实体类
+     * @param search 查询实体类
      * @return Reply
      */
     @Override
     public Reply getUsers(Search search) {
         if (search.getTenantId() != null && search.getInvalid() && search.getKeyword() == null) {
             throw new BusinessException("查询关键词不能为空");
+        }
+
+        var orgId = search.getOwnerId();
+        if (orgId != null) {
+            List<TreeVo> orgList = client.getSubOrganizes(orgId).getListFromData(TreeVo.class);
+            search.setLongSet(orgList.stream().map(BaseVo::getId).toList());
         }
 
         var page = PageHelper.startPage(search.getPageNum(), search.getPageSize())
@@ -132,6 +140,7 @@ public class ManageServiceImpl implements ManageService {
      * @param dto  用户DTO
      */
     @Override
+    @Transactional
     public void editUser(LoginInfo info, UserDto dto) {
         Long id = dto.getId();
         UserVo user = mapper.getUser(id);
@@ -160,7 +169,12 @@ public class ManageServiceImpl implements ManageService {
             Redis.deleteKey("ID:" + oldEmail);
         }
 
-        // 更新数据
+        var roleIds = dto.getRoleIds();
+        if (roleIds != null && !roleIds.isEmpty()) {
+            mapper.removeRoleRelation(info.getTenantId(), id);
+            mapper.addRoleMember(id, roleIds);
+        }
+
         mapper.updateUser(dto);
         LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, dto);
     }
@@ -315,7 +329,7 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public Reply getUserLogs(Search search) {
-        return client.getLogs(BUSINESS, search.getKeyword(), search.getPageNum(), search.getPageSize());
+        return logClient.getLogs(BUSINESS, search.getKeyword(), search.getPageNum(), search.getPageSize());
     }
 
     /**
@@ -326,6 +340,6 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public Reply getUserLog(Long id) {
-        return client.getLog(id);
+        return logClient.getLog(id);
     }
 }

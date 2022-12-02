@@ -42,7 +42,8 @@ public class Core {
         // 补完ID
         Long userId = user.getId();
         if (userId == null) {
-            user.setId(creator.nextId(3));
+            userId = creator.nextId(3);
+            user.setId(userId);
         }
 
         // 补完类型
@@ -86,11 +87,21 @@ public class Core {
 
         // 持久化数据
         mapper.addUser(user);
-        if (tenantId == null) {
+        if (tenantId != null) {
+            mapper.addRelation(tenantId, userId);
+        }
+
+        var orgId = user.getOrgId();
+        if (orgId != null){
+            mapper.addOrgMember(userId, orgId);
+        }
+
+        var roleIds = user.getRoleIds();
+        if (roleIds == null || roleIds.isEmpty()){
             return;
         }
 
-        mapper.addRelation(tenantId, userId);
+        mapper.addRoleMember(userId, roleIds);
     }
 
     /**

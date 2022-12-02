@@ -1,6 +1,7 @@
 package com.insight.base.user.common.mapper;
 
 import com.insight.base.user.common.dto.FuncPermitDto;
+import com.insight.base.user.common.dto.UserDto;
 import com.insight.base.user.common.dto.UserListDto;
 import com.insight.base.user.common.dto.UserVo;
 import com.insight.utils.pojo.base.JsonTypeHandler;
@@ -22,13 +23,17 @@ public interface UserMapper {
     /**
      * 获取用户列表
      *
-     * @param search   查询实体类
+     * @param search 查询实体类
      * @return 用户列表
      */
-    @Select("<script>select u.id, u.`type`, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_user u " +
-            "<if test = 'tenantId != null'>join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} </if>" +
-            "where 0=0 " +
-            "<if test = 'keyword != null'>and u.code = #{keyword} or u.account = #{keyword} or u.mobile = #{keyword} or u.name like concat('%',#{keyword},'%') </if>" +
+    @Select("<script>select u.id, u.`type`, u.code, u.name, u.account, u.mobile, r.role_name, u.remark, u.is_builtin, u.is_invalid from ibu_user u " +
+            "<if test = 'tenantId != null'>join ibt_tenant_user t on t.user_id = u.id and t.tenant_id = #{tenantId} </if>" +
+            "<if test = 'longSet != null and longSet.size() > 0'>join ibo_organize_member m on m.user_id = u.id and m.post_id in " +
+            "(<foreach collection = \"longSet\" item = \"item\" index = \"index\" separator = \",\">#{item}</foreach>)</if>" +
+            "left join (select m.member_id, group_concat(r.name) as role_name from ibr_role r join ibr_role_member m on m.role_id = r.id " +
+            "group by m.member_id) r on r.member_id = u.id " +
+            "<if test = 'keyword != null'>where u.code = #{keyword} or u.account = #{keyword} or u.mobile = #{keyword} " +
+            "or u.name like concat('%',#{keyword},'%') </if>" +
             "</script>")
     List<UserListDto> getUsers(Search search);
 
@@ -71,7 +76,7 @@ public interface UserMapper {
      */
     @Insert("insert ibu_user(id, `type`, code, name, account, mobile, email, union_id, password, head_img, remark, is_builtin, creator, creator_id, created_time) values " +
             "(#{id}, #{type}, #{code}, #{name}, #{account}, #{mobile}, #{email}, #{unionId}, #{password}, #{headImg}, #{remark}, #{isBuiltin}, #{creator}, #{creatorId}, #{createdTime});")
-    void addUser(User user);
+    void addUser(UserDto user);
 
     /**
      * 匹配关键词的用户数
@@ -168,7 +173,27 @@ public interface UserMapper {
      * @param userId   用户ID
      */
     @Insert("insert ibt_tenant_user(tenant_id, user_id) values (#{tenantId}, #{userId});")
-    void addRelation(@Param("tenantId") Long tenantId, @Param("userId") Long userId);
+    void addRelation(long tenantId, long userId);
+
+    /**
+     * 加入组织机构
+     *
+     * @param id    用户ID
+     * @param orgId 组织机构ID
+     */
+    @Insert("insert ibo_organize_member (post_id, user_id) values (#{orgId}, #{id});")
+    void addOrgMember(long id, long orgId);
+
+    /**
+     * 加入角色成员
+     *
+     * @param id      用户ID
+     * @param roleIds 角色ID集合
+     */
+    @Insert("<script>insert ibr_role_member (type, role_id, member_id) values " +
+            "<foreach collection = \"roleIds\" item = \"item\" index = \"index\" separator = \",\">" +
+            "(1, #{item}, #{id})</foreach>;</script>")
+    void addRoleMember(long id, List<Long> roleIds);
 
     /**
      * 删除租户-用户关系
@@ -177,7 +202,7 @@ public interface UserMapper {
      * @param userId   用户ID
      */
     @Delete("delete from ibt_tenant_user where tenant_id = #{tenantId} and user_id = #{userId};")
-    void removeRelation(@Param("tenantId") Long tenantId, @Param("userId") Long userId);
+    void removeRelation(long tenantId, long userId);
 
     /**
      * 删除租户-角色关系
@@ -186,7 +211,7 @@ public interface UserMapper {
      * @param userId   用户ID
      */
     @Delete("delete m from ibr_role r join ibr_role_member m on m.role_id = r.id and m.type = 1 and m.member_id = #{userId} where r.tenant_id = #{tenantId};")
-    void removeRoleRelation(@Param("tenantId") Long tenantId, @Param("userId") Long userId);
+    void removeRoleRelation(long tenantId, long userId);
 
     /**
      * 删除租户-用户组关系
@@ -195,7 +220,7 @@ public interface UserMapper {
      * @param userId   用户ID
      */
     @Delete("delete m from ibu_group g join ibu_group_member m on m.group_id = g.id and m.user_id = #{userId} where g.tenant_id = #{tenantId};")
-    void removeGroupRelation(@Param("tenantId") Long tenantId, @Param("userId") Long userId);
+    void removeGroupRelation(long tenantId, long userId);
 
     /**
      * 删除租户-组织机构关系
@@ -204,5 +229,5 @@ public interface UserMapper {
      * @param userId   用户ID
      */
     @Delete("delete m from ibo_organize o join ibo_organize_member m on m.post_id = o.id and m.user_id = #{userId} where o.tenant_id = #{tenantId};")
-    void removeOrganizeRelation(@Param("tenantId") Long tenantId, @Param("userId") Long userId);
+    void removeOrganizeRelation(long tenantId, long userId);
 }

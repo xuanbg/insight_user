@@ -35,6 +35,11 @@ public class UserListDto extends BaseXo {
     private String mobile;
 
     /**
+     * 用户角色, 多个角色以逗号分割
+     */
+    private String roleName;
+
+    /**
      * 备注
      */
     private String remark;
@@ -87,6 +92,14 @@ public class UserListDto extends BaseXo {
 
     public void setMobile(String mobile) {
         this.mobile = mobile;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 
     public String getRemark() {

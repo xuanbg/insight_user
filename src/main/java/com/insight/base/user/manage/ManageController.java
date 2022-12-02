@@ -42,11 +42,12 @@ public class ManageController {
      * @return Reply
      */
     @GetMapping("/v1.0/users")
-    public Reply getUsers(@RequestHeader("loginInfo") String info, @RequestParam(defaultValue = "false") boolean all, Search search) {
+    public Reply getUsers(@RequestHeader("loginInfo") String info, @RequestParam(defaultValue = "false") Boolean all, Search search) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         search.setTenantId(loginInfo.getTenantId());
-        search.setInvalid(all);
+        search.setOwnerId(loginInfo.getOrgId());
+        search.setInvalid(all == null || all);
         return service.getUsers(search);
     }
 
