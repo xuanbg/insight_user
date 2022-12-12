@@ -151,6 +151,29 @@ public class ManageServiceImpl implements ManageService {
         String account = dto.getAccount();
         String mobile = dto.getMobile();
         String email = dto.getEmail();
+        if (account == null){
+            account = user.getAccount();
+            dto.setAccount(account);
+        }
+
+        if (mobile == null){
+            mobile = user.getMobile();
+            dto.setMobile(mobile);
+        }
+
+        if (email == null){
+            email = user.getEmail();
+            dto.setEmail(email);
+        }
+
+        if (dto.getHeadImg() == null){
+            dto.setHeadImg(user.getHeadImg());
+        }
+
+        if (dto.getRemark() == null){
+            dto.setRemark(user.getRemark());
+        }
+
         core.matchUser(id, account, mobile, email);
 
         // 清理失效缓存数据
