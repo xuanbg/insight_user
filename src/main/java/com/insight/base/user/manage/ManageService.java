@@ -1,7 +1,6 @@
 package com.insight.base.user.manage;
 
 import com.insight.base.user.common.dto.FuncPermitDto;
-import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
 import com.insight.base.user.common.dto.UserVo;
 import com.insight.utils.pojo.auth.LoginInfo;
@@ -20,7 +19,7 @@ public interface ManageService {
     /**
      * 查询用户列表
      *
-     * @param search   查询实体类
+     * @param search 查询实体类
      * @return Reply
      */
     Reply getUsers(Search search);
@@ -79,9 +78,9 @@ public interface ManageService {
      * 重置用户密码
      *
      * @param info 用户关键信息
-     * @param dto  密码DTO
+     * @param id   用户ID
      */
-    void resetPassword(LoginInfo info, PasswordDto dto);
+    void resetPassword(LoginInfo info, Long id);
 
     /**
      * 获取可邀请用户列表

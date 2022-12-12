@@ -1,7 +1,6 @@
 package com.insight.base.user.manage;
 
 import com.insight.base.user.common.dto.FuncPermitDto;
-import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
 import com.insight.base.user.common.dto.UserVo;
 import com.insight.utils.Json;
@@ -144,14 +143,13 @@ public class ManageController {
      * 重置用户密码
      *
      * @param info 用户关键信息
-     * @param dto  密码DTO
+     * @param id   用户ID
      */
     @PutMapping("/v1.0/users/{id}/password")
-    public void resetPassword(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody PasswordDto dto) {
+    public void resetPassword(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
-        dto.setId(id);
 
-        service.resetPassword(loginInfo, dto);
+        service.resetPassword(loginInfo, id);
     }
 
     /**

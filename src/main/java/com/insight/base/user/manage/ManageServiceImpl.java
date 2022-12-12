@@ -6,7 +6,6 @@ import com.insight.base.user.common.client.LogClient;
 import com.insight.base.user.common.client.LogServiceClient;
 import com.insight.base.user.common.client.OrgClient;
 import com.insight.base.user.common.dto.FuncPermitDto;
-import com.insight.base.user.common.dto.PasswordDto;
 import com.insight.base.user.common.dto.UserDto;
 import com.insight.base.user.common.dto.UserVo;
 import com.insight.base.user.common.mapper.UserMapper;
@@ -151,26 +150,26 @@ public class ManageServiceImpl implements ManageService {
         String account = dto.getAccount();
         String mobile = dto.getMobile();
         String email = dto.getEmail();
-        if (account == null){
+        if (account == null) {
             account = user.getAccount();
             dto.setAccount(account);
         }
 
-        if (mobile == null){
+        if (mobile == null) {
             mobile = user.getMobile();
             dto.setMobile(mobile);
         }
 
-        if (email == null){
+        if (email == null) {
             email = user.getEmail();
             dto.setEmail(email);
         }
 
-        if (dto.getHeadImg() == null){
+        if (dto.getHeadImg() == null) {
             dto.setHeadImg(user.getHeadImg());
         }
 
-        if (dto.getRemark() == null){
+        if (dto.getRemark() == null) {
             dto.setRemark(user.getRemark());
         }
 
@@ -256,21 +255,16 @@ public class ManageServiceImpl implements ManageService {
      * 重置用户密码
      *
      * @param info 用户关键信息
-     * @param dto  密码DTO
+     * @param id   用户ID
      */
     @Override
-    public void resetPassword(LoginInfo info, PasswordDto dto) {
-        Long id = dto.getId();
+    public void resetPassword(LoginInfo info, Long id) {
         UserVo user = mapper.getUser(id);
         if (user == null) {
             throw new BusinessException("ID不存在,未更新数据");
         }
 
-        String password = dto.getPassword();
-        if (password == null || password.isEmpty()) {
-            password = Util.md5("123456");
-        }
-
+        var password = Util.md5("123456");
         mapper.updatePassword(id, password);
         String key = "User:" + id;
         if (Redis.hasKey(key)) {
