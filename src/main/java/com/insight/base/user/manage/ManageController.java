@@ -36,17 +36,15 @@ public class ManageController {
      * 查询用户列表
      *
      * @param info   用户关键信息
-     * @param all    是否查询全部用户
      * @param search 查询实体类
      * @return Reply
      */
     @GetMapping("/v1.0/users")
-    public Reply getUsers(@RequestHeader("loginInfo") String info, @RequestParam(defaultValue = "false") Boolean all, Search search) {
+    public Reply getUsers(@RequestHeader("loginInfo") String info, Search search) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
         search.setTenantId(loginInfo.getTenantId());
         search.setOwnerId(loginInfo.getOrgId());
-        search.setInvalid(all == null || all);
         return service.getUsers(search);
     }
 
