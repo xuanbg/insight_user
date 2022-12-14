@@ -24,7 +24,7 @@ public interface AuthClient {
      * @return Reply
      */
     @GetMapping("/base/auth/v1.0/tokens/codes")
-    Reply getCode(@RequestParam String account);
+    String getCode(@RequestParam String account);
 
     /**
      * 获取Token

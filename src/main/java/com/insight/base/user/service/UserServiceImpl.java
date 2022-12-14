@@ -5,6 +5,7 @@ import com.insight.base.user.common.client.AuthClient;
 import com.insight.base.user.common.client.MessageClient;
 import com.insight.base.user.common.dto.*;
 import com.insight.base.user.common.mapper.UserMapper;
+import com.insight.utils.Json;
 import com.insight.utils.Redis;
 import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
@@ -50,7 +51,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserVo getUser(Long id) {
-        UserVo user = mapper.getUser(id);
+        var user = mapper.getUser(id);
         if (user == null) {
             throw new BusinessException("ID不存在,未读取数据");
         }
@@ -67,13 +68,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long register(UserDto dto) {
         // 验证账号|手机号|邮箱是否已存在
-        Long id = creator.nextId(3);
+        var id = creator.nextId(3);
         core.matchUser(id, dto.getAccount(), dto.getMobile(), dto.getEmail());
 
         // 验证验证码是否正确
-        String code = dto.getCode();
+        var code = dto.getCode();
         if (code != null && !code.isEmpty()) {
-            String key = Util.md5("1" + dto.getMobile() + code);
+            var key = Util.md5("1" + dto.getMobile() + code);
             client.verifySmsCode(key);
         }
 
@@ -93,7 +94,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateName(Long id, String name) {
-        UserVo user = mapper.getUser(id);
+        var user = mapper.getUser(id);
         if (user == null) {
             throw new BusinessException("ID不存在,未更新数据");
         }
@@ -110,13 +111,13 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateMobile(Long id, MobileDto dto) {
-        UserVo user = mapper.getUser(id);
+        var user = mapper.getUser(id);
         if (user == null) {
             throw new BusinessException("ID不存在,未更新数据");
         }
 
-        String mobile = dto.getMobile();
-        String oldMobile = user.getMobile();
+        var mobile = dto.getMobile();
+        var oldMobile = user.getMobile();
         if (mobile == null && oldMobile == null) {
             return;
         }
@@ -126,15 +127,16 @@ public class UserServiceImpl implements UserService {
                 throw new BusinessException("已绑定手机号,请先解除绑定");
             }
 
-            int count = mapper.matchUsers(id, mobile);
+            var count = mapper.matchUsers(id, mobile);
             if (count > 0) {
                 throw new BusinessException("手机号[" + mobile + "]已被使用");
             }
         }
 
         // 验证手机验证码
-        String key = dto.getKey();
-        Reply reply = client.verifySmsCode(key);
+        var key = dto.getKey();
+        var result = client.verifySmsCode(key);
+        var reply = Json.toBean(result, Reply.class);
         if (!reply.getSuccess()) {
             throw new BusinessException(reply.getMessage());
         }
@@ -156,17 +158,17 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateEmail(Long id, String email) {
-        UserVo user = mapper.getUser(id);
+        var user = mapper.getUser(id);
         if (user == null) {
             throw new BusinessException("ID不存在,未更新数据");
         }
 
-        int count = mapper.matchUsers(id, email);
+        var count = mapper.matchUsers(id, email);
         if (count > 0) {
             throw new BusinessException("Email[" + email + "]已被使用");
         }
 
-        String oldEmail = user.getEmail();
+        var oldEmail = user.getEmail();
         if (oldEmail != null && !oldEmail.isEmpty()) {
             Redis.deleteKey("ID:" + oldEmail);
         }
@@ -183,7 +185,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateHeadImg(Long id, String headImg) {
-        UserVo user = mapper.getUser(id);
+        var user = mapper.getUser(id);
         if (user == null) {
             throw new BusinessException("ID不存在,未更新数据");
         }
@@ -200,7 +202,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateRemark(Long id, String remark) {
-        UserVo user = mapper.getUser(id);
+        var user = mapper.getUser(id);
         if (user == null) {
             throw new BusinessException("ID不存在,未更新数据");
         }
@@ -216,20 +218,20 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void changePassword(PasswordDto dto) {
-        Long id = dto.getId();
-        UserVo user = mapper.getUser(id);
+        var id = dto.getId();
+        var user = mapper.getUser(id);
         if (user == null) {
             throw new BusinessException("ID不存在,未更新数据");
         }
 
-        String key = "User:" + id;
-        String pw = Redis.get(key, "password");
-        String old = dto.getOld();
+        var key = "User:" + id;
+        var pw = Redis.get(key, "password");
+        var old = dto.getOld();
         if (old == null || old.isEmpty() || !old.equals(pw)) {
             throw new BusinessException("原密码错误,请输入正确的原密码");
         }
 
-        String password = dto.getPassword();
+        var password = dto.getPassword();
         Redis.setHash(key, "password", password);
         mapper.updatePassword(id, password);
     }
@@ -242,32 +244,34 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Reply resetPassword(PasswordDto dto) {
-        Reply reply = client.verifySmsCode(dto.getKey());
+        var result = client.verifySmsCode(dto.getKey());
+        var reply = Json.toBean(result, Reply.class);
         if (!reply.getSuccess()) {
             return reply;
         }
 
         // 验证用户
-        String mobile = reply.getData().toString();
-        reply = authClient.getCode(mobile);
+        var mobile = reply.getBeanFromData(String.class);
+        result = authClient.getCode(mobile);
+        reply = Json.toBean(result, Reply.class);
         if (!reply.getSuccess()) {
             return reply;
         }
 
         // 获取旧密码用于计算签名
-        Long id = Long.valueOf(Redis.get("ID:" + mobile));
-        String key = "User:" + id;
-        String pw = Redis.get(key, "password");
+        var id = Long.valueOf(Redis.get("ID:" + mobile));
+        var key = "User:" + id;
+        var pw = Redis.get(key, "password");
 
         // 更新密码
-        String password = dto.getPassword();
+        var password = dto.getPassword();
         Redis.setHash(key, "password", password);
         mapper.updatePassword(id, password);
 
         // 构造登录数据并返回Token
-        String code = reply.getData().toString();
-        String sign = Util.md5(Util.md5(mobile + pw) + code);
-        LoginDto login = new LoginDto();
+        var code = reply.getData().toString();
+        var sign = Util.md5(Util.md5(mobile + pw) + code);
+        var login = new LoginDto();
         login.setAppId(dto.getAppId());
         login.setTenantId(dto.getTenantId());
         login.setAccount(mobile);
@@ -283,18 +287,19 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void setPayPassword(PasswordDto dto) {
-        String password = dto.getPassword();
+        var password = dto.getPassword();
         if (password == null || password.isEmpty()) {
             throw new BusinessException("支付密码不能为空");
         }
 
-        Long id = dto.getId();
-        UserVo user = mapper.getUser(id);
+        var id = dto.getId();
+        var user = mapper.getUser(id);
         if (user == null) {
             throw new BusinessException("ID不存在,未更新数据");
         }
 
-        Reply reply = client.verifySmsCode(dto.getKey());
+        var result = client.verifySmsCode(dto.getKey());
+        var reply = Json.toBean(result, Reply.class);
         if (!reply.getSuccess()) {
             throw new BusinessException(reply.getMessage());
         }
@@ -311,7 +316,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void verifyPayPw(Long id, String key) {
-        String payPassword = Redis.get("User:" + id, "payPassword");
+        var payPassword = Redis.get("User:" + id, "payPassword");
         if (payPassword == null || payPassword.isEmpty()) {
             throw new BusinessException("当前未设置支付密码,请先设置支付密码");
         }
