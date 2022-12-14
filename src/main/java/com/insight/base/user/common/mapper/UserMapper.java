@@ -238,5 +238,5 @@ public interface UserMapper {
      * @return 用户数量
      */
     @Select("select count(*) from ibu_user where is_invalid = 0 and (code = #{keyword} or account = #{keyword} or mobile = #{keyword});")
-    int getUserCount(String keyword);
+    int getCount(String keyword);
 }

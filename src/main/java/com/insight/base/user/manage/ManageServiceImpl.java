@@ -350,7 +350,7 @@ public class ManageServiceImpl implements ManageService {
             throw new BusinessException("查询关键词不能为空");
         }
 
-        return mapper.getUserCount(keyword);
+        return mapper.getCount(keyword);
     }
 
     /**
