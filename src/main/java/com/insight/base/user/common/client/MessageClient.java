@@ -19,6 +19,6 @@ public interface MessageClient {
      * @param key 验证参数,MD5(type + mobile + code)
      * @return Reply
      */
-    @GetMapping("/common/message/v1.0/codes/{key}/status?isCheck=true")
+    @GetMapping("/common/message/v1.0/codes/{key}/status?isCheck=false")
     String verifySmsCode(@PathVariable String key);
 }
