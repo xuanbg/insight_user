@@ -107,6 +107,14 @@ public interface ManageService {
     void removeUser(LoginInfo info, Long id);
 
     /**
+     * 查询符合条件的用户数量
+     *
+     * @param keyword 查询条件
+     * @return 用户数量
+     */
+    int getUserCount(String keyword);
+
+    /**
      * 获取日志列表
      *
      * @param search 查询实体类

@@ -339,6 +339,21 @@ public class ManageServiceImpl implements ManageService {
     }
 
     /**
+     * 查询符合条件的用户数量
+     *
+     * @param keyword 查询条件
+     * @return 用户数量
+     */
+    @Override
+    public int getUserCount(String keyword) {
+        if (Util.isEmpty(keyword)) {
+            throw new BusinessException("查询关键词不能为空");
+        }
+
+        return mapper.getUserCount(keyword);
+    }
+
+    /**
      * 获取日志列表
      *
      * @param search 查询实体类

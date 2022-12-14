@@ -230,4 +230,13 @@ public interface UserMapper {
      */
     @Delete("delete m from ibo_organize o join ibo_organize_member m on m.post_id = o.id and m.user_id = #{userId} where o.tenant_id = #{tenantId};")
     void removeOrganizeRelation(long tenantId, long userId);
+
+    /**
+     * 查询符合条件的用户数量
+     *
+     * @param keyword 查询条件
+     * @return 用户数量
+     */
+    @Select("select count(*) from ibu_user where is_invalid = 0 and (code = #{keyword} or account = #{keyword} or mobile = #{keyword});")
+    int getUserCount(String keyword);
 }

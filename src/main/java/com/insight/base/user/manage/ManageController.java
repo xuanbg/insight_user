@@ -192,6 +192,17 @@ public class ManageController {
     }
 
     /**
+     * 查询符合条件的用户数量
+     *
+     * @param keyword 查询条件
+     * @return 用户数量
+     */
+    @GetMapping("/v1.0/users/count")
+    public int getUserCount(@RequestParam String keyword) {
+        return service.getUserCount(keyword);
+    }
+
+    /**
      * 获取日志列表
      *
      * @param search 查询实体类
