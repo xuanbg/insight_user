@@ -59,7 +59,7 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public Reply getUsers(Search search) {
-        if (search.getTenantId() != null && search.getInvalid() && search.getKeyword() == null) {
+        if (search.getTenantId() != null && search.getKeyword() == null) {
             throw new BusinessException("查询关键词不能为空");
         }
 
