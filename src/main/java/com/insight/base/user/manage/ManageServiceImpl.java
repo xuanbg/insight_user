@@ -59,10 +59,6 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public Reply getUsers(Search search) {
-        if (search.getTenantId() != null && search.getKeyword() == null) {
-            throw new BusinessException("查询关键词不能为空");
-        }
-
         var orgId = search.getOwnerId();
         if (orgId != null) {
             List<TreeVo> orgList = client.getSubOrganizes(orgId).getListFromData(TreeVo.class);
