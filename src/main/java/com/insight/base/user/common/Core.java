@@ -49,7 +49,7 @@ public class Core {
         // 补完类型
         Integer type = user.getType();
         if (type == null) {
-            user.setType(0);
+            user.setType(1);
         }
 
         // 生成用户编码

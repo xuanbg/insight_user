@@ -26,14 +26,14 @@ public interface UserMapper {
      * @param search 查询实体类
      * @return 用户列表
      */
-    @Select("<script>select u.id, u.`type`, u.code, u.name, u.account, u.mobile, r.role_name, u.remark, u.is_builtin, u.is_invalid from ibu_user u " +
+    @Select("<script>select u.id, u.`type`, u.code, u.name, u.account, u.mobile, r.role_name, u.remark, u.builtin, u.invalid from ibu_user u " +
             "<if test = 'tenantId != null'>join ibt_tenant_user t on t.user_id = u.id and t.tenant_id = #{tenantId} </if>" +
             "<if test = 'longSet != null and longSet.size() > 0'>join ibo_organize_member m on m.user_id = u.id and m.post_id in " +
             "(<foreach collection = \"longSet\" item = \"item\" index = \"index\" separator = \",\">#{item}</foreach>)</if>" +
             "left join (select m.member_id, group_concat(r.name) as role_name from ibr_role r join ibr_role_member m on m.role_id = r.id " +
             "group by m.member_id) r on r.member_id = u.id where 0 = 0 " +
             "<if test = 'keyword != null'>and u.code = #{keyword} or u.account = #{keyword} or u.mobile = #{keyword} or u.name like concat('%',#{keyword},'%') </if>" +
-            "<if test = 'invalid != null'>and u.is_invalid = #{invalid} </if>" +
+            "<if test = 'invalid != null'>and u.invalid = #{invalid} </if>" +
             "</script>")
     List<UserListDto> getUsers(Search search);
 
@@ -44,7 +44,7 @@ public interface UserMapper {
      * @return 用户详情
      */
     @Results({@Result(property = "openId", column = "open_id", javaType = Map.class, typeHandler = JsonTypeHandler.class)})
-    @Select("select id, code, name, account, mobile, email, union_id, open_id, head_img, remark, is_builtin, is_invalid, creator, creator_id, created_time " +
+    @Select("select id, code, name, account, mobile, email, union_id, open_id, head_img, remark, builtin, invalid, creator, creator_id, created_time " +
             "from ibu_user where id = #{id};")
     UserVo getUser(Long id);
 
@@ -74,8 +74,8 @@ public interface UserMapper {
      *
      * @param user 用户DTO
      */
-    @Insert("insert ibu_user(id, `type`, code, name, account, mobile, email, union_id, password, head_img, remark, is_builtin, creator, creator_id, created_time) values " +
-            "(#{id}, #{type}, #{code}, #{name}, #{account}, #{mobile}, #{email}, #{unionId}, #{password}, #{headImg}, #{remark}, #{isBuiltin}, #{creator}, #{creatorId}, #{createdTime});")
+    @Insert("insert ibu_user(id, `type`, code, name, account, mobile, email, union_id, password, head_img, remark, builtin, creator, creator_id, created_time) values " +
+            "(#{id}, #{type}, #{code}, #{name}, #{account}, #{mobile}, #{email}, #{unionId}, #{password}, #{headImg}, #{remark}, #{builtin}, #{creator}, #{creatorId}, #{createdTime});")
     void addUser(UserDto user);
 
     /**
@@ -142,7 +142,7 @@ public interface UserMapper {
      * @param id     用户ID
      * @param status 禁用/启用状态
      */
-    @Update("update ibu_user set is_invalid = #{status} where id = #{id};")
+    @Update("update ibu_user set invalid = #{status} where id = #{id};")
     void updateStatus(Long id, boolean status);
 
     /**
@@ -161,7 +161,7 @@ public interface UserMapper {
      * @param search 查询关键词
      * @return 用户列表
      */
-    @Select("select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.is_builtin, u.is_invalid from ibu_user u " +
+    @Select("select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.builtin, u.invalid from ibu_user u " +
             "left join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} " +
             "where isnull(r.id) and (u.account = #{keyword} or u.mobile = #{keyword} or u.`name` like concat('%',#{keyword},'%'))")
     List<UserListDto> getOtherUsers(Search search);
@@ -237,6 +237,6 @@ public interface UserMapper {
      * @param keyword 查询条件
      * @return 用户数量
      */
-    @Select("select count(*) from ibu_user where is_invalid = 0 and (code = #{keyword} or account = #{keyword} or mobile = #{keyword});")
+    @Select("select count(*) from ibu_user where invalid = 0 and (code = #{keyword} or account = #{keyword} or mobile = #{keyword});")
     int getCount(String keyword);
 }
