@@ -252,7 +252,7 @@ public class UserServiceImpl implements UserService {
 
         // 验证用户
         var mobile = reply.getBeanFromData(String.class);
-        result = authClient.getCode(mobile);
+        result = authClient.getCode(new CodeDto(mobile));
         reply = Json.toBean(result, Reply.class);
         if (!reply.getSuccess()) {
             return reply;

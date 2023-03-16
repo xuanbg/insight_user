@@ -1,13 +1,12 @@
 package com.insight.base.user.common.client;
 
 import com.insight.base.user.common.config.FeignClientConfig;
+import com.insight.base.user.common.dto.CodeDto;
 import com.insight.base.user.common.dto.LoginDto;
 import com.insight.utils.pojo.base.Reply;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author 宣炳刚
@@ -20,11 +19,11 @@ public interface AuthClient {
     /**
      * 获取Code
      *
-     * @param account 用户登录账号
+     * @param dto CodeDTO
      * @return Reply
      */
-    @GetMapping("/base/auth/v1.0/tokens/codes")
-    String getCode(@RequestParam String account);
+    @PostMapping("/base/auth/v1.0/codes")
+    String getCode(@RequestBody CodeDto dto);
 
     /**
      * 获取Token
