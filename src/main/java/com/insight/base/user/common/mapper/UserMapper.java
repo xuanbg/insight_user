@@ -26,15 +26,18 @@ public interface UserMapper {
      * @param search 查询实体类
      * @return 用户列表
      */
-    @Select("<script>select u.id, u.`type`, u.code, u.name, u.account, u.mobile, r.role_name, u.remark, u.builtin, u.invalid from ibu_user u " +
-            "<if test = 'tenantId != null'>join ibt_tenant_user t on t.user_id = u.id and t.tenant_id = #{tenantId} </if>" +
-            "<if test = 'longSet != null and longSet.size() > 0'>join ibo_organize_member m on m.user_id = u.id and m.post_id in " +
-            "(<foreach collection = \"longSet\" item = \"item\" index = \"index\" separator = \",\">#{item}</foreach>)</if>" +
-            "left join (select m.member_id, group_concat(r.name) as role_name from ibr_role r join ibr_role_member m on m.role_id = r.id " +
-            "group by m.member_id) r on r.member_id = u.id where 0 = 0 " +
-            "<if test = 'keyword != null'>and u.code = #{keyword} or u.account = #{keyword} or u.mobile = #{keyword} or u.name like concat('%',#{keyword},'%') </if>" +
-            "<if test = 'invalid != null'>and u.invalid = #{invalid} </if>" +
-            "</script>")
+    @Select("""
+            <script>select u.id, u.`type`, u.code, u.name, u.account, u.mobile, u.email, r.role_name, u.remark,
+            u.builtin, u.invalid, u.created_time from ibu_user u
+            <if test = 'tenantId != null'>join ibt_tenant_user t on t.user_id = u.id and t.tenant_id = #{tenantId} </if>
+            <if test = 'longSet != null and longSet.size() > 0'>join ibo_organize_member m on m.user_id = u.id and m.post_id in
+            (<foreach collection = "longSet" item = "item" index = "index" separator = ",">#{item}</foreach>)</if>
+            left join (select m.member_id, group_concat(r.name) as role_name from ibr_role r join ibr_role_member m on m.role_id = r.id
+            group by m.member_id) r on r.member_id = u.id where 0 = 0
+            <if test = 'keyword != null'>and u.code = #{keyword} or u.account = #{keyword} or u.mobile = #{keyword} or u.name like concat('%',#{keyword},'%') </if>
+            <if test = 'invalid != null'>and u.invalid = #{invalid} </if>
+            </script>
+            """)
     List<UserListDto> getUsers(Search search);
 
     /**

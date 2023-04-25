@@ -65,9 +65,8 @@ public class ManageServiceImpl implements ManageService {
             search.setLongSet(orgList.stream().map(BaseVo::getId).toList());
         }
 
-        var page = PageHelper.startPage(search.getPageNum(), search.getPageSize())
-                .setOrderBy(search.getOrderBy()).doSelectPage(() -> mapper.getUsers(search));
-
+        var page = PageHelper.startPage(search.getPageNum(), search.getPageSize()).setOrderBy(search.getOrderBy())
+                .doSelectPage(() -> mapper.getUsers(search));
         var total = page.getTotal();
         return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
     }

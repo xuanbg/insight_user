@@ -2,6 +2,8 @@ package com.insight.base.user.common.dto;
 
 import com.insight.utils.pojo.base.BaseXo;
 
+import java.time.LocalDateTime;
+
 /**
  * @author 宣炳刚
  * @date 2019/10/31
@@ -13,6 +15,11 @@ public class UserListDto extends BaseXo {
      * 用户ID
      */
     private Long id;
+
+    /**
+     * 用户类型: 0.普通用户, 1.教师, 2.学生
+     */
+    private Integer type;
 
     /**
      * 用户编码
@@ -35,6 +42,11 @@ public class UserListDto extends BaseXo {
     private String mobile;
 
     /**
+     * 电子邮箱
+     */
+    private String email;
+
+    /**
      * 用户角色, 多个角色以逗号分割
      */
     private String roleName;
@@ -54,12 +66,25 @@ public class UserListDto extends BaseXo {
      */
     private Boolean isInvalid;
 
+    /**
+     * 创建时间
+     */
+    private LocalDateTime createdTime;
+
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public String getCode() {
@@ -94,6 +119,14 @@ public class UserListDto extends BaseXo {
         this.mobile = mobile;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getRoleName() {
         return roleName;
     }
@@ -124,5 +157,13 @@ public class UserListDto extends BaseXo {
 
     public void setInvalid(Boolean invalid) {
         isInvalid = invalid;
+    }
+
+    public LocalDateTime getCreatedTime() {
+        return createdTime;
+    }
+
+    public void setCreatedTime(LocalDateTime createdTime) {
+        this.createdTime = createdTime;
     }
 }
