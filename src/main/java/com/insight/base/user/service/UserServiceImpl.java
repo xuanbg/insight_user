@@ -111,22 +111,17 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateMobile(Long id, MobileDto dto) {
+        if (Util.isEmpty(dto.getMobile())){
+            throw new BusinessException("手机号不能为空");
+        }
+
         var user = mapper.getUser(id);
         if (user == null) {
             throw new BusinessException("ID不存在,未更新数据");
         }
 
         var mobile = dto.getMobile();
-        var oldMobile = user.getMobile();
-        if (mobile == null && oldMobile == null) {
-            return;
-        }
-
         if (mobile != null) {
-            if (oldMobile != null) {
-                throw new BusinessException("已绑定手机号,请先解除绑定");
-            }
-
             var count = mapper.matchUsers(id, mobile);
             if (count > 0) {
                 throw new BusinessException("手机号[" + mobile + "]已被使用");
@@ -141,8 +136,8 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(reply.getMessage());
         }
 
-        if (oldMobile != null && !oldMobile.isEmpty()) {
-            Redis.deleteKey("ID:" + oldMobile);
+        if (Util.isNotEmpty(user.getMobile())) {
+            Redis.deleteKey("ID:" + user.getMobile());
         }
 
         // 持久化数据
