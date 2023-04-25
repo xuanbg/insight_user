@@ -49,7 +49,7 @@ public class Core {
         // 补完类型
         Integer type = user.getType();
         if (type == null) {
-            user.setType(1);
+            user.setType(0);
         }
 
         // 生成用户编码
@@ -58,14 +58,12 @@ public class Core {
         user.setCode(code);
 
         // 补完账号
-        String account = user.getAccount();
-        if (account == null || account.isEmpty()) {
+        if (Util.isEmpty(user.getAccount())) {
             user.setAccount(Util.uuid());
         }
 
         // 补完密码
-        String password = user.getPassword();
-        if (password == null || password.isEmpty()) {
+        if (Util.isEmpty(user.getPassword())) {
             String pw = Util.md5(tenantId == null ? Util.uuid() : "123456");
             user.setPassword(pw);
         }
@@ -92,12 +90,12 @@ public class Core {
         }
 
         var orgId = user.getOrgId();
-        if (orgId != null){
+        if (orgId != null) {
             mapper.addOrgMember(userId, orgId);
         }
 
         var roleIds = user.getRoleIds();
-        if (roleIds == null || roleIds.isEmpty()){
+        if (roleIds == null || roleIds.isEmpty()) {
             return;
         }
 
@@ -118,14 +116,18 @@ public class Core {
             throw new BusinessException("账号[" + account + "]已被使用");
         }
 
-        count = mapper.matchUsers(userId, mobile);
-        if (count > 0) {
-            throw new BusinessException("手机号[" + mobile + "]已被使用");
+        if (Util.isNotEmpty(mobile)) {
+            count = mapper.matchUsers(userId, mobile);
+            if (count > 0) {
+                throw new BusinessException("手机号[" + mobile + "]已被使用");
+            }
         }
 
-        count = mapper.matchUsers(userId, email);
-        if (count > 0) {
-            throw new BusinessException("Email[" + email + "]已被使用");
+        if (Util.isNotEmpty(email)) {
+            count = mapper.matchUsers(userId, email);
+            if (count > 0) {
+                throw new BusinessException("Email[" + email + "]已被使用");
+            }
         }
     }
 
