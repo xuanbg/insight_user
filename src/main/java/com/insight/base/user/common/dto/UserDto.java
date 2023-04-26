@@ -12,11 +12,6 @@ import java.util.List;
 public class UserDto extends User {
 
     /**
-     * 租户ID
-     */
-    private Long tenantId;
-
-    /**
      * 用户所属组织机构ID
      */
     private Long orgId;
@@ -25,14 +20,6 @@ public class UserDto extends User {
      * 用户授权角色ID集合
      */
     private List<Long> roleIds;
-
-    public Long getTenantId() {
-        return tenantId;
-    }
-
-    public void setTenantId(Long tenantId) {
-        this.tenantId = tenantId;
-    }
 
     public Long getOrgId() {
         return orgId;
