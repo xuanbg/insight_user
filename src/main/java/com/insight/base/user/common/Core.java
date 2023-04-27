@@ -39,14 +39,16 @@ public class Core {
      */
     @Transactional
     public void addUser(UserDto user) {
+        if (mapper.userIsExisted(user.getAccount(), user.getMobile(), user.getEmail())) {
+            return;
+        }
+
         Long userId = user.getId();
         Long tenantId = user.getTenantId();
         if (userId == null) {
             userId = creator.nextId(3);
             user.setId(userId);
         }
-
-        matchUser(userId, user.getAccount(), user.getMobile(), user.getEmail());
 
         if (user.getType() == null) {
             user.setType(0);
