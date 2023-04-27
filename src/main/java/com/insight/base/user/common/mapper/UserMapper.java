@@ -117,7 +117,7 @@ public interface UserMapper {
     @Select("<script>select count(*) from ibu_user u " +
             "<if test = 'tenantId != null'>join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} </if>" +
             "where u.code = #{code};</script>")
-    int getUserCount(@Param("tenantId") Long tenantId, @Param("code") String code);
+    Boolean codeIsExisted(@Param("tenantId") Long tenantId, @Param("code") String code);
 
     /**
      * 匹配租户下的用户数

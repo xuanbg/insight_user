@@ -129,8 +129,7 @@ public class Core {
         String format = isTenant ? "#6" : "IU#8";
         while (true) {
             String code = Generator.newCode(format, group, !isTenant);
-            int count = mapper.getUserCount(tenantId, code);
-            if (count > 0) {
+            if (mapper.codeIsExisted(tenantId, code)) {
                 continue;
             }
 
