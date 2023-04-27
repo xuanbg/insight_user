@@ -1,8 +1,8 @@
 package com.insight.base.user.common.dto;
 
 import com.insight.utils.pojo.base.BaseXo;
+import jakarta.validation.constraints.NotEmpty;
 
-import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
 import java.util.Map;
 

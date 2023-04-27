@@ -73,6 +73,22 @@ public interface UserMapper {
     List<FuncPermitDto> getUserPermit(Long id);
 
     /**
+     * 匹配关键词的用户是否存在
+     *
+     * @param account 账号
+     * @param mobile  手机号
+     * @param email   电子邮箱
+     * @return 是否存在
+     */
+    @Select("""
+            select count(*) from ibu_user
+            where account = #{account} or mobile = #{account} or email = #{account}
+            or account = #{mobile} or mobile = #{mobile} or email = #{mobile}
+            or account = #{email} or mobile = #{email} or email = #{email};
+            """)
+    Boolean userIsExisted(String account, String mobile, String email);
+
+    /**
      * 新增用户
      *
      * @param user 用户DTO
@@ -82,14 +98,14 @@ public interface UserMapper {
     void addUser(UserDto user);
 
     /**
-     * 匹配关键词的用户数
+     * 匹配关键词的用户是否存在
      *
      * @param id  用户ID
      * @param key 查询关键词
-     * @return 用户数
+     * @return 是否存在
      */
     @Select("select count(*) from ibu_user where (account = #{key} or mobile = #{key} or email = #{key}) and id != #{id};")
-    int matchUsers(@Param("id") Long id, @Param("key") String key);
+    Boolean keyIsExisted(@Param("id") Long id, @Param("key") String key);
 
     /**
      * 获取指定租户下指定编码的用户数量

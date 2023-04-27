@@ -111,29 +111,24 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateMobile(Long id, MobileDto dto) {
-        if (Util.isEmpty(dto.getMobile())){
-            throw new BusinessException("手机号不能为空");
-        }
-
+        var mobile = dto.getMobile();
         var user = mapper.getUser(id);
         if (user == null) {
             throw new BusinessException("ID不存在,未更新数据");
         }
 
-        var mobile = dto.getMobile();
-        if (mobile != null) {
-            var count = mapper.matchUsers(id, mobile);
-            if (count > 0) {
+        if (Util.isNotEmpty(mobile)) {
+            if (mapper.keyIsExisted(id, mobile)) {
                 throw new BusinessException("手机号[" + mobile + "]已被使用");
             }
-        }
 
-        // 验证手机验证码
-        var key = dto.getKey();
-        var result = client.verifySmsCode(key);
-        var reply = Json.toBean(result, Reply.class);
-        if (!reply.getSuccess()) {
-            throw new BusinessException(reply.getMessage());
+            // 验证手机验证码
+            var key = dto.getKey();
+            var result = client.verifySmsCode(key);
+            var reply = Json.toBean(result, Reply.class);
+            if (!reply.getSuccess()) {
+                throw new BusinessException(reply.getMessage());
+            }
         }
 
         if (Util.isNotEmpty(user.getMobile())) {
@@ -158,8 +153,7 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("ID不存在,未更新数据");
         }
 
-        var count = mapper.matchUsers(id, email);
-        if (count > 0) {
+        if (Util.isNotEmpty(email) && mapper.keyIsExisted(id, email)) {
             throw new BusinessException("Email[" + email + "]已被使用");
         }
 
