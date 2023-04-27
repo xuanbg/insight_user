@@ -65,10 +65,11 @@ public class ManageServiceImpl implements ManageService {
             search.setLongSet(orgList.stream().map(BaseVo::getId).toList());
         }
 
-        var page = PageHelper.startPage(search.getPageNum(), search.getPageSize()).setOrderBy(search.getOrderBy())
-                .doSelectPage(() -> mapper.getUsers(search));
-        var total = page.getTotal();
-        return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
+        try (var page = PageHelper.startPage(search.getPageNum(), search.getPageSize()).setOrderBy(search.getOrderBy())
+                .doSelectPage(() -> mapper.getUsers(search))) {
+            var total = page.getTotal();
+            return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
+        }
     }
 
     /**
@@ -231,18 +232,7 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public void changeUserStatus(LoginInfo info, Long id, boolean status) {
-        UserVo user = mapper.getUser(id);
-        if (user == null) {
-            throw new BusinessException("ID不存在,未更新数据");
-        }
-
-        // 更新缓存
-        String key = "User:" + id;
-        if (Redis.hasKey(key)) {
-            Redis.setHash(key, "invalid", status);
-        }
-
-        mapper.updateStatus(id, status);
+        var user = core.changeUserStatus(id, status);
         LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, user);
     }
 
@@ -286,11 +276,11 @@ public class ManageServiceImpl implements ManageService {
             throw new BusinessException("查询关键词不能为空");
         }
 
-        var page = PageHelper.startPage(search.getPageNum(), search.getPageSize())
-                .setOrderBy(search.getOrderBy()).doSelectPage(() -> mapper.getOtherUsers(search));
-
-        var total = page.getTotal();
-        return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
+        try (var page = PageHelper.startPage(search.getPageNum(), search.getPageSize()).setOrderBy(search.getOrderBy())
+                .doSelectPage(() -> mapper.getOtherUsers(search))) {
+            var total = page.getTotal();
+            return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
+        }
     }
 
     /**

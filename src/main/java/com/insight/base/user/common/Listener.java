@@ -47,8 +47,30 @@ public class Listener {
             core.addUser(Json.toBean(body, UserDto.class));
         } catch (Exception ex) {
             logger.error("发生异常: {}", ex.getMessage());
-            channel.basicPublish(QueueConfig.DELAY_EXCHANGE_NAME, QueueConfig.DELAY_QUEUE_NAME, null, message.getBody());
-        }finally {
+            channel.basicPublish(QueueConfig.DELAY_EXCHANGE, QueueConfig.DELAY_USER_QUEUE, null, message.getBody());
+        } finally {
+            channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+        }
+    }
+
+    /**
+     * 从队列订阅新增用户消息
+     *
+     * @param channel Channel
+     * @param message Message
+     * @throws IOException IOException
+     */
+    @RabbitHandler
+    @RabbitListener(queues = "insight.user.status")
+    public void disableUser(Channel channel, Message message) throws IOException {
+        try {
+            String body = new String(message.getBody());
+            var user = Json.toBean(body, UserDto.class);
+            core.changeUserStatus(user.getId(), user.getInvalid());
+        } catch (Exception ex) {
+            logger.error("发生异常: {}", ex.getMessage());
+            channel.basicPublish(QueueConfig.DELAY_EXCHANGE, QueueConfig.DELAY_STATUS_QUEUE, null, message.getBody());
+        } finally {
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         }
     }

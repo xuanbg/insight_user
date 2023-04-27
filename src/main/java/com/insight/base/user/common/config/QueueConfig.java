@@ -1,6 +1,9 @@
 package com.insight.base.user.common.config;
 
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.QueueBuilder;
+import org.springframework.amqp.core.TopicExchange;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -16,41 +19,51 @@ public class QueueConfig {
     /**
      * exchange name
      */
-    private final static String TOPIC_EXCHANGE_NAME = "amq.topic";
-
-    /**
-     * process queue
-     */
-    private final static String PROCESS_QUEUE_NAME = "insight.user";
+    private final static String TOPIC_EXCHANGE = "amq.topic";
 
     /**
      * dlx exchange name
      */
-    public final static String DELAY_EXCHANGE_NAME = "amq.direct";
+    public final static String DELAY_EXCHANGE = "amq.direct";
+
+    /**
+     * process queue
+     */
+    private final static String PROCESS_USER_QUEUE = "insight.user";
 
     /**
      * delay queue
      */
-    public final static String DELAY_QUEUE_NAME = "dlx.insight.user";
+    public final static String DELAY_USER_QUEUE = "dlx.insight.user";
 
     /**
-     * dlx exchange
+     * process queue
+     */
+    private final static String PROCESS_STATUS_QUEUE = "insight.user.status";
+
+    /**
+     * delay queue
+     */
+    public final static String DELAY_STATUS_QUEUE = "dlx.insight.user.status";
+
+    /**
+     * user dlx exchange
      *
      * @return DirectExchange
      */
     @Bean
     public DirectExchange delayExchange() {
-        return new DirectExchange(DELAY_EXCHANGE_NAME);
+        return new DirectExchange(DELAY_EXCHANGE);
     }
 
     /**
-     * exchange
+     * user exchange
      *
      * @return DirectExchange
      */
     @Bean
     public TopicExchange topicExchange() {
-        return new TopicExchange(TOPIC_EXCHANGE_NAME);
+        return new TopicExchange(TOPIC_EXCHANGE);
     }
 
     /**
@@ -59,10 +72,10 @@ public class QueueConfig {
      * @return Queue
      */
     @Bean
-    public Queue delayQueue() {
-        return QueueBuilder.durable(DELAY_QUEUE_NAME)
-                .withArgument("x-dead-letter-exchange", TOPIC_EXCHANGE_NAME)
-                .withArgument("x-dead-letter-routing-key", PROCESS_QUEUE_NAME)
+    public Queue delayUserQueue() {
+        return QueueBuilder.durable(DELAY_USER_QUEUE)
+                .withArgument("x-dead-letter-exchange", TOPIC_EXCHANGE)
+                .withArgument("x-dead-letter-routing-key", PROCESS_USER_QUEUE)
                 .withArgument("x-message-ttl", QUEUE_EXPIRATION)
                 .build();
     }
@@ -73,31 +86,31 @@ public class QueueConfig {
      * @return Queue
      */
     @Bean
-    public Queue processQueue() {
-        return QueueBuilder.durable(PROCESS_QUEUE_NAME).build();
+    public Queue processUserQueue() {
+        return QueueBuilder.durable(PROCESS_USER_QUEUE).build();
     }
 
     /**
-     * 将延时交换机绑定到延时队列
+     * delay queue
      *
-     * @param delayQueue    Queue
-     * @param delayExchange DirectExchange
-     * @return Binding
+     * @return Queue
      */
     @Bean
-    public Binding dlxBinding(Queue delayQueue, DirectExchange delayExchange) {
-        return BindingBuilder.bind(delayQueue).to(delayExchange).with(DELAY_QUEUE_NAME);
+    public Queue delayStatusQueue() {
+        return QueueBuilder.durable(DELAY_STATUS_QUEUE)
+                .withArgument("x-dead-letter-exchange", TOPIC_EXCHANGE)
+                .withArgument("x-dead-letter-routing-key", PROCESS_STATUS_QUEUE)
+                .withArgument("x-message-ttl", QUEUE_EXPIRATION)
+                .build();
     }
 
     /**
-     * 将交换机绑定到实际消费队列
+     * process queue
      *
-     * @param processQueue  Queue
-     * @param topicExchange TopicExchange
-     * @return Binding
+     * @return Queue
      */
     @Bean
-    public Binding defaultBinding(Queue processQueue, TopicExchange topicExchange) {
-        return BindingBuilder.bind(processQueue).to(topicExchange).with(PROCESS_QUEUE_NAME);
+    public Queue processStatusQueue() {
+        return QueueBuilder.durable(PROCESS_STATUS_QUEUE).build();
     }
 }

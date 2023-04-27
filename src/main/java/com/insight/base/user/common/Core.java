@@ -1,8 +1,10 @@
 package com.insight.base.user.common;
 
 import com.insight.base.user.common.dto.UserDto;
+import com.insight.base.user.common.dto.UserVo;
 import com.insight.base.user.common.mapper.UserMapper;
 import com.insight.utils.Generator;
+import com.insight.utils.Redis;
 import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
 import com.insight.utils.pojo.base.BusinessException;
@@ -93,6 +95,29 @@ public class Core {
         if (Util.isNotEmpty(roleIds)) {
             mapper.addRoleMember(userId, roleIds);
         }
+    }
+
+    /**
+     * 改变用户禁用/启用状态
+     *
+     * @param id     用户ID
+     * @param status 禁用/启用状态
+     * @return 用户实体类
+     */
+    public UserVo changeUserStatus(Long id, boolean status) {
+        UserVo user = mapper.getUser(id);
+        if (user == null) {
+            return null;
+        }
+
+        // 更新缓存
+        String key = "User:" + id;
+        if (Redis.hasKey(key)) {
+            Redis.setHash(key, "invalid", status);
+        }
+
+        mapper.updateStatus(id, status);
+        return user;
     }
 
     /**
