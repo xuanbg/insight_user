@@ -43,10 +43,7 @@ public class Core {
     public Long processUser(UserDto user) {
         var data = mapper.getUser(user.getId());
         if (data == null) {
-            if (mapper.userIsExisted(user.getAccount(), user.getMobile(), user.getEmail())) {
-                return null;
-            }
-            return addUser(user);
+            return mapper.userIsExisted(user.getAccount(), user.getMobile(), user.getEmail()) ? null : addUser(user);
         } else {
             updateUser(user, data);
             return null;
