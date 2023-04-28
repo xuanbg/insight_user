@@ -66,6 +66,10 @@ public class Core {
         }
 
         if (!user.equals(data)) {
+            user.setAccount(data.getAccount());
+            user.setEmail(data.getEmail());
+            user.setHeadImg(data.getHeadImg());
+            user.setRemark(data.getRemark());
             mapper.updateUser(user);
         }
 
