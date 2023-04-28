@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * @author 宣炳刚
@@ -73,7 +74,7 @@ public class Core {
             mapper.updateUser(user);
         }
 
-        if (!user.getInvalid().equals(data.getInvalid())) {
+        if (!Objects.equals(user.getInvalid(), data.getInvalid())) {
             mapper.updateStatus(userId, user.getInvalid());
             String key = "User:" + userId;
             if (Redis.hasKey(key)) {
