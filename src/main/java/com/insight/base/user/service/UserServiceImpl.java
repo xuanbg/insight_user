@@ -7,7 +7,6 @@ import com.insight.base.user.common.dto.*;
 import com.insight.base.user.common.mapper.UserMapper;
 import com.insight.utils.Json;
 import com.insight.utils.Redis;
-import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
 import com.insight.utils.pojo.base.BusinessException;
 import com.insight.utils.pojo.base.Reply;
@@ -20,7 +19,6 @@ import com.insight.utils.pojo.user.User;
  */
 @org.springframework.stereotype.Service
 public class UserServiceImpl implements UserService {
-    private final SnowflakeCreator creator;
     private final UserMapper mapper;
     private final MessageClient client;
     private final AuthClient authClient;
@@ -29,14 +27,12 @@ public class UserServiceImpl implements UserService {
     /**
      * 构造方法
      *
-     * @param creator    雪花算法ID生成器
      * @param mapper     UserMapper
      * @param client     MessageClient
      * @param authClient AuthClient
      * @param core       Core
      */
-    public UserServiceImpl(SnowflakeCreator creator, UserMapper mapper, MessageClient client, AuthClient authClient, Core core) {
-        this.creator = creator;
+    public UserServiceImpl(UserMapper mapper, MessageClient client, AuthClient authClient, Core core) {
         this.mapper = mapper;
         this.client = client;
         this.authClient = authClient;
@@ -68,8 +64,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Long register(UserDto dto) {
         // 验证账号|手机号|邮箱是否已存在
-        var id = creator.nextId(3);
-        core.matchUser(id, dto.getAccount(), dto.getMobile(), dto.getEmail());
+        core.matchUser(0L, dto.getAccount(), dto.getMobile(), dto.getEmail());
 
         // 验证验证码是否正确
         var code = dto.getCode();
@@ -78,12 +73,9 @@ public class UserServiceImpl implements UserService {
             client.verifySmsCode(key);
         }
 
-        dto.setId(id);
         dto.setType(0);
         dto.setCode(null);
-        core.addUser(dto);
-
-        return id;
+        return core.processUser(dto);
     }
 
     /**

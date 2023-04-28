@@ -37,16 +37,6 @@ public class QueueConfig {
     public final static String DELAY_USER_QUEUE = "dlx.insight.user";
 
     /**
-     * process queue
-     */
-    private final static String PROCESS_STATUS_QUEUE = "insight.user.status";
-
-    /**
-     * delay queue
-     */
-    public final static String DELAY_STATUS_QUEUE = "dlx.insight.user.status";
-
-    /**
      * user dlx exchange
      *
      * @return DirectExchange
@@ -88,29 +78,5 @@ public class QueueConfig {
     @Bean
     public Queue processUserQueue() {
         return QueueBuilder.durable(PROCESS_USER_QUEUE).build();
-    }
-
-    /**
-     * delay queue
-     *
-     * @return Queue
-     */
-    @Bean
-    public Queue delayStatusQueue() {
-        return QueueBuilder.durable(DELAY_STATUS_QUEUE)
-                .withArgument("x-dead-letter-exchange", TOPIC_EXCHANGE)
-                .withArgument("x-dead-letter-routing-key", PROCESS_STATUS_QUEUE)
-                .withArgument("x-message-ttl", QUEUE_EXPIRATION)
-                .build();
-    }
-
-    /**
-     * process queue
-     *
-     * @return Queue
-     */
-    @Bean
-    public Queue processStatusQueue() {
-        return QueueBuilder.durable(PROCESS_STATUS_QUEUE).build();
     }
 }

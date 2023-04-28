@@ -11,7 +11,6 @@ import com.insight.base.user.common.dto.UserVo;
 import com.insight.base.user.common.mapper.UserMapper;
 import com.insight.utils.Redis;
 import com.insight.utils.ReplyHelper;
-import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
 import com.insight.utils.pojo.auth.LoginInfo;
 import com.insight.utils.pojo.base.*;
@@ -28,7 +27,6 @@ import java.util.List;
 @org.springframework.stereotype.Service
 public class ManageServiceImpl implements ManageService {
     private static final String BUSINESS = "用户管理";
-    private final SnowflakeCreator creator;
     private final UserMapper mapper;
     private final LogServiceClient logClient;
     private final OrgClient client;
@@ -37,14 +35,12 @@ public class ManageServiceImpl implements ManageService {
     /**
      * 构造方法
      *
-     * @param creator   雪花算法ID生成器
      * @param mapper    UserMapper
      * @param logClient LogServiceClient
      * @param client    Feign客户端
      * @param core      Core
      */
-    public ManageServiceImpl(SnowflakeCreator creator, UserMapper mapper, LogServiceClient logClient, OrgClient client, Core core) {
-        this.creator = creator;
+    public ManageServiceImpl(UserMapper mapper, LogServiceClient logClient, OrgClient client, Core core) {
         this.mapper = mapper;
         this.logClient = logClient;
         this.client = client;
@@ -113,16 +109,14 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public Long newUser(LoginInfo info, UserDto dto) {
-        Long id = creator.nextId(3);
-        core.matchUser(id, dto.getAccount(), dto.getMobile(), dto.getEmail());
+        core.matchUser(0L, dto.getAccount(), dto.getMobile(), dto.getEmail());
 
-        dto.setId(id);
         Long tenantId = info.getTenantId();
         dto.setTenantId(tenantId);
         dto.setType(tenantId == null ? 1 : 0);
         dto.setCreator(info.getUserName());
         dto.setCreatorId(info.getUserId());
-        core.addUser(dto);
+        var id = core.processUser(dto);
         LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, dto);
 
         return id;
@@ -232,7 +226,18 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public void changeUserStatus(LoginInfo info, Long id, boolean status) {
-        var user = core.changeUserStatus(id, status);
+        UserVo user = mapper.getUser(id);
+        if (user == null) {
+            return;
+        }
+
+        // 更新缓存
+        String key = "User:" + id;
+        if (Redis.hasKey(key)) {
+            Redis.setHash(key, "invalid", status);
+        }
+
+        mapper.updateStatus(id, status);
         LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, user);
     }
 

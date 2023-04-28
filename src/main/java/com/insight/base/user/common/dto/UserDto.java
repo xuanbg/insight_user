@@ -3,6 +3,7 @@ package com.insight.base.user.common.dto;
 import com.insight.utils.pojo.user.User;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author 宣炳刚
@@ -35,5 +36,13 @@ public class UserDto extends User {
 
     public void setRoleIds(List<Long> roleIds) {
         this.roleIds = roleIds;
+    }
+
+    public Boolean mobileEquals(String mobile){
+        return Objects.equals(getMobile(), mobile);
+    }
+
+    public Boolean equals(UserVo dto) {
+        return Objects.equals(getName(), dto.getName()) && mobileEquals(dto.getMobile());
     }
 }

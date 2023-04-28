@@ -35,18 +35,61 @@ public class Core {
     }
 
     /**
-     * 新增用户
+     * 用户处理逻辑
      *
      * @param user 用户DTO
      */
     @Transactional
-    public void addUser(UserDto user) {
-        if (mapper.userIsExisted(user.getAccount(), user.getMobile(), user.getEmail())) {
-            return;
+    public Long processUser(UserDto user) {
+        var data = mapper.getUser(user.getId());
+        if (data == null) {
+            if (mapper.userIsExisted(user.getAccount(), user.getMobile(), user.getEmail())) {
+                return null;
+            }
+            return addUser(user);
+        } else {
+            updateUser(user, data);
+            return null;
+        }
+    }
+
+    /**
+     * 更新用户信息
+     *
+     * @param user 用户数据
+     * @param data 库中数据
+     */
+    private void updateUser(UserDto user, UserVo data) {
+        var userId = user.getId();
+        var mobile = data.getMobile();
+        if (!user.mobileEquals(mobile)) {
+            if (Util.isNotEmpty(mobile)) {
+                Redis.deleteKey("ID:" + mobile);
+            }
         }
 
-        Long userId = user.getId();
-        Long tenantId = user.getTenantId();
+        if (!user.equals(data)) {
+            mapper.updateUser(user);
+        }
+
+        if (!user.getInvalid().equals(data.getInvalid())) {
+            mapper.updateStatus(userId, user.getInvalid());
+            String key = "User:" + userId;
+            if (Redis.hasKey(key)) {
+                Redis.setHash(key, "invalid", user.getInvalid());
+            }
+        }
+    }
+
+    /**
+     * 新增用户
+     *
+     * @param user 用户数据
+     * @return 用户ID
+     */
+    private Long addUser(UserDto user) {
+        var userId = user.getId();
+        var tenantId = user.getTenantId();
         if (userId == null) {
             userId = creator.nextId(3);
             user.setId(userId);
@@ -95,29 +138,8 @@ public class Core {
         if (Util.isNotEmpty(roleIds)) {
             mapper.addRoleMember(userId, roleIds);
         }
-    }
 
-    /**
-     * 改变用户禁用/启用状态
-     *
-     * @param id     用户ID
-     * @param status 禁用/启用状态
-     * @return 用户实体类
-     */
-    public UserVo changeUserStatus(Long id, boolean status) {
-        UserVo user = mapper.getUser(id);
-        if (user == null) {
-            return null;
-        }
-
-        // 更新缓存
-        String key = "User:" + id;
-        if (Redis.hasKey(key)) {
-            Redis.setHash(key, "invalid", status);
-        }
-
-        mapper.updateStatus(id, status);
-        return user;
+        return user.getId();
     }
 
     /**
