@@ -1,9 +1,6 @@
 package com.insight.base.user.service;
 
-import com.insight.base.user.common.dto.MobileDto;
-import com.insight.base.user.common.dto.PasswordDto;
-import com.insight.base.user.common.dto.UserDto;
-import com.insight.base.user.common.dto.UserVo;
+import com.insight.base.user.common.dto.*;
 import com.insight.utils.Json;
 import com.insight.utils.pojo.auth.LoginInfo;
 import com.insight.utils.pojo.base.BusinessException;
@@ -67,7 +64,7 @@ public class UserController {
         }
 
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
-         service.updateName(loginInfo.getUserId(), name);
+        service.updateName(loginInfo.getUserId(), name);
     }
 
     /**
@@ -80,7 +77,7 @@ public class UserController {
     public void updateMobile(@RequestHeader("loginInfo") String info, @RequestBody MobileDto dto) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-         service.updateMobile(loginInfo.getUserId(), dto);
+        service.updateMobile(loginInfo.getUserId(), dto);
     }
 
     /**
@@ -93,7 +90,21 @@ public class UserController {
     public void updateEmail(@RequestHeader("loginInfo") String info, @RequestBody String email) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-         service.updateEmail(loginInfo.getUserId(), email);
+        service.updateEmail(loginInfo.getUserId(), email);
+    }
+
+    /**
+     * 更新用户微信号
+     *
+     * @param info 用户关键信息
+     * @param dto  微信DTO
+     */
+    @PutMapping("/v1.0/users/wechat")
+    public void updateUnionId(@RequestHeader("loginInfo") String info, @RequestBody WechatDto dto) {
+        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+
+        dto.setId(loginInfo.getUserId());
+        service.updateUnionId(dto);
     }
 
     /**
@@ -106,7 +117,7 @@ public class UserController {
     public void updateHeadImg(@RequestHeader("loginInfo") String info, @RequestBody String headImg) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-         service.updateHeadImg(loginInfo.getUserId(), headImg);
+        service.updateHeadImg(loginInfo.getUserId(), headImg);
     }
 
     /**
@@ -119,7 +130,7 @@ public class UserController {
     public void updateRemark(@RequestHeader("loginInfo") String info, @RequestBody String remark) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-         service.updateRemark(loginInfo.getUserId(), remark);
+        service.updateRemark(loginInfo.getUserId(), remark);
     }
 
     /**
@@ -133,7 +144,7 @@ public class UserController {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
         dto.setId(loginInfo.getUserId());
 
-         service.changePassword(dto);
+        service.changePassword(dto);
     }
 
     /**
@@ -158,7 +169,7 @@ public class UserController {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
         dto.setId(loginInfo.getUserId());
 
-         service.setPayPassword(dto);
+        service.setPayPassword(dto);
     }
 
     /**
@@ -171,6 +182,6 @@ public class UserController {
     public void verifyPayPw(@RequestHeader("loginInfo") String info, @RequestParam String key) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
 
-         service.verifyPayPw(loginInfo.getUserId(), key);
+        service.verifyPayPw(loginInfo.getUserId(), key);
     }
 }

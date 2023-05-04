@@ -1,9 +1,6 @@
 package com.insight.base.user.service;
 
-import com.insight.base.user.common.dto.MobileDto;
-import com.insight.base.user.common.dto.PasswordDto;
-import com.insight.base.user.common.dto.UserDto;
-import com.insight.base.user.common.dto.UserVo;
+import com.insight.base.user.common.dto.*;
 import com.insight.utils.pojo.base.Reply;
 
 /**
@@ -52,6 +49,13 @@ public interface UserService {
      * @param email Email
      */
     void updateEmail(Long id, String email);
+
+    /**
+     * 更新用户微信号
+     *
+     * @param dto 微信DTO
+     */
+    void updateUnionId(WechatDto dto);
 
     /**
      * 更新用户头像

@@ -11,6 +11,7 @@ import com.insight.utils.Util;
 import com.insight.utils.pojo.base.BusinessException;
 import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.user.User;
+import com.insight.utils.wechat.WeChatHelper;
 
 /**
  * @author 宣炳刚
@@ -19,6 +20,7 @@ import com.insight.utils.pojo.user.User;
  */
 @org.springframework.stereotype.Service
 public class UserServiceImpl implements UserService {
+    private final WeChatHelper weChatHelper;
     private final UserMapper mapper;
     private final MessageClient client;
     private final AuthClient authClient;
@@ -27,12 +29,14 @@ public class UserServiceImpl implements UserService {
     /**
      * 构造方法
      *
-     * @param mapper     UserMapper
-     * @param client     MessageClient
-     * @param authClient AuthClient
-     * @param core       Core
+     * @param weChatHelper WeChatHelper
+     * @param mapper       UserMapper
+     * @param client       MessageClient
+     * @param authClient   AuthClient
+     * @param core         Core
      */
-    public UserServiceImpl(UserMapper mapper, MessageClient client, AuthClient authClient, Core core) {
+    public UserServiceImpl(WeChatHelper weChatHelper, UserMapper mapper, MessageClient client, AuthClient authClient, Core core) {
+        this.weChatHelper = weChatHelper;
         this.mapper = mapper;
         this.client = client;
         this.authClient = authClient;
@@ -155,6 +159,36 @@ public class UserServiceImpl implements UserService {
         }
 
         user.setEmail(email);
+        mapper.updateUser(user.convert(User.class));
+    }
+
+    /**
+     * 更新用户微信号
+     *
+     * @param dto 微信DTO
+     */
+    @Override
+    public void updateUnionId(WechatDto dto) {
+        var user = mapper.getUser(dto.getId());
+        if (user == null) {
+            throw new BusinessException("ID不存在,未更新数据");
+        }
+
+        var code = dto.getCode();
+        var wechatAppId = dto.getWeChatAppId();
+        var key = "WeChatApp:" + wechatAppId;
+        var secret = Redis.get(key, "secret");
+        var weChatUser = weChatHelper.getUserInfo(code, wechatAppId, secret);
+        if (weChatUser == null) {
+            throw new BusinessException("微信授权失败");
+        }
+
+        var unionId = weChatUser.getUnionid();
+        if (unionId == null || unionId.isEmpty()) {
+            throw new BusinessException("未取得微信用户的UnionID");
+        }
+
+        user.setUnionId(unionId);
         mapper.updateUser(user.convert(User.class));
     }
 
