@@ -137,9 +137,8 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("Email[" + email + "]已被使用");
         }
 
-        var oldEmail = data.getEmail();
-        if (oldEmail != null && !oldEmail.isEmpty()) {
-            Redis.deleteKey("ID:" + oldEmail);
+        if (Util.isNotEmpty(data.getEmail())) {
+            Redis.deleteKey("ID:" + data.getEmail());
         }
 
         data.setEmail(email);
@@ -153,7 +152,6 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateUnionId(WechatDto dto) {
-        var data = getUserById(dto.getId());
         var code = dto.getCode();
         var wechatAppId = dto.getWeChatAppId();
         var key = "WeChatApp:" + wechatAppId;
@@ -167,6 +165,17 @@ public class UserServiceImpl implements UserService {
         if (unionId == null || unionId.isEmpty()) {
             throw new BusinessException("未取得微信用户的UnionID");
         }
+
+        var userId = dto.getId();
+        var data = getUserById(userId);
+        if (Util.isNotEmpty(data.getUnionId())) {
+            Redis.deleteKey("ID:" + data.getUnionId());
+        }
+
+        key = "User:" + userId;
+        Redis.setHash(key, "unionId", unionId);
+        Redis.setHash(key, "nickname", wechatUser.getNickname());
+        Redis.set("ID:" + unionId, userId.toString());
 
         data.setNickname(wechatUser.getNickname());
         data.setUnionId(unionId);

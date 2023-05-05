@@ -61,7 +61,7 @@ public class GlobalExceptionHandler implements ResponseBodyAdvice<Object> {
         String msg = ex.getMessage();
         logger(LogLevel.INFO, "业务发生异常, " + msg);
 
-        return ReplyHelper.fail(msg);
+        return ReplyHelper.fail(ex.getCode(), msg);
     }
 
     /**
