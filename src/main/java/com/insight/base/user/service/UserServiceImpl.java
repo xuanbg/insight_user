@@ -119,6 +119,10 @@ public class UserServiceImpl implements UserService {
             Redis.deleteKey("ID:" + data.getMobile());
         }
 
+        var key = "User:" + id;
+        Redis.setHash(key, "mobile", mobile);
+        Redis.set("ID:" + mobile, id.toString());
+
         // 持久化数据
         data.setMobile(mobile);
         mapper.updateUser(data);
@@ -140,6 +144,10 @@ public class UserServiceImpl implements UserService {
         if (Util.isNotEmpty(data.getEmail())) {
             Redis.deleteKey("ID:" + data.getEmail());
         }
+
+        var key = "User:" + id;
+        Redis.setHash(key, "email", email);
+        Redis.set("ID:" + email, id.toString());
 
         data.setEmail(email);
         mapper.updateUser(data);
