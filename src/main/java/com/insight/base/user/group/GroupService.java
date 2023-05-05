@@ -1,7 +1,7 @@
 package com.insight.base.user.group;
 
 import com.insight.base.user.common.dto.GroupDto;
-import com.insight.base.user.common.dto.UserListDto;
+import com.insight.base.user.common.dto.UserVo;
 import com.insight.utils.pojo.auth.LoginInfo;
 import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.base.Search;
@@ -18,7 +18,7 @@ public interface GroupService {
     /**
      * 查询用户组列表
      *
-     * @param search   查询实体类
+     * @param search 查询实体类
      * @return Reply
      */
     Reply getGroups(Search search);
@@ -70,7 +70,7 @@ public interface GroupService {
      * @param id 用户组ID
      * @return Reply
      */
-    List<UserListDto> getOthers(Long id);
+    List<UserVo> getOthers(Long id);
 
     /**
      * 添加用户组成员

@@ -1,12 +1,11 @@
 package com.insight.base.user.common.mapper;
 
 import com.insight.base.user.common.dto.FuncPermitDto;
-import com.insight.base.user.common.dto.UserDto;
-import com.insight.base.user.common.dto.UserListDto;
 import com.insight.base.user.common.dto.UserVo;
 import com.insight.utils.pojo.base.JsonTypeHandler;
 import com.insight.utils.pojo.base.Search;
 import com.insight.utils.pojo.user.User;
+import com.insight.utils.pojo.user.UserDto;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -38,7 +37,7 @@ public interface UserMapper {
             <if test = 'invalid != null'>and u.invalid = #{invalid} </if>
             </script>
             """)
-    List<UserListDto> getUsers(Search search);
+    List<UserVo> getUsers(Search search);
 
     /**
      * 获取用户详情
@@ -47,9 +46,8 @@ public interface UserMapper {
      * @return 用户详情
      */
     @Results({@Result(property = "openId", column = "open_id", javaType = Map.class, typeHandler = JsonTypeHandler.class)})
-    @Select("select id, code, name, account, mobile, email, union_id, open_id, head_img, remark, builtin, invalid, creator, creator_id, created_time " +
-            "from ibu_user where id = #{id};")
-    UserVo getUser(Long id);
+    @Select("select * from ibu_user where id = #{id};")
+    User getUser(Long id);
 
     /**
      * 获取用户功能授权
@@ -93,8 +91,11 @@ public interface UserMapper {
      *
      * @param user 用户DTO
      */
-    @Insert("insert ibu_user(id, `type`, code, name, account, mobile, email, union_id, password, head_img, remark, builtin, creator, creator_id, created_time) values " +
-            "(#{id}, #{type}, #{code}, #{name}, #{account}, #{mobile}, #{email}, #{unionId}, #{password}, #{headImg}, #{remark}, #{builtin}, #{creator}, #{creatorId}, #{createdTime});")
+    @Insert("""
+            insert ibu_user(id, `type`, code, name, account, mobile, email, union_id, password, head_img, remark, builtin, creator, creator_id, created_time)
+            values (#{id}, #{type}, #{code}, #{name}, #{account}, #{mobile}, #{email}, #{unionId}, #{password}, #{headImg}, #{remark}, #{builtin},
+            #{creator}, #{creatorId}, #{createdTime});
+            """)
     void addUser(UserDto user);
 
     /**
@@ -135,8 +136,8 @@ public interface UserMapper {
      * @param user 用户DTO
      */
     @Update("""
-            update ibu_user set name = #{name}, account = #{account}, mobile = #{mobile}, email = #{email}, union_id = #{unionId},
-            head_img = #{headImg}, remark = #{remark} where id = #{id};
+            update ibu_user set name = #{name}, account = #{account}, mobile = #{mobile}, email = #{email},
+            nickname = #{nickname}, union_id = #{unionId}, head_img = #{headImg}, remark = #{remark} where id = #{id};
             """)
     void updateUser(User user);
 
@@ -186,7 +187,7 @@ public interface UserMapper {
     @Select("select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.builtin, u.invalid from ibu_user u " +
             "left join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} " +
             "where isnull(r.id) and (u.account = #{keyword} or u.mobile = #{keyword} or u.`name` like concat('%',#{keyword},'%'))")
-    List<UserListDto> getOtherUsers(Search search);
+    List<UserVo> getOtherUsers(Search search);
 
     /**
      * 新增租户-用户关系

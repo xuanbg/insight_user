@@ -14,27 +14,23 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class QueueConfig {
-    private final static int QUEUE_EXPIRATION = 1000 * 300;
-
-    /**
-     * exchange name
-     */
-    private final static String TOPIC_EXCHANGE = "amq.topic";
-
     /**
      * dlx exchange name
      */
     public final static String DELAY_EXCHANGE = "amq.direct";
-
-    /**
-     * process queue
-     */
-    private final static String PROCESS_USER_QUEUE = "insight.user";
-
     /**
      * delay queue
      */
     public final static String DELAY_USER_QUEUE = "dlx.insight.user";
+    private final static int QUEUE_EXPIRATION = 1000 * 300;
+    /**
+     * exchange name
+     */
+    private final static String TOPIC_EXCHANGE = "amq.topic";
+    /**
+     * process queue
+     */
+    private final static String PROCESS_USER_QUEUE = "insight.user";
 
     /**
      * user dlx exchange

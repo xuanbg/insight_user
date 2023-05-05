@@ -1,8 +1,8 @@
 package com.insight.base.user.common;
 
 import com.insight.base.user.common.config.QueueConfig;
-import com.insight.base.user.common.dto.UserDto;
 import com.insight.utils.Json;
+import com.insight.utils.pojo.user.UserDto;
 import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

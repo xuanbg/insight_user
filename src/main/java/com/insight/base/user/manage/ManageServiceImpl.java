@@ -6,15 +6,16 @@ import com.insight.base.user.common.client.LogClient;
 import com.insight.base.user.common.client.LogServiceClient;
 import com.insight.base.user.common.client.OrgClient;
 import com.insight.base.user.common.dto.FuncPermitDto;
-import com.insight.base.user.common.dto.UserDto;
 import com.insight.base.user.common.dto.UserVo;
 import com.insight.base.user.common.mapper.UserMapper;
-import com.insight.utils.Redis;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.Util;
 import com.insight.utils.pojo.auth.LoginInfo;
 import com.insight.utils.pojo.base.*;
 import com.insight.utils.pojo.message.OperateType;
+import com.insight.utils.pojo.user.User;
+import com.insight.utils.pojo.user.UserDto;
+import com.insight.utils.redis.Redis;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -76,12 +77,8 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public UserVo getUser(Long id) {
-        UserVo user = mapper.getUser(id);
-        if (user == null) {
-            throw new BusinessException("ID不存在,未读取数据");
-        }
-
-        return user;
+        var data = getUserById(id);
+        return data.convert(UserVo.class);
     }
 
     /**
@@ -92,11 +89,7 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public List<FuncPermitDto> getUserPermit(Long id) {
-        UserVo user = mapper.getUser(id);
-        if (user == null) {
-            throw new BusinessException("ID不存在,未读取数据");
-        }
-
+        var data = getUserById(id);
         return mapper.getUserPermit(id);
     }
 
@@ -114,8 +107,8 @@ public class ManageServiceImpl implements ManageService {
         Long tenantId = info.getTenantId();
         dto.setTenantId(tenantId);
         dto.setType(tenantId == null ? 1 : 0);
-        dto.setCreator(info.getUserName());
-        dto.setCreatorId(info.getUserId());
+        dto.setCreator(info.getName());
+        dto.setCreatorId(info.getId());
         var id = core.processUser(dto);
         LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, dto);
 
@@ -132,51 +125,48 @@ public class ManageServiceImpl implements ManageService {
     @Transactional
     public void editUser(LoginInfo info, UserDto dto) {
         Long id = dto.getId();
-        UserVo user = mapper.getUser(id);
-        if (user == null) {
-            throw new BusinessException("ID不存在,未更新数据");
-        }
+        var data = getUserById(id);
 
         String account = dto.getAccount();
         String mobile = dto.getMobile();
         String email = dto.getEmail();
         if (account == null) {
-            account = user.getAccount();
+            account = data.getAccount();
             dto.setAccount(account);
         }
 
         if (mobile == null) {
-            mobile = user.getMobile();
+            mobile = data.getMobile();
             dto.setMobile(mobile);
         }
 
         if (email == null) {
-            email = user.getEmail();
+            email = data.getEmail();
             dto.setEmail(email);
         }
 
         if (dto.getHeadImg() == null) {
-            dto.setHeadImg(user.getHeadImg());
+            dto.setHeadImg(data.getHeadImg());
         }
 
         if (dto.getRemark() == null) {
-            dto.setRemark(user.getRemark());
+            dto.setRemark(data.getRemark());
         }
 
         core.matchUser(id, account, mobile, email);
 
         // 清理失效缓存数据
-        String oldAccount = user.getAccount();
+        String oldAccount = data.getAccount();
         if (!account.equals(oldAccount)) {
             Redis.deleteKey("ID:" + oldAccount);
         }
 
-        String oldMobile = user.getMobile();
+        String oldMobile = data.getMobile();
         if (oldMobile != null && !oldMobile.isEmpty()) {
             Redis.deleteKey("ID:" + oldMobile);
         }
 
-        String oldEmail = user.getEmail();
+        String oldEmail = data.getEmail();
         if (oldEmail != null && !oldEmail.isEmpty()) {
             Redis.deleteKey("ID:" + oldEmail);
         }
@@ -187,7 +177,7 @@ public class ManageServiceImpl implements ManageService {
             mapper.addRoleMember(id, roleIds);
         }
 
-        mapper.updateUser(dto);
+        mapper.updateUser(dto.convert(User.class));
         LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, dto);
     }
 
@@ -199,22 +189,19 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public void deleteUser(LoginInfo info, Long id) {
-        UserVo user = mapper.getUser(id);
-        if (user == null) {
-            throw new BusinessException("ID不存在,未删除数据");
-        }
+        var data = getUserById(id);
 
         // 清理缓存
-        Redis.deleteKey("ID:" + user.getAccount());
-        Redis.deleteKey("ID:" + user.getMobile());
-        Redis.deleteKey("ID:" + user.getEmail());
-        Redis.deleteKey("ID:" + user.getUnionId());
+        Redis.deleteKey("ID:" + data.getAccount());
+        Redis.deleteKey("ID:" + data.getMobile());
+        Redis.deleteKey("ID:" + data.getEmail());
+        Redis.deleteKey("ID:" + data.getUnionId());
         Redis.deleteKey("User:" + id);
         Redis.deleteKey("UserToken:" + id);
 
         // 删除数据
         mapper.deleteUser(id);
-        LogClient.writeLog(info, BUSINESS, OperateType.DELETE, id, user);
+        LogClient.writeLog(info, BUSINESS, OperateType.DELETE, id, data);
     }
 
     /**
@@ -226,7 +213,7 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public void changeUserStatus(LoginInfo info, Long id, boolean status) {
-        UserVo user = mapper.getUser(id);
+        var user = mapper.getUser(id);
         if (user == null) {
             return;
         }
@@ -249,11 +236,7 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public void resetPassword(LoginInfo info, Long id) {
-        UserVo user = mapper.getUser(id);
-        if (user == null) {
-            throw new BusinessException("ID不存在,未更新数据");
-        }
-
+        var data = getUserById(id);
         var password = Util.md5("123456");
         mapper.updatePassword(id, password);
         String key = "User:" + id;
@@ -261,7 +244,7 @@ public class ManageServiceImpl implements ManageService {
             Redis.setHash(key, "password", password);
         }
 
-        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, user);
+        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, data);
     }
 
     /**
@@ -301,11 +284,7 @@ public class ManageServiceImpl implements ManageService {
             throw new BusinessException("租户ID不存在,请以租户身份登录");
         }
 
-        UserVo user = mapper.getUser(id);
-        if (user == null) {
-            throw new BusinessException("ID不存在,未更新数据");
-        }
-
+        var data = getUserById(id);
         int count = mapper.matchRelation(tenantId, id);
         if (count == 0) {
             mapper.addRelation(tenantId, id);
@@ -322,6 +301,7 @@ public class ManageServiceImpl implements ManageService {
     @Transactional
     public void removeUser(LoginInfo info, Long id) {
         Long tenantId = info.getTenantId();
+        var data = getUserById(id);
         mapper.removeRelation(tenantId, id);
         mapper.removeGroupRelation(tenantId, id);
         mapper.removeOrganizeRelation(tenantId, id);
@@ -363,5 +343,20 @@ public class ManageServiceImpl implements ManageService {
     @Override
     public Reply getUserLog(Long id) {
         return logClient.getLog(id);
+    }
+
+    /**
+     * 根据ID获取用户
+     *
+     * @param id 用户ID
+     * @return 用户
+     */
+    private User getUserById(Long id) {
+        var user = mapper.getUser(id);
+        if (user == null) {
+            throw new BusinessException("指定的用户不存在");
+        }
+
+        return user;
     }
 }

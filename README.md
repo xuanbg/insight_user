@@ -9,32 +9,32 @@
 ## 目录
 
 - [概述](#概述)
-  - [主要功能](#主要功能)
-  - [通讯方式](#通讯方式)
+    - [主要功能](#主要功能)
+    - [通讯方式](#通讯方式)
 - [用户管理](#用户管理)
-  - [查询用户列表](#查询用户列表)
-  - [获取用户详情](#获取用户详情)
-  - [新增用户](#新增用户)
-  - [编辑用户](#编辑用户)
-  - [删除用户](#删除用户)
-  - [禁用用户](#禁用用户)
-  - [启用用户](#启用用户)
-  - [重置用户密码](#重置用户密码)
-  - [邀请用户](#邀请用户)
-  - [获取日志列表](#获取日志列表)
-  - [获取日志详情](#获取日志详情)
+    - [查询用户列表](#查询用户列表)
+    - [获取用户详情](#获取用户详情)
+    - [新增用户](#新增用户)
+    - [编辑用户](#编辑用户)
+    - [删除用户](#删除用户)
+    - [禁用用户](#禁用用户)
+    - [启用用户](#启用用户)
+    - [重置用户密码](#重置用户密码)
+    - [邀请用户](#邀请用户)
+    - [获取日志列表](#获取日志列表)
+    - [获取日志详情](#获取日志详情)
 - [ToC模块](#ToC模块)
-  - [注册用户](#注册用户)
-  - [获取我的详情](#获取我的详情)
-  - [更新昵称](#更新昵称)
-  - [更新手机号](#更新手机号)
-  - [更新Email](#更新Email)
-  - [更新头像](#更新头像)
-  - [更新备注](#更新备注)
-  - [修改密码](#修改密码)
-  - [重置密码](#重置密码)
-  - [设置支付密码](#设置支付密码)
-  - [验证支付密码](#验证支付密码)
+    - [注册用户](#注册用户)
+    - [获取我的详情](#获取我的详情)
+    - [更新昵称](#更新昵称)
+    - [更新手机号](#更新手机号)
+    - [更新Email](#更新Email)
+    - [更新头像](#更新头像)
+    - [更新备注](#更新备注)
+    - [修改密码](#修改密码)
+    - [重置密码](#重置密码)
+    - [设置支付密码](#设置支付密码)
+    - [验证支付密码](#验证支付密码)
 - [DTO类型说明](#DTO类型说明)
 
 ## 概述
@@ -48,16 +48,18 @@ Insight 用户服务是 Insight 基础服务的组成部分之一，提供用户
 
 ### 通讯方式
 
-接口支持 **HTTP/HTTPS** 协议的 **GET/POST/PUT/DELETE** 方法，支持 **URL Params** 、 **Path Variable** 或 **BODY** 传递接口参数。如使用 **BODY** 传参，则需使用 **Json** 格式的请求参数。接口 **/URL** 区分大小写，请求以及返回都使用 **UTF-8** 字符集进行编码，接口返回的数据封装为统一的 **Json** 格式。格式详见：[Reply数据类型](#Reply)。
+接口支持 **HTTP/HTTPS** 协议的 **GET/POST/PUT/DELETE** 方法，支持 **URL Params** 、 **Path Variable** 或 **BODY**
+传递接口参数。如使用 **BODY** 传参，则需使用 **Json** 格式的请求参数。接口 **/URL** 区分大小写，请求以及返回都使用 **UTF-8**
+字符集进行编码，接口返回的数据封装为统一的 **Json** 格式。格式详见：[Reply数据类型](#Reply)。
 
->注：文档中所列举的类型皆为 **Java** 语言的数据类型，其它编程语言的的数据类型请自行对应。
+> 注：文档中所列举的类型皆为 **Java** 语言的数据类型，其它编程语言的的数据类型请自行对应。
 
 建议在HTTP请求头中设置以下参数：
 
-|参数名|参数值|
-| ------------ | ------------ |
-|Accept|application/json|
-|Content-Type|application/json|
+| 参数名          | 参数值              |
+|--------------|------------------|
+| Accept       | application/json |
+| Content-Type | application/json |
 
 ## 用户管理
 
@@ -71,25 +73,25 @@ Insight 用户服务是 Insight 基础服务的组成部分之一，提供用户
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|keyword|否|查询关键词,如查询全部用户,则必须制定查询关键词|
-|Integer|page|否|分页页码|
-|Integer|size|否|每页记录数|
-|Boolean|all|是|是否查询全部用户,如为false,则只查询租户关联的用户.平台管理端此参数为false|
+| 类型      | 属性      | 是否必需 | 属性说明                                        |
+|---------|---------|------|---------------------------------------------|
+| String  | keyword | 否    | 查询关键词,如查询全部用户,则必须制定查询关键词                    |
+| Integer | page    | 否    | 分页页码                                        |
+| Integer | size    | 否    | 每页记录数                                       |
+| Boolean | all     | 是    | 是否查询全部用户,如为false,则只查询租户关联的用户.平台管理端此参数为false |
 
 接口返回数据类型：
 
-|类型|属性|属性说明|
-| ------------ | ------------ | ------------ |
-|String|id|用户ID|
-|String|code|用户编码|
-|String|name|姓名/昵称|
-|String|account|登录账号|
-|String|mobile|手机号|
-|String|remark|备注|
-|Boolean|isBuiltin|是否内置|
-|Boolean|isInvalid|是否失效|
+| 类型      | 属性        | 属性说明  |
+|---------|-----------|-------|
+| String  | id        | 用户ID  |
+| String  | code      | 用户编码  |
+| String  | name      | 姓名/昵称 |
+| String  | account   | 登录账号  |
+| String  | mobile    | 手机号   |
+| String  | remark    | 备注    |
+| Boolean | isBuiltin | 是否内置  |
+| Boolean | isInvalid | 是否失效  |
 
 请求示例：
 
@@ -146,28 +148,28 @@ curl "http://192.168.236.8:6200/base/user/manage/v1.0/users?all=false" \
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|id|是|用户ID|
+| 类型     | 属性 | 是否必需 | 属性说明 |
+|--------|----|------|------|
+| String | id | 是    | 用户ID |
 
 接口返回数据类型：
 
-|类型|属性|属性说明|
-| ------------ | ------------ | ------------ |
-|String|id|用户ID|
-|String|code|用户编码|
-|String|name|姓名/昵称|
-|String|account|登录账号|
-|String|mobile|手机号|
-|String|unionId|微信UnionID|
-|Map|openId|关联微信OpenID|
-|String|headImg|头像URL|
-|String|remark|备注|
-|Boolean|isBuiltin|是否内置|
-|Boolean|isInvalid|是否失效|
-|String|creator|创建人|
-|String|creatorId|创建人ID|
-|Date|createdTime|创建时间|
+| 类型      | 属性          | 属性说明       |
+|---------|-------------|------------|
+| String  | id          | 用户ID       |
+| String  | code        | 用户编码       |
+| String  | name        | 姓名/昵称      |
+| String  | account     | 登录账号       |
+| String  | mobile      | 手机号        |
+| String  | unionId     | 微信UnionID  |
+| Map     | openId      | 关联微信OpenID |
+| String  | headImg     | 头像URL      |
+| String  | remark      | 备注         |
+| Boolean | isBuiltin   | 是否内置       |
+| Boolean | isInvalid   | 是否失效       |
+| String  | creator     | 创建人        |
+| String  | creatorId   | 创建人ID      |
+| Date    | createdTime | 创建时间       |
 
 请求示例：
 
@@ -219,15 +221,15 @@ curl "http://192.168.236.8:6200/base/user/manage/v1.0/users/815ee690d6a443cb938d
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|Long|tenantId|否|租户ID(学校ID)|
-|String|name|是|姓名/昵称|
-|String|account|是|登录账号|
-|String|password|是|登录密码(MD5)|
-|String|mobile|否|手机号|
-|String|headImg|否|头像URL|
-|String|remark|否|备注|
+| 类型     | 属性       | 是否必需 | 属性说明       |
+|--------|----------|------|------------|
+| Long   | tenantId | 否    | 租户ID(学校ID) |
+| String | name     | 是    | 姓名/昵称      |
+| String | account  | 是    | 登录账号       |
+| String | password | 是    | 登录密码(MD5)  |
+| String | mobile   | 否    | 手机号        |
+| String | headImg  | 否    | 头像URL      |
+| String | remark   | 否    | 备注         |
 
 请求示例：
 
@@ -268,14 +270,14 @@ curl -X "POST" "http://192.168.236.8:6200/base/user/manage/v1.0/users" \
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|name|是|姓名/昵称|
-|String|account|是|登录账号|
-|String|mobile|否|手机号|
-|String|email|否|邮箱|
-|String|headImg|否|头像URL|
-|String|remark|否|备注|
+| 类型     | 属性      | 是否必需 | 属性说明  |
+|--------|---------|------|-------|
+| String | name    | 是    | 姓名/昵称 |
+| String | account | 是    | 登录账号  |
+| String | mobile  | 否    | 手机号   |
+| String | email   | 否    | 邮箱    |
+| String | headImg | 否    | 头像URL |
+| String | remark  | 否    | 备注    |
 
 请求示例：
 
@@ -318,9 +320,9 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users/299b7d142d6
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|-|是|用户ID|
+| 类型     | 属性 | 是否必需 | 属性说明 |
+|--------|----|------|------|
+| String | -  | 是    | 用户ID |
 
 请求示例：
 
@@ -356,9 +358,9 @@ curl -X "DELETE" "http://192.168.236.8:6200/base/user/manage/v1.0/users/299b7d14
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|-|是|用户ID|
+| 类型     | 属性 | 是否必需 | 属性说明 |
+|--------|----|------|------|
+| String | -  | 是    | 用户ID |
 
 请求示例：
 
@@ -394,9 +396,9 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users/299b7d142d6
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|-|是|用户ID|
+| 类型     | 属性 | 是否必需 | 属性说明 |
+|--------|----|------|------|
+| String | -  | 是    | 用户ID |
 
 请求示例：
 
@@ -432,10 +434,10 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users/299b7d142d6
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|id|是|用户ID|
-|String|password|否|登录密码(MD5),如未设置登录密码,则自动使用默认密码(123456)|
+| 类型     | 属性       | 是否必需 | 属性说明                                 |
+|--------|----------|------|--------------------------------------|
+| String | id       | 是    | 用户ID                                 |
+| String | password | 否    | 登录密码(MD5),如未设置登录密码,则自动使用默认密码(123456) |
 
 请求示例：
 
@@ -471,9 +473,9 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/manage/v1.0/users/299b7d142d6
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|-|是|用户ID|
+| 类型     | 属性 | 是否必需 | 属性说明 |
+|--------|----|------|------|
+| String | -  | 是    | 用户ID |
 
 请求示例：
 
@@ -509,23 +511,23 @@ curl -X "POST" "http://192.168.236.8:6200/base/user/manage/v1.0/users/299b7d142d
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|keyword|否|查询关键词|
-|Integer|page|否|分页页码|
-|Integer|size|否|每页记录数|
+| 类型      | 属性      | 是否必需 | 属性说明  |
+|---------|---------|------|-------|
+| String  | keyword | 否    | 查询关键词 |
+| Integer | page    | 否    | 分页页码  |
+| Integer | size    | 否    | 每页记录数 |
 
 接口返回数据类型：
 
-|类型|属性|属性说明|
-| ------------ | ------------ | ------------ |
-|String|id|日志ID|
-|String|type|操作类型|
-|String|business|业务名称|
-|String|businessId|业务ID|
-|String|creator|创建人|
-|String|creatorId|创建人ID|
-|Date|createdTime|创建时间|
+| 类型     | 属性          | 属性说明  |
+|--------|-------------|-------|
+| String | id          | 日志ID  |
+| String | type        | 操作类型  |
+| String | business    | 业务名称  |
+| String | businessId  | 业务ID  |
+| String | creator     | 创建人   |
+| String | creatorId   | 创建人ID |
+| Date   | createdTime | 创建时间  |
 
 请求示例：
 
@@ -573,22 +575,22 @@ curl "http://192.168.236.8:6200/base/user/manage/v1.0/users/logs?keyword=insert"
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|id|是|日志ID|
+| 类型     | 属性 | 是否必需 | 属性说明 |
+|--------|----|------|------|
+| String | id | 是    | 日志ID |
 
 接口返回数据类型：
 
-|类型|属性|属性说明|
-| ------------ | ------------ | ------------ |
-|String|id|日志ID|
-|String|type|操作类型|
-|String|business|业务名称|
-|String|businessId|业务ID|
-|Object|content|日志内容|
-|String|creator|创建人|
-|String|creatorId|创建人ID|
-|Date|createdTime|创建时间|
+| 类型     | 属性          | 属性说明  |
+|--------|-------------|-------|
+| String | id          | 日志ID  |
+| String | type        | 操作类型  |
+| String | business    | 业务名称  |
+| String | businessId  | 业务ID  |
+| Object | content     | 日志内容  |
+| String | creator     | 创建人   |
+| String | creatorId   | 创建人ID |
+| Date   | createdTime | 创建时间  |
 
 请求示例：
 
@@ -653,14 +655,14 @@ curl "http://192.168.236.8:6200/base/user/manage/v1.0/users/logs/b0c781a91ed448d
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|name|是|姓名/昵称|
-|String|account|否|登录账号,如登录账号为空则手机号不可为空|
-|String|password|是|登录密码(MD5)|
-|String|mobile|否|手机号,如手机号为空则登录账号不可为空|
-|String|headImg|否|头像URL|
-|String|remark|否|备注|
+| 类型     | 属性       | 是否必需 | 属性说明                 |
+|--------|----------|------|----------------------|
+| String | name     | 是    | 姓名/昵称                |
+| String | account  | 否    | 登录账号,如登录账号为空则手机号不可为空 |
+| String | password | 是    | 登录密码(MD5)            |
+| String | mobile   | 否    | 手机号,如手机号为空则登录账号不可为空  |
+| String | headImg  | 否    | 头像URL                |
+| String | remark   | 否    | 备注                   |
 
 请求示例：
 
@@ -701,22 +703,22 @@ curl -X "POST" "http://192.168.236.8:6200/base/user/v1.0/users" \
 
 接口返回数据类型：
 
-|类型|属性|属性说明|
-| ------------ | ------------ | ------------ |
-|String|id|用户ID|
-|String|code|用户编码|
-|String|name|姓名/昵称|
-|String|account|登录账号|
-|String|mobile|手机号|
-|String|unionId|微信UnionID|
-|Map|openId|关联微信OpenID|
-|String|headImg|头像URL|
-|String|remark|备注|
-|Boolean|isBuiltin|是否内置|
-|Boolean|isInvalid|是否失效|
-|String|creator|创建人|
-|String|creatorId|创建人ID|
-|Date|createdTime|创建时间|
+| 类型      | 属性          | 属性说明       |
+|---------|-------------|------------|
+| String  | id          | 用户ID       |
+| String  | code        | 用户编码       |
+| String  | name        | 姓名/昵称      |
+| String  | account     | 登录账号       |
+| String  | mobile      | 手机号        |
+| String  | unionId     | 微信UnionID  |
+| Map     | openId      | 关联微信OpenID |
+| String  | headImg     | 头像URL      |
+| String  | remark      | 备注         |
+| Boolean | isBuiltin   | 是否内置       |
+| Boolean | isInvalid   | 是否失效       |
+| String  | creator     | 创建人        |
+| String  | creatorId   | 创建人ID      |
+| Date    | createdTime | 创建时间       |
 
 请求示例：
 
@@ -768,9 +770,9 @@ curl "http://192.168.236.8:6200/base/user/v1.0/users/myself" \
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|-|是|姓名/昵称|
+| 类型     | 属性 | 是否必需 | 属性说明  |
+|--------|----|------|-------|
+| String | -  | 是    | 姓名/昵称 |
 
 请求示例：
 
@@ -807,10 +809,10 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/v1.0/users/name" \
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|key|是|验证参数,MD5(2 + 绑定手机号 + 短信验证码)|
-|String|mobile|否|手机号,解除绑定时手机号为空|
+| 类型     | 属性     | 是否必需 | 属性说明                        |
+|--------|--------|------|-----------------------------|
+| String | key    | 是    | 验证参数,MD5(2 + 绑定手机号 + 短信验证码) |
+| String | mobile | 否    | 手机号,解除绑定时手机号为空              |
 
 请求示例：
 
@@ -850,9 +852,9 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/v1.0/users/mobile" \
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|-|是|Email|
+| 类型     | 属性 | 是否必需 | 属性说明  |
+|--------|----|------|-------|
+| String | -  | 是    | Email |
 
 请求示例：
 
@@ -889,9 +891,9 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/v1.0/users/email" \
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|-|是|头像URL|
+| 类型     | 属性 | 是否必需 | 属性说明  |
+|--------|----|------|-------|
+| String | -  | 是    | 头像URL |
 
 请求示例：
 
@@ -928,9 +930,9 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/v1.0/users/head" \
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|-|是|备注信息|
+| 类型     | 属性 | 是否必需 | 属性说明 |
+|--------|----|------|------|
+| String | -  | 是    | 备注信息 |
 
 请求示例：
 
@@ -967,10 +969,10 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/v1.0/users/remark" \
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|old|是|原密码(MD5)|
-|String|password|是|新密码(MD5)|
+| 类型     | 属性       | 是否必需 | 属性说明     |
+|--------|----------|------|----------|
+| String | old      | 是    | 原密码(MD5) |
+| String | password | 是    | 新密码(MD5) |
 
 请求示例：
 
@@ -1010,22 +1012,22 @@ curl -X "PUT" "http://192.168.236.8:6200/base/user/v1.0/users/password" \
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|appId|是|应用ID|
-|String|tenantId|否|租户ID|
-|String|key|是|验证参数,MD5(2 + 绑定手机号 + 短信验证码)|
-|String|password|是|密码(MD5)|
+| 类型     | 属性       | 是否必需 | 属性说明                        |
+|--------|----------|------|-----------------------------|
+| String | appId    | 是    | 应用ID                        |
+| String | tenantId | 否    | 租户ID                        |
+| String | key      | 是    | 验证参数,MD5(2 + 绑定手机号 + 短信验证码) |
+| String | password | 是    | 密码(MD5)                     |
 
 接口返回数据类型：
 
-|类型|属性|属性说明|
-| ------------ | ------------ | ------------ |
-|String|accessToken|访问用令牌|
-|String|refreshToken|刷新用令牌|
-|Integer|expire|令牌过期时间(毫秒)|
-|Integer|failure|令牌失效时间(毫秒)|
-|[UserInfo](#UserInfo)|userInfo|用户信息|
+| 类型                    | 属性           | 属性说明       |
+|-----------------------|--------------|------------|
+| String                | accessToken  | 访问用令牌      |
+| String                | refreshToken | 刷新用令牌      |
+| Integer               | expire       | 令牌过期时间(毫秒) |
+| Integer               | failure      | 令牌失效时间(毫秒) |
+| [UserInfo](#UserInfo) | userInfo     | 用户信息       |
 
 请求示例：
 
@@ -1082,10 +1084,10 @@ curl -X "POST" "http://192.168.236.8:6200/base/user/v1.0/users/password" \
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|key|是|验证参数,MD5(3 + 绑定手机号 + 短信验证码)|
-|String|password|是|支付密码(MD5)|
+| 类型     | 属性       | 是否必需 | 属性说明                        |
+|--------|----------|------|-----------------------------|
+| String | key      | 是    | 验证参数,MD5(3 + 绑定手机号 + 短信验证码) |
+| String | password | 是    | 支付密码(MD5)                   |
 
 请求示例：
 
@@ -1125,9 +1127,9 @@ curl -X "POST" "http://192.168.236.8:6200/base/user/v1.0/users/password/pay" \
 
 请求参数如下：
 
-|类型|属性|是否必需|属性说明|
-| ------------ | ------------ | ------------ | ------------ |
-|String|key|是|支付密码(MD5)|
+| 类型     | 属性  | 是否必需 | 属性说明      |
+|--------|-----|------|-----------|
+| String | key | 是    | 支付密码(MD5) |
 
 请求示例：
 
@@ -1157,28 +1159,28 @@ curl -X "GET" "http://192.168.236.8:6200/base/user/v1.0/users/password/pay?key=6
 
 ### Reply
 
-|类型|属性|属性说明|
-| ------------ | ------------ | ------------ |
-|Boolean|success|接口调用是否成功，成功：true；失败：false|
-|Integer|code|错误代码，2xx代表成功，4xx或5xx代表失败|
-|String|message|错误消息，描述了接口调用失败原因|
-|Object|data|接口返回数据|
-|Object|option|附加数据，如分页数据的总条数|
+| 类型      | 属性      | 属性说明                      |
+|---------|---------|---------------------------|
+| Boolean | success | 接口调用是否成功，成功：true；失败：false |
+| Integer | code    | 错误代码，2xx代表成功，4xx或5xx代表失败  |
+| String  | message | 错误消息，描述了接口调用失败原因          |
+| Object  | data    | 接口返回数据                    |
+| Object  | option  | 附加数据，如分页数据的总条数            |
 
 [回目录](#目录)
 
 ### UserInfo
 
-|类型|字段|字段说明|
-|----|----|----|
-|String|id|用户ID|
-|String|tenantId|用户当前登录租户ID|
-|String|name|用户姓名|
-|String|account|用户登录账号|
-|String|mobile|用户绑定手机号|
-|String|email|用户绑定邮箱|
-|String|headImg|用户头像|
-|Boolean|builtin|是否内置用户|
-|String|createdTime|用户创建时间|
+| 类型      | 字段          | 字段说明       |
+|---------|-------------|------------|
+| String  | id          | 用户ID       |
+| String  | tenantId    | 用户当前登录租户ID |
+| String  | name        | 用户姓名       |
+| String  | account     | 用户登录账号     |
+| String  | mobile      | 用户绑定手机号    |
+| String  | email       | 用户绑定邮箱     |
+| String  | headImg     | 用户头像       |
+| Boolean | builtin     | 是否内置用户     |
+| String  | createdTime | 用户创建时间     |
 
 [回目录](#目录)

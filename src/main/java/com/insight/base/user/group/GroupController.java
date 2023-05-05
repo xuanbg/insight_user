@@ -1,7 +1,7 @@
 package com.insight.base.user.group;
 
 import com.insight.base.user.common.dto.GroupDto;
-import com.insight.base.user.common.dto.UserListDto;
+import com.insight.base.user.common.dto.UserVo;
 import com.insight.utils.Json;
 import com.insight.utils.pojo.auth.LoginInfo;
 import com.insight.utils.pojo.base.BusinessException;
@@ -120,7 +120,7 @@ public class GroupController {
      * @return Reply
      */
     @GetMapping("/v1.0/groups/{id}/others")
-    public List<UserListDto> getOthers(@PathVariable Long id) {
+    public List<UserVo> getOthers(@PathVariable Long id) {
         return service.getOthers(id);
     }
 

@@ -1,11 +1,11 @@
 package com.insight.base.user.manage;
 
 import com.insight.base.user.common.dto.FuncPermitDto;
-import com.insight.base.user.common.dto.UserDto;
 import com.insight.base.user.common.dto.UserVo;
 import com.insight.utils.pojo.auth.LoginInfo;
 import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.base.Search;
+import com.insight.utils.pojo.user.UserDto;
 
 import java.util.List;
 

@@ -4,9 +4,8 @@ import com.github.pagehelper.PageHelper;
 import com.insight.base.user.common.client.LogClient;
 import com.insight.base.user.common.client.LogServiceClient;
 import com.insight.base.user.common.dto.GroupDto;
-import com.insight.base.user.common.dto.UserListDto;
+import com.insight.base.user.common.dto.UserVo;
 import com.insight.base.user.common.mapper.GroupMapper;
-import com.insight.utils.Generator;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.pojo.auth.LoginInfo;
@@ -14,6 +13,7 @@ import com.insight.utils.pojo.base.BusinessException;
 import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.base.Search;
 import com.insight.utils.pojo.message.OperateType;
+import com.insight.utils.redis.Generator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,16 +46,16 @@ public class GroupServiceImpl implements GroupService {
     /**
      * 查询用户组列表
      *
-     * @param search   查询实体类
+     * @param search 查询实体类
      * @return Reply
      */
     @Override
     public Reply getGroups(Search search) {
-        var page = PageHelper.startPage(search.getPageNum(), search.getPageSize())
-                .setOrderBy(search.getOrderBy()).doSelectPage(() -> mapper.getGroups(search));
-
-        var total = page.getTotal();
-        return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
+        try (var page = PageHelper.startPage(search.getPageNum(), search.getPageSize()).setOrderBy(search.getOrderBy())
+                .doSelectPage(() -> mapper.getGroups(search))) {
+            var total = page.getTotal();
+            return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
+        }
     }
 
     /**
@@ -89,8 +89,8 @@ public class GroupServiceImpl implements GroupService {
         dto.setTenantId(tenantId);
         dto.setCode(newGroupCode(tenantId));
         dto.setBuiltin(false);
-        dto.setCreator(info.getUserName());
-        dto.setCreatorId(info.getUserId());
+        dto.setCreator(info.getName());
+        dto.setCreatorId(info.getId());
         dto.setCreatedTime(LocalDateTime.now());
 
         mapper.addGroup(dto);
@@ -147,11 +147,11 @@ public class GroupServiceImpl implements GroupService {
             throw new BusinessException("ID不存在,未读取数据");
         }
 
-        var page = PageHelper.startPage(search.getPageNum(), search.getPageSize())
-                .setOrderBy(search.getOrderBy()).doSelectPage(() -> mapper.getMembers(search));
-
-        var total = page.getTotal();
-        return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
+        try (var page = PageHelper.startPage(search.getPageNum(), search.getPageSize()).setOrderBy(search.getOrderBy())
+                .doSelectPage(() -> mapper.getMembers(search))) {
+            var total = page.getTotal();
+            return total > 0 ? ReplyHelper.success(page.getResult(), total) : ReplyHelper.resultIsEmpty();
+        }
     }
 
     /**
@@ -161,7 +161,7 @@ public class GroupServiceImpl implements GroupService {
      * @return Reply
      */
     @Override
-    public List<UserListDto> getOthers(Long id) {
+    public List<UserVo> getOthers(Long id) {
         return mapper.getOthers(id);
     }
 

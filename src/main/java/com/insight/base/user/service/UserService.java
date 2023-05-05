@@ -1,7 +1,11 @@
 package com.insight.base.user.service;
 
-import com.insight.base.user.common.dto.*;
+import com.insight.base.user.common.dto.MobileDto;
+import com.insight.base.user.common.dto.PasswordDto;
+import com.insight.base.user.common.dto.UserVo;
+import com.insight.base.user.common.dto.WechatDto;
 import com.insight.utils.pojo.base.Reply;
+import com.insight.utils.pojo.user.UserDto;
 
 /**
  * @author 宣炳刚

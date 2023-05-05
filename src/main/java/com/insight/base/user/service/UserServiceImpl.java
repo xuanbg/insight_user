@@ -6,12 +6,14 @@ import com.insight.base.user.common.client.MessageClient;
 import com.insight.base.user.common.dto.*;
 import com.insight.base.user.common.mapper.UserMapper;
 import com.insight.utils.Json;
-import com.insight.utils.Redis;
 import com.insight.utils.Util;
+import com.insight.utils.WechatHelper;
 import com.insight.utils.pojo.base.BusinessException;
 import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.user.User;
-import com.insight.utils.wechat.WeChatHelper;
+import com.insight.utils.pojo.user.UserDto;
+import com.insight.utils.redis.Redis;
+
 
 /**
  * @author 宣炳刚
@@ -20,7 +22,6 @@ import com.insight.utils.wechat.WeChatHelper;
  */
 @org.springframework.stereotype.Service
 public class UserServiceImpl implements UserService {
-    private final WeChatHelper weChatHelper;
     private final UserMapper mapper;
     private final MessageClient client;
     private final AuthClient authClient;
@@ -29,14 +30,12 @@ public class UserServiceImpl implements UserService {
     /**
      * 构造方法
      *
-     * @param weChatHelper WeChatHelper
-     * @param mapper       UserMapper
-     * @param client       MessageClient
-     * @param authClient   AuthClient
-     * @param core         Core
+     * @param mapper     UserMapper
+     * @param client     MessageClient
+     * @param authClient AuthClient
+     * @param core       Core
      */
-    public UserServiceImpl(WeChatHelper weChatHelper, UserMapper mapper, MessageClient client, AuthClient authClient, Core core) {
-        this.weChatHelper = weChatHelper;
+    public UserServiceImpl(UserMapper mapper, MessageClient client, AuthClient authClient, Core core) {
         this.mapper = mapper;
         this.client = client;
         this.authClient = authClient;
@@ -51,12 +50,8 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserVo getUser(Long id) {
-        var user = mapper.getUser(id);
-        if (user == null) {
-            throw new BusinessException("ID不存在,未读取数据");
-        }
-
-        return user;
+        var data = getUserById(id);
+        return data.convert(UserVo.class);
     }
 
     /**
@@ -90,13 +85,10 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateName(Long id, String name) {
-        var user = mapper.getUser(id);
-        if (user == null) {
-            throw new BusinessException("ID不存在,未更新数据");
-        }
+        var data = getUserById(id);
 
-        user.setName(name);
-        mapper.updateUser(user.convert(User.class));
+        data.setName(name);
+        mapper.updateUser(data);
     }
 
     /**
@@ -108,11 +100,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateMobile(Long id, MobileDto dto) {
         var mobile = dto.getMobile();
-        var user = mapper.getUser(id);
-        if (user == null) {
-            throw new BusinessException("ID不存在,未更新数据");
-        }
-
+        var data = getUserById(id);
         if (Util.isNotEmpty(mobile)) {
             if (mapper.keyIsExisted(id, mobile)) {
                 throw new BusinessException("手机号[" + mobile + "]已被使用");
@@ -127,13 +115,13 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        if (Util.isNotEmpty(user.getMobile())) {
-            Redis.deleteKey("ID:" + user.getMobile());
+        if (Util.isNotEmpty(data.getMobile())) {
+            Redis.deleteKey("ID:" + data.getMobile());
         }
 
         // 持久化数据
-        user.setMobile(mobile);
-        mapper.updateUser(user.convert(User.class));
+        data.setMobile(mobile);
+        mapper.updateUser(data);
     }
 
     /**
@@ -144,22 +132,18 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateEmail(Long id, String email) {
-        var user = mapper.getUser(id);
-        if (user == null) {
-            throw new BusinessException("ID不存在,未更新数据");
-        }
-
+        var data = getUserById(id);
         if (Util.isNotEmpty(email) && mapper.keyIsExisted(id, email)) {
             throw new BusinessException("Email[" + email + "]已被使用");
         }
 
-        var oldEmail = user.getEmail();
+        var oldEmail = data.getEmail();
         if (oldEmail != null && !oldEmail.isEmpty()) {
             Redis.deleteKey("ID:" + oldEmail);
         }
 
-        user.setEmail(email);
-        mapper.updateUser(user.convert(User.class));
+        data.setEmail(email);
+        mapper.updateUser(data);
     }
 
     /**
@@ -169,27 +153,28 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateUnionId(WechatDto dto) {
-        var user = mapper.getUser(dto.getId());
-        if (user == null) {
-            throw new BusinessException("ID不存在,未更新数据");
-        }
-
+        var data = getUserById(dto.getId());
         var code = dto.getCode();
         var wechatAppId = dto.getWeChatAppId();
         var key = "WeChatApp:" + wechatAppId;
         var secret = Redis.get(key, "secret");
-        var weChatUser = weChatHelper.getUserInfo(code, wechatAppId, secret);
-        if (weChatUser == null) {
+        var wechatUser = WechatHelper.getUserInfo(code, wechatAppId, secret);
+        if (wechatUser == null) {
             throw new BusinessException("微信授权失败");
         }
 
-        var unionId = weChatUser.getUnionid();
+        var unionId = wechatUser.getUnionid();
         if (unionId == null || unionId.isEmpty()) {
             throw new BusinessException("未取得微信用户的UnionID");
         }
 
-        user.setUnionId(unionId);
-        mapper.updateUser(user.convert(User.class));
+        data.setNickname(wechatUser.getNickname());
+        data.setUnionId(unionId);
+        if (Util.isEmpty(data.getHeadImg())) {
+            data.setHeadImg(wechatUser.getHeadimgurl());
+        }
+
+        mapper.updateUser(data);
     }
 
     /**
@@ -200,13 +185,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateHeadImg(Long id, String headImg) {
-        var user = mapper.getUser(id);
-        if (user == null) {
-            throw new BusinessException("ID不存在,未更新数据");
-        }
-
-        user.setHeadImg(headImg);
-        mapper.updateUser(user.convert(User.class));
+        var data = getUserById(id);
+        data.setHeadImg(headImg);
+        mapper.updateUser(data);
     }
 
     /**
@@ -217,13 +198,9 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateRemark(Long id, String remark) {
-        var user = mapper.getUser(id);
-        if (user == null) {
-            throw new BusinessException("ID不存在,未更新数据");
-        }
-
-        user.setRemark(remark);
-        mapper.updateUser(user.convert(User.class));
+        var data = getUserById(id);
+        data.setRemark(remark);
+        mapper.updateUser(data);
     }
 
     /**
@@ -234,18 +211,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changePassword(PasswordDto dto) {
         var id = dto.getId();
-        var user = mapper.getUser(id);
-        if (user == null) {
-            throw new BusinessException("ID不存在,未更新数据");
-        }
+        var data = getUserById(id);
 
-        var key = "User:" + id;
-        var pw = Redis.get(key, "password");
         var old = dto.getOld();
-        if (old == null || old.isEmpty() || !old.equals(pw)) {
+        if (Util.isEmpty(old) || !old.equals(data.getPassword())) {
             throw new BusinessException("原密码错误,请输入正确的原密码");
         }
 
+        var key = "User:" + id;
         var password = dto.getPassword();
         Redis.setHash(key, "password", password);
         mapper.updatePassword(id, password);
@@ -339,5 +312,20 @@ public class UserServiceImpl implements UserService {
         if (!payPassword.equals(key)) {
             throw new BusinessException("支付密码错误");
         }
+    }
+
+    /**
+     * 根据ID获取用户
+     *
+     * @param id 用户ID
+     * @return 用户
+     */
+    private User getUserById(Long id) {
+        var user = mapper.getUser(id);
+        if (user == null) {
+            throw new BusinessException("指定的用户不存在");
+        }
+
+        return user;
     }
 }

@@ -1,13 +1,13 @@
 package com.insight.base.user.common;
 
-import com.insight.base.user.common.dto.UserDto;
-import com.insight.base.user.common.dto.UserVo;
 import com.insight.base.user.common.mapper.UserMapper;
-import com.insight.utils.Generator;
-import com.insight.utils.Redis;
 import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
 import com.insight.utils.pojo.base.BusinessException;
+import com.insight.utils.pojo.user.User;
+import com.insight.utils.pojo.user.UserDto;
+import com.insight.utils.redis.Generator;
+import com.insight.utils.redis.Redis;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,8 +46,8 @@ public class Core {
         if (data == null) {
             return mapper.userIsExisted(user.getAccount(), user.getMobile(), user.getEmail()) ? null : addUser(user);
         } else {
-            updateUser(user, data);
-            return null;
+            updateUser(user, data.convert(User.class));
+            return data.getId();
         }
     }
 
@@ -57,7 +57,7 @@ public class Core {
      * @param user 用户数据
      * @param data 库中数据
      */
-    private void updateUser(UserDto user, UserVo data) {
+    private void updateUser(UserDto user, User data) {
         var userId = user.getId();
         var mobile = data.getMobile();
         if (!user.mobileEquals(mobile)) {
@@ -71,7 +71,7 @@ public class Core {
             user.setEmail(data.getEmail());
             user.setHeadImg(data.getHeadImg());
             user.setRemark(data.getRemark());
-            mapper.updateUser(user);
+            mapper.updateUser(user.convert(User.class));
         }
 
         if (!Objects.equals(user.getInvalid(), data.getInvalid())) {
