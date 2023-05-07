@@ -113,20 +113,4 @@ public interface ManageService {
      * @return 用户数量
      */
     int getUserCount(String keyword);
-
-    /**
-     * 获取日志列表
-     *
-     * @param search 查询实体类
-     * @return Reply
-     */
-    Reply getUserLogs(Search search);
-
-    /**
-     * 获取日志详情
-     *
-     * @param id 日志ID
-     * @return Reply
-     */
-    Reply getUserLog(Long id);
 }

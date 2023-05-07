@@ -3,7 +3,6 @@ package com.insight.base.user.manage;
 import com.github.pagehelper.PageHelper;
 import com.insight.base.user.common.Core;
 import com.insight.base.user.common.client.LogClient;
-import com.insight.base.user.common.client.LogServiceClient;
 import com.insight.base.user.common.client.OrgClient;
 import com.insight.base.user.common.dto.FuncPermitDto;
 import com.insight.base.user.common.dto.UserVo;
@@ -27,23 +26,20 @@ import java.util.List;
  */
 @org.springframework.stereotype.Service
 public class ManageServiceImpl implements ManageService {
-    private static final String BUSINESS = "用户管理";
+    private static final String BUSINESS = "UserManage";
     private final UserMapper mapper;
-    private final LogServiceClient logClient;
     private final OrgClient client;
     private final Core core;
 
     /**
      * 构造方法
      *
-     * @param mapper    UserMapper
-     * @param logClient LogServiceClient
-     * @param client    Feign客户端
-     * @param core      Core
+     * @param mapper UserMapper
+     * @param client Feign客户端
+     * @param core   Core
      */
-    public ManageServiceImpl(UserMapper mapper, LogServiceClient logClient, OrgClient client, Core core) {
+    public ManageServiceImpl(UserMapper mapper, OrgClient client, Core core) {
         this.mapper = mapper;
-        this.logClient = logClient;
         this.client = client;
         this.core = core;
     }
@@ -321,28 +317,6 @@ public class ManageServiceImpl implements ManageService {
         }
 
         return mapper.getCount(keyword);
-    }
-
-    /**
-     * 获取日志列表
-     *
-     * @param search 查询实体类
-     * @return Reply
-     */
-    @Override
-    public Reply getUserLogs(Search search) {
-        return logClient.getLogs(BUSINESS, search.getKeyword(), search.getPageNum(), search.getPageSize());
-    }
-
-    /**
-     * 获取日志详情
-     *
-     * @param id 日志ID
-     * @return Reply
-     */
-    @Override
-    public Reply getUserLog(Long id) {
-        return logClient.getLog(id);
     }
 
     /**
