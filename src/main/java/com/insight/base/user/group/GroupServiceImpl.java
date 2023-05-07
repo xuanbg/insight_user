@@ -2,7 +2,6 @@ package com.insight.base.user.group;
 
 import com.github.pagehelper.PageHelper;
 import com.insight.base.user.common.client.LogClient;
-import com.insight.base.user.common.client.LogServiceClient;
 import com.insight.base.user.common.dto.GroupDto;
 import com.insight.base.user.common.dto.UserVo;
 import com.insight.base.user.common.mapper.GroupMapper;
@@ -25,22 +24,19 @@ import java.util.List;
  */
 @org.springframework.stereotype.Service
 public class GroupServiceImpl implements GroupService {
-    private static final String BUSINESS = "用户组管理";
+    private static final String BUSINESS = "UserGroup";
     private final SnowflakeCreator creator;
     private final GroupMapper mapper;
-    private final LogServiceClient client;
 
     /**
      * 构造方法
      *
      * @param creator 雪花算法ID生成器
      * @param mapper  GroupMapper
-     * @param client  LogServiceClient
      */
-    public GroupServiceImpl(SnowflakeCreator creator, GroupMapper mapper, LogServiceClient client) {
+    public GroupServiceImpl(SnowflakeCreator creator, GroupMapper mapper) {
         this.creator = creator;
         this.mapper = mapper;
-        this.client = client;
     }
 
     /**
@@ -199,28 +195,6 @@ public class GroupServiceImpl implements GroupService {
 
         mapper.removeMembers(id, userIds);
         LogClient.writeLog(info, BUSINESS, OperateType.DELETE, id, userIds);
-    }
-
-    /**
-     * 获取日志列表
-     *
-     * @param search 查询实体类
-     * @return Reply
-     */
-    @Override
-    public Reply getGroupLogs(Search search) {
-        return client.getLogs(BUSINESS, search.getKeyword(), search.getPageNum(), search.getPageSize());
-    }
-
-    /**
-     * 获取日志详情
-     *
-     * @param id 日志ID
-     * @return Reply
-     */
-    @Override
-    public Reply getGroupLog(Long id) {
-        return client.getLog(id);
     }
 
     /**

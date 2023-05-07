@@ -89,20 +89,4 @@ public interface GroupService {
      * @param userIds 用户ID集合
      */
     void removeMembers(LoginInfo info, Long id, List<Long> userIds);
-
-    /**
-     * 获取日志列表
-     *
-     * @param search 查询实体类
-     * @return Reply
-     */
-    Reply getGroupLogs(Search search);
-
-    /**
-     * 获取日志详情
-     *
-     * @param id 日志ID
-     * @return Reply
-     */
-    Reply getGroupLog(Long id);
 }

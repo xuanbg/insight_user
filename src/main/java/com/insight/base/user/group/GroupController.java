@@ -1,5 +1,6 @@
 package com.insight.base.user.group;
 
+import com.insight.base.user.common.client.LogServiceClient;
 import com.insight.base.user.common.dto.GroupDto;
 import com.insight.base.user.common.dto.UserVo;
 import com.insight.utils.Json;
@@ -21,14 +22,17 @@ import java.util.List;
 @RestController
 @RequestMapping("/base/user")
 public class GroupController {
+    private final LogServiceClient client;
     private final GroupService service;
 
     /**
      * 构造方法
      *
+     * @param client  Feign客户端
      * @param service 自动注入的Service
      */
-    public GroupController(GroupService service) {
+    public GroupController(LogServiceClient client, GroupService service) {
+        this.client = client;
         this.service = service;
     }
 
@@ -156,24 +160,28 @@ public class GroupController {
     }
 
     /**
-     * 获取日志列表
+     * 查询日志
      *
-     * @param search 查询实体类
-     * @return Reply
+     * @param loginInfo 用户登录信息
+     * @param search    查询条件
+     * @return 日志集合
      */
-    @GetMapping("/v1.0/groups/logs")
-    public Reply getGroupLogs(Search search) {
-        return service.getGroupLogs(search);
+    @GetMapping("/v1.0/groups/{id}/logs")
+    public Reply getAirportLogs(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id, Search search) {
+        var info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
+        return client.getLogs(id, "UserGroup", search.getKeyword());
     }
 
     /**
-     * 获取日志详情
+     * 获取日志
      *
-     * @param id 日志ID
-     * @return Reply
+     * @param loginInfo 用户登录信息
+     * @param id        日志ID
+     * @return 日志VO
      */
     @GetMapping("/v1.0/groups/logs/{id}")
-    public Reply getGroupLog(@PathVariable Long id) {
-        return service.getGroupLog(id);
+    public Reply getAirportLog(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
+        var info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
+        return client.getLog(id);
     }
 }
