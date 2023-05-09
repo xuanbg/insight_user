@@ -106,7 +106,7 @@ public class ManageServiceImpl implements ManageService {
         dto.setCreator(info.getName());
         dto.setCreatorId(info.getId());
         var id = core.processUser(dto);
-        LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.NEW, id, dto);
 
         return id;
     }
@@ -174,7 +174,7 @@ public class ManageServiceImpl implements ManageService {
         }
 
         mapper.updateUser(dto.convert(User.class));
-        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, dto);
     }
 
     /**
@@ -221,7 +221,7 @@ public class ManageServiceImpl implements ManageService {
         }
 
         mapper.updateStatus(id, status);
-        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, user);
+        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, user);
     }
 
     /**
@@ -240,7 +240,7 @@ public class ManageServiceImpl implements ManageService {
             Redis.setHash(key, "password", password);
         }
 
-        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, data);
+        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, data);
     }
 
     /**

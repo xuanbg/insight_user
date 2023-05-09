@@ -90,7 +90,7 @@ public class GroupServiceImpl implements GroupService {
         dto.setCreatedTime(LocalDateTime.now());
 
         mapper.addGroup(dto);
-        LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.NEW, id, dto);
 
         return id;
     }
@@ -110,7 +110,7 @@ public class GroupServiceImpl implements GroupService {
         }
 
         mapper.updateGroup(dto);
-        LogClient.writeLog(info, BUSINESS, OperateType.UPDATE, id, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, dto);
     }
 
     /**
@@ -176,7 +176,7 @@ public class GroupServiceImpl implements GroupService {
         }
 
         mapper.addMembers(id, userIds);
-        LogClient.writeLog(info, BUSINESS, OperateType.INSERT, id, userIds);
+        LogClient.writeLog(info, BUSINESS, OperateType.NEW, id, userIds);
     }
 
     /**
