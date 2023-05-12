@@ -2,7 +2,6 @@ package com.insight.base.user.manage;
 
 import com.github.pagehelper.PageHelper;
 import com.insight.base.user.common.Core;
-import com.insight.base.user.common.client.LogClient;
 import com.insight.base.user.common.client.OrgClient;
 import com.insight.base.user.common.dto.FuncPermitDto;
 import com.insight.base.user.common.dto.UserVo;
@@ -11,7 +10,6 @@ import com.insight.utils.ReplyHelper;
 import com.insight.utils.Util;
 import com.insight.utils.pojo.auth.LoginInfo;
 import com.insight.utils.pojo.base.*;
-import com.insight.utils.pojo.message.OperateType;
 import com.insight.utils.pojo.user.User;
 import com.insight.utils.pojo.user.UserDto;
 import com.insight.utils.redis.Redis;
@@ -26,8 +24,7 @@ import java.util.List;
  */
 @org.springframework.stereotype.Service
 public class ManageServiceImpl implements ManageService {
-    private static final String BUSINESS = "UserManage";
-    private final UserMapper mapper;
+   private final UserMapper mapper;
     private final OrgClient client;
     private final Core core;
 
@@ -105,10 +102,7 @@ public class ManageServiceImpl implements ManageService {
         dto.setType(tenantId == null ? 1 : 0);
         dto.setCreator(info.getName());
         dto.setCreatorId(info.getId());
-        var id = core.processUser(dto);
-        LogClient.writeLog(info, BUSINESS, OperateType.NEW, id, dto);
-
-        return id;
+        return core.processUser(dto);
     }
 
     /**
@@ -174,7 +168,6 @@ public class ManageServiceImpl implements ManageService {
         }
 
         mapper.updateUser(dto.convert(User.class));
-        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, dto);
     }
 
     /**
@@ -197,7 +190,6 @@ public class ManageServiceImpl implements ManageService {
 
         // 删除数据
         mapper.deleteUser(id);
-        LogClient.writeLog(info, BUSINESS, OperateType.DELETE, id, data);
     }
 
     /**
@@ -221,7 +213,6 @@ public class ManageServiceImpl implements ManageService {
         }
 
         mapper.updateStatus(id, status);
-        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, user);
     }
 
     /**
@@ -239,8 +230,6 @@ public class ManageServiceImpl implements ManageService {
         if (Redis.hasKey(key)) {
             Redis.setHash(key, "password", password);
         }
-
-        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, data);
     }
 
     /**

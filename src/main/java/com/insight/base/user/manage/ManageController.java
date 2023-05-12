@@ -1,5 +1,6 @@
 package com.insight.base.user.manage;
 
+import com.insight.base.user.common.client.LogClient;
 import com.insight.base.user.common.client.LogServiceClient;
 import com.insight.base.user.common.dto.FuncPermitDto;
 import com.insight.base.user.common.dto.UserVo;
@@ -7,6 +8,7 @@ import com.insight.utils.Json;
 import com.insight.utils.pojo.auth.LoginInfo;
 import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.base.Search;
+import com.insight.utils.pojo.message.OperateType;
 import com.insight.utils.pojo.user.UserDto;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/base/user/manage")
 public class ManageController {
+    private static final String BUSINESS = "UserManage";
     private final LogServiceClient client;
     private final ManageService service;
 
@@ -39,16 +42,16 @@ public class ManageController {
     /**
      * 查询用户列表
      *
-     * @param info   用户关键信息
+     * @param loginInfo   用户关键信息
      * @param search 查询实体类
      * @return Reply
      */
     @GetMapping("/v1.0/users")
-    public Reply getUsers(@RequestHeader("loginInfo") String info, Search search) {
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+    public Reply getUsers(@RequestHeader("loginInfo") String loginInfo, Search search) {
+        LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
 
-        search.setTenantId(loginInfo.getTenantId());
-        search.setOwnerId(loginInfo.getOrgId());
+        search.setTenantId(info.getTenantId());
+        search.setOwnerId(info.getOrgId());
         return service.getUsers(search);
     }
 
@@ -77,122 +80,129 @@ public class ManageController {
     /**
      * 新增用户
      *
-     * @param info 用户关键信息
+     * @param loginInfo 用户关键信息
      * @param dto  用户DTO
      * @return Reply
      */
     @PostMapping("/v1.0/users")
-    public Long newUser(@RequestHeader("loginInfo") String info, @Valid @RequestBody UserDto dto) {
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+    public Long newUser(@RequestHeader("loginInfo") String loginInfo, @Valid @RequestBody UserDto dto) {
+        LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
 
-        return service.newUser(loginInfo, dto);
+        var id = service.newUser(info, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.NEW, id, dto);
+        return id;
     }
 
     /**
      * 编辑用户
      *
-     * @param info 用户关键信息
+     * @param loginInfo 用户关键信息
      * @param dto  用户DTO
      */
     @PutMapping("/v1.0/users/{id}")
-    public void editUser(@RequestHeader("loginInfo") String info, @PathVariable Long id, @Valid @RequestBody UserDto dto) {
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+    public void editUser(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id, @Valid @RequestBody UserDto dto) {
+        LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
         dto.setId(id);
 
-        service.editUser(loginInfo, dto);
+        service.editUser(info, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, dto);
     }
 
     /**
      * 删除用户
      *
-     * @param info 用户关键信息
+     * @param loginInfo 用户关键信息
      * @param id   用户ID
      */
     @DeleteMapping("/v1.0/users/{id}")
-    public void deleteUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+    public void deleteUser(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
+        LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
 
-        service.deleteUser(loginInfo, id);
+        service.deleteUser(info, id);
+        LogClient.writeLog(info, BUSINESS, OperateType.DELETE, id, null);
     }
 
     /**
      * 禁用用户
      *
-     * @param info 用户关键信息
+     * @param loginInfo 用户关键信息
      * @param id   用户ID
      */
     @PutMapping("/v1.0/users/{id}/disable")
-    public void disableUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+    public void disableUser(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
+        LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
 
-        service.changeUserStatus(loginInfo, id, true);
+        service.changeUserStatus(info, id, true);
+        LogClient.writeLog(info, BUSINESS, OperateType.DISABLE, id, null);
     }
 
     /**
      * 启用用户
      *
-     * @param info 用户关键信息
+     * @param loginInfo 用户关键信息
      * @param id   用户ID
      */
     @PutMapping("/v1.0/users/{id}/enable")
-    public void enableUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+    public void enableUser(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
+        LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
 
-        service.changeUserStatus(loginInfo, id, false);
+        service.changeUserStatus(info, id, false);
+        LogClient.writeLog(info, BUSINESS, OperateType.ENABLE, id, null);
     }
 
     /**
      * 重置用户密码
      *
-     * @param info 用户关键信息
+     * @param loginInfo 用户关键信息
      * @param id   用户ID
      */
     @PutMapping("/v1.0/users/{id}/password")
-    public void resetPassword(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+    public void resetPassword(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
+        LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
 
-        service.resetPassword(loginInfo, id);
+        service.resetPassword(info, id);
+        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, "重置密码");
     }
 
     /**
      * 获取可邀请用户列表
      *
-     * @param info   用户关键信息
+     * @param loginInfo   用户关键信息
      * @param search 查询关键词
      * @return Reply
      */
     @GetMapping("/v1.0/users/others")
-    public Reply getInviteUsers(@RequestHeader("loginInfo") String info, Search search) {
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+    public Reply getInviteUsers(@RequestHeader("loginInfo") String loginInfo, Search search) {
+        LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
 
-        search.setTenantId(loginInfo.getTenantId());
+        search.setTenantId(info.getTenantId());
         return service.getInviteUsers(search);
     }
 
     /**
      * 邀请用户
      *
-     * @param info 用户关键信息
+     * @param loginInfo 用户关键信息
      * @param id   用户ID
      */
     @PostMapping("/v1.0/users/{id}/relation")
-    public void inviteUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+    public void inviteUser(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
+        LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
 
-        service.inviteUser(loginInfo, id);
+        service.inviteUser(info, id);
     }
 
     /**
      * 清退用户
      *
-     * @param info 用户关键信息
+     * @param loginInfo 用户关键信息
      * @param id   用户ID
      */
     @DeleteMapping("/v1.0/users/{id}/relation")
-    public void removeUser(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+    public void removeUser(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
+        LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
 
-        service.removeUser(loginInfo, id);
+        service.removeUser(info, id);
     }
 
     /**
@@ -216,7 +226,7 @@ public class ManageController {
     @GetMapping("/v1.0/users/{id}/logs")
     public Reply getAirportLogs(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id, Search search) {
         var info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
-        return client.getLogs(id, "UserManage", search.getKeyword());
+        return client.getLogs(id, BUSINESS, search.getKeyword());
     }
 
     /**
