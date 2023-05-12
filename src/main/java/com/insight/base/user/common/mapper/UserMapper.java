@@ -55,19 +55,35 @@ public interface UserMapper {
      * @param id 用户ID
      * @return 功能授权集合
      */
-    @Select("select * from (select distinct a.id, null as parent_id, a.`index`, 0 as type, a.`name`, null as remark, null as permit from ibv_user_roles r " +
-            "join ibr_role_permit p on p.role_id = r.role_id join ibs_function f on f.id = p.function_id join ibs_navigator m on m.id = f.nav_id " +
-            "join ibs_navigator g on g.id = m.parent_id join ibs_application a on a.id = g.app_id where r.user_id = #{id} union " +
-            "select distinct g.id, g.app_id as parent_id, g.`index`, g.type, g.`name`, null as remark, null as permit from ibv_user_roles r " +
-            "join ibr_role_permit p on p.role_id = r.role_id join ibs_function f on f.id = p.function_id join ibs_navigator m on m.id = f.nav_id " +
-            "join ibs_navigator g on g.id = m.parent_id where r.user_id = #{id} union " +
-            "select distinct m.id, m.parent_id, m.`index`, m.type, m.`name`, null as remark, null as permit from ibv_user_roles r " +
-            "join ibr_role_permit p on p.role_id = r.role_id join ibs_function f on f.id = p.function_id " +
-            "join ibs_navigator m on m.id = f.nav_id where r.user_id = #{id} union " +
-            "select f.id, f.nav_id as parent_id, f.`index`, min(p.permit) + 3 as type, f.`name`, " +
-            "case min(p.permit) when 0 then '禁止' else '允许' end as remark, min(p.permit) as permit " +
-            "from ibv_user_roles r join ibr_role_permit p on p.role_id = r.role_id join ibs_function f on f.id = p.function_id " +
-            "where r.user_id = #{id} group by f.id) t order by t.`index`;")
+    @Select("""
+            select * from (select distinct a.id, null as parent_id, a.`index`, 0 as type, a.`name`, null as remark, null as permit
+            from ibv_user_roles r
+              join ibr_role_permit p on p.role_id = r.role_id
+              join ibs_function f on f.id = p.function_id
+              join ibs_navigator m on m.id = f.nav_id
+              join ibs_navigator g on g.id = m.parent_id
+              join ibs_application a on a.id = g.app_id
+            where r.user_id = #{id} union
+            select distinct g.id, g.app_id as parent_id, g.`index`, g.type, g.`name`, null as remark, null as permit
+            from ibv_user_roles r
+              join ibr_role_permit p on p.role_id = r.role_id
+              join ibs_function f on f.id = p.function_id
+              join ibs_navigator m on m.id = f.nav_id
+              join ibs_navigator g on g.id = m.parent_id
+            where r.user_id = #{id} union
+            select distinct m.id, m.parent_id, m.`index`, m.type, m.`name`, null as remark, null as permit
+            from ibv_user_roles r
+              join ibr_role_permit p on p.role_id = r.role_id
+              join ibs_function f on f.id = p.function_id
+              join ibs_navigator m on m.id = f.nav_id
+            where r.user_id = #{id} union
+            select f.id, f.nav_id as parent_id, f.`index`, min(p.permit) + 3 as type, f.`name`,
+            case min(p.permit) when 0 then '禁止' else '允许' end as remark, min(p.permit) as permit
+            from ibv_user_roles r
+              join ibr_role_permit p on p.role_id = r.role_id
+              join ibs_function f on f.id = p.function_id
+            where r.user_id = #{id} group by f.id) t order by t.`index`;
+            """)
     List<FuncPermitDto> getUserPermit(Long id);
 
     /**
@@ -115,9 +131,11 @@ public interface UserMapper {
      * @param code     用户编码
      * @return 用户数量
      */
-    @Select("<script>select count(*) from ibu_user u " +
-            "<if test = 'tenantId != null'>join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} </if>" +
-            "where u.code = #{code};</script>")
+    @Select("""
+            <script>select count(*) from ibu_user u
+            <if test = 'tenantId != null'>join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId}</if>
+            where u.code = #{code};</script>
+            """)
     Boolean codeIsExisted(@Param("tenantId") Long tenantId, @Param("code") String code);
 
     /**
@@ -173,9 +191,11 @@ public interface UserMapper {
      *
      * @param id 用户ID
      */
-    @Delete("delete u, g, t, o, r from ibu_user u left join ibu_group_member g on g.user_id = u.id " +
-            "left join ibt_tenant_user t on t.user_id = u.id left join ibo_organize_member o on o.user_id = u.id " +
-            "left join ibr_role_member r on r.member_id = u.id and r.type = 1 where u.id = #{id};")
+    @Delete("""
+            delete u, g, t, o, r from ibu_user u left join ibu_group_member g on g.user_id = u.id
+            left join ibt_tenant_user t on t.user_id = u.id left join ibo_organize_member o on o.user_id = u.id
+            left join ibr_role_member r on r.member_id = u.id and r.type = 1 where u.id = #{id};
+            """)
     void deleteUser(Long id);
 
     /**
@@ -184,9 +204,11 @@ public interface UserMapper {
      * @param search 查询关键词
      * @return 用户列表
      */
-    @Select("select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.builtin, u.invalid from ibu_user u " +
-            "left join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId} " +
-            "where isnull(r.id) and (u.account = #{keyword} or u.mobile = #{keyword} or u.`name` like concat('%',#{keyword},'%'))")
+    @Select("""
+            select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.builtin, u.invalid from ibu_user u
+            left join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId}
+            where isnull(r.id) and (u.account = #{keyword} or u.mobile = #{keyword} or u.`name` like concat('%',#{keyword},'%'))
+            """)
     List<UserVo> getOtherUsers(Search search);
 
     /**
@@ -213,9 +235,11 @@ public interface UserMapper {
      * @param id      用户ID
      * @param roleIds 角色ID集合
      */
-    @Insert("<script>insert ibr_role_member (type, role_id, member_id) values " +
-            "<foreach collection = \"roleIds\" item = \"item\" index = \"index\" separator = \",\">" +
-            "(1, #{item}, #{id})</foreach>;</script>")
+    @Insert("""
+            <script>insert ibr_role_member (type, role_id, member_id) values
+            <foreach collection = "roleIds" item = "item" index = "index" separator = ",">(1, #{item}, #{id})</foreach>
+            ;</script>
+            """)
     void addRoleMember(long id, List<Long> roleIds);
 
     /**
@@ -228,30 +252,40 @@ public interface UserMapper {
     void removeRelation(long tenantId, long userId);
 
     /**
-     * 删除租户-角色关系
+     * 删除用户-角色关系
      *
      * @param tenantId 租户ID
      * @param userId   用户ID
      */
-    @Delete("delete m from ibr_role r join ibr_role_member m on m.role_id = r.id and m.type = 1 and m.member_id = #{userId} where r.tenant_id = #{tenantId};")
-    void removeRoleRelation(long tenantId, long userId);
+    @Delete("""
+            <script>delete m from ibr_role r join ibr_role_member m on m.role_id = r.id and m.type = 1 and m.member_id = #{userId}
+            <if test = 'tenantId != null'>where r.tenant_id = #{tenantId}</if>
+            ;</script>
+            """)
+    void removeRoleRelation(Long tenantId, Long userId);
 
     /**
-     * 删除租户-用户组关系
+     * 删除用户-用户组关系
      *
      * @param tenantId 租户ID
      * @param userId   用户ID
      */
-    @Delete("delete m from ibu_group g join ibu_group_member m on m.group_id = g.id and m.user_id = #{userId} where g.tenant_id = #{tenantId};")
+    @Delete("""
+            delete m from ibu_group g join ibu_group_member m on m.group_id = g.id and m.user_id = #{userId}
+            where g.tenant_id = #{tenantId};
+            """)
     void removeGroupRelation(long tenantId, long userId);
 
     /**
-     * 删除租户-组织机构关系
+     * 删除用户-组织机构关系
      *
      * @param tenantId 租户ID
      * @param userId   用户ID
      */
-    @Delete("delete m from ibo_organize o join ibo_organize_member m on m.post_id = o.id and m.user_id = #{userId} where o.tenant_id = #{tenantId};")
+    @Delete("""
+            delete m from ibo_organize o join ibo_organize_member m on m.post_id = o.id and m.user_id = #{userId}
+            where o.tenant_id = #{tenantId};
+            """)
     void removeOrganizeRelation(long tenantId, long userId);
 
     /**
