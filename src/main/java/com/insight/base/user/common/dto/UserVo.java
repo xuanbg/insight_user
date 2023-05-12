@@ -22,6 +22,11 @@ public class UserVo extends UserBase {
     private String roleName;
 
     /**
+     * 用户角色ID, 多个角色以逗号分割
+     */
+    private String roleId;
+
+    /**
      * 备注
      */
     private String remark;
@@ -60,6 +65,14 @@ public class UserVo extends UserBase {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public String getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(String roleId) {
+        this.roleId = roleId;
     }
 
     public String getRemark() {
