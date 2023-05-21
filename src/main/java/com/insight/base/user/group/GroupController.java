@@ -1,7 +1,9 @@
 package com.insight.base.user.group;
 
+import com.insight.base.user.common.client.LogClient;
 import com.insight.base.user.common.client.LogServiceClient;
 import com.insight.base.user.common.dto.GroupDto;
+import com.insight.base.user.common.dto.OperateType;
 import com.insight.base.user.common.dto.UserVo;
 import com.insight.utils.Json;
 import com.insight.utils.pojo.auth.LoginInfo;
@@ -22,6 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/base/user")
 public class GroupController {
+    private static final String BUSINESS = "UserGroup";
     private final LogServiceClient client;
     private final GroupService service;
 
@@ -39,15 +42,15 @@ public class GroupController {
     /**
      * 查询用户组列表
      *
-     * @param info   用户关键信息
+     * @param loginInfo   用户关键信息
      * @param search 查询实体类
      * @return Reply
      */
     @GetMapping("/v1.0/groups")
-    public Reply getGroups(@RequestHeader("loginInfo") String info, Search search) {
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+    public Reply getGroups(@RequestHeader("loginInfo") String loginInfo, Search search) {
+        LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
 
-        search.setTenantId(loginInfo.getTenantId());
+        search.setTenantId(info.getTenantId());
         return service.getGroups(search);
     }
 
@@ -65,43 +68,47 @@ public class GroupController {
     /**
      * 新增用户组
      *
-     * @param info 用户关键信息
+     * @param loginInfo 用户关键信息
      * @param dto  用户组DTO
      * @return Reply
      */
     @PostMapping("/v1.0/groups")
-    public Long newGroup(@RequestHeader("loginInfo") String info, @Valid @RequestBody GroupDto dto) {
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+    public Long newGroup(@RequestHeader("loginInfo") String loginInfo, @Valid @RequestBody GroupDto dto) {
+        LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
 
-        return service.newGroup(loginInfo, dto);
+        var id = service.newGroup(info, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.NEW, id, dto);
+        return id;
     }
 
     /**
      * 编辑用户组
      *
-     * @param info 用户关键信息
+     * @param loginInfo 用户关键信息
      * @param id   用户组ID
      * @param dto  用户组DTO
      */
     @PutMapping("/v1.0/groups/{id}")
-    public void editGroup(@RequestHeader("loginInfo") String info, @PathVariable Long id, @Valid @RequestBody GroupDto dto) {
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+    public void editGroup(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id, @Valid @RequestBody GroupDto dto) {
+        LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
         dto.setId(id);
 
-        service.editGroup(loginInfo, dto);
+        service.editGroup(info, dto);
+        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, dto);
     }
 
     /**
      * 删除用户组
      *
-     * @param info 用户关键信息
+     * @param loginInfo 用户关键信息
      * @param id   用户组ID
      */
     @DeleteMapping("/v1.0/groups/{id}")
-    public void deleteGroup(@RequestHeader("loginInfo") String info, @PathVariable Long id) {
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+    public void deleteGroup(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
+        LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
 
-        service.deleteGroup(loginInfo, id);
+        service.deleteGroup(info, id);
+        LogClient.writeLog(info, BUSINESS, OperateType.DELETE, id, null);
     }
 
     /**
@@ -131,32 +138,34 @@ public class GroupController {
     /**
      * 添加用户组成员
      *
-     * @param info    用户关键信息
+     * @param loginInfo    用户关键信息
      * @param id      用户组ID
      * @param userIds 用户ID集合
      */
     @PostMapping("/v1.0/groups/{id}/members")
-    public void addMembers(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody List<Long> userIds) {
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
+    public void addMembers(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id, @RequestBody List<Long> userIds) {
+        LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
 
-        service.addMembers(loginInfo, id, userIds);
+        service.addMembers(info, id, userIds);
+        LogClient.writeLog(info, BUSINESS, OperateType.NEW, id, userIds);
     }
 
     /**
      * 移除用户组成员
      *
-     * @param info    用户关键信息
+     * @param loginInfo    用户关键信息
      * @param id      用户组ID
      * @param userIds 用户ID集合
      */
     @DeleteMapping("/v1.0/groups/{id}/members")
-    public void removeMembers(@RequestHeader("loginInfo") String info, @PathVariable Long id, @RequestBody List<Long> userIds) {
+    public void removeMembers(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id, @RequestBody List<Long> userIds) {
         if (userIds == null || userIds.isEmpty()) {
             throw new BusinessException("请选择需要移除的成员");
         }
 
-        LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
-        service.removeMembers(loginInfo, id, userIds);
+        LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
+        service.removeMembers(info, id, userIds);
+        LogClient.writeLog(info, BUSINESS, OperateType.DELETE, id, userIds);
     }
 
     /**

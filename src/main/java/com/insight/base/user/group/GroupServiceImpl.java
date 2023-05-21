@@ -1,7 +1,6 @@
 package com.insight.base.user.group;
 
 import com.github.pagehelper.PageHelper;
-import com.insight.base.user.common.client.LogClient;
 import com.insight.base.user.common.dto.GroupDto;
 import com.insight.base.user.common.dto.UserVo;
 import com.insight.base.user.common.mapper.GroupMapper;
@@ -11,7 +10,6 @@ import com.insight.utils.pojo.auth.LoginInfo;
 import com.insight.utils.pojo.base.BusinessException;
 import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.base.Search;
-import com.insight.utils.pojo.message.OperateType;
 import com.insight.utils.redis.Generator;
 
 import java.time.LocalDateTime;
@@ -24,7 +22,6 @@ import java.util.List;
  */
 @org.springframework.stereotype.Service
 public class GroupServiceImpl implements GroupService {
-    private static final String BUSINESS = "UserGroup";
     private final SnowflakeCreator creator;
     private final GroupMapper mapper;
 
@@ -90,8 +87,6 @@ public class GroupServiceImpl implements GroupService {
         dto.setCreatedTime(LocalDateTime.now());
 
         mapper.addGroup(dto);
-        LogClient.writeLog(info, BUSINESS, OperateType.NEW, id, dto);
-
         return id;
     }
 
@@ -110,7 +105,6 @@ public class GroupServiceImpl implements GroupService {
         }
 
         mapper.updateGroup(dto);
-        LogClient.writeLog(info, BUSINESS, OperateType.EDIT, id, dto);
     }
 
     /**
@@ -127,7 +121,6 @@ public class GroupServiceImpl implements GroupService {
         }
 
         mapper.deleteGroup(id);
-        LogClient.writeLog(info, BUSINESS, OperateType.DELETE, id, group);
     }
 
     /**
@@ -176,7 +169,6 @@ public class GroupServiceImpl implements GroupService {
         }
 
         mapper.addMembers(id, userIds);
-        LogClient.writeLog(info, BUSINESS, OperateType.NEW, id, userIds);
     }
 
     /**
@@ -194,7 +186,6 @@ public class GroupServiceImpl implements GroupService {
         }
 
         mapper.removeMembers(id, userIds);
-        LogClient.writeLog(info, BUSINESS, OperateType.DELETE, id, userIds);
     }
 
     /**
