@@ -99,7 +99,7 @@ public class ManageServiceImpl implements ManageService {
 
         Long tenantId = info.getTenantId();
         dto.setTenantId(tenantId);
-        dto.setType(tenantId == null ? 1 : 0);
+        dto.setType(tenantId == null ? 0 : 1);
         dto.setCreator(info.getName());
         dto.setCreatorId(info.getId());
         return core.processUser(dto);
