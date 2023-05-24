@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
             client.verifySmsCode(key);
         }
 
-        dto.setType(0);
+        dto.setType(1);
         dto.setCode(null);
         return core.processUser(dto);
     }
