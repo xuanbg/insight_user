@@ -20,7 +20,6 @@ import java.util.List;
  * @date 2019-09-01
  * @remark 用户管理服务控制器
  */
-@CrossOrigin
 @RestController
 @RequestMapping("/base/user/manage")
 public class ManageController {
