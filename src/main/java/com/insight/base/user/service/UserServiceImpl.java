@@ -206,6 +206,11 @@ public class UserServiceImpl implements UserService {
         var data = getUserById(id);
         data.setHeadImg(headImg);
         mapper.updateUser(data);
+
+        var key = "User:" + id;
+        if (Redis.hasKey(key)){
+            Redis.setHash(key, "headImg", headImg);
+        }
     }
 
     /**
