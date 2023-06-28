@@ -111,7 +111,7 @@ public class Core {
         }
 
         if (Util.isEmpty(user.getPassword())) {
-            String pw = Util.md5(user.getType() == 0 ? "123456" : Util.uuid());
+            String pw = Util.md5(user.getType() > 0 ? "123456" : Util.uuid());
             user.setPassword(pw);
         }
 
