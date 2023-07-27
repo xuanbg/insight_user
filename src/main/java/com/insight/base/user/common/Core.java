@@ -42,9 +42,13 @@ public class Core {
      */
     @Transactional
     public Long processUser(UserDto user) {
+        if (mapper.userIsExisted(user.getId(), user.getAccount(), user.getMobile(), user.getEmail())){
+            return null;
+        }
+
         var data = mapper.getUser(user.getId());
         if (data == null) {
-            return mapper.userIsExisted(user.getAccount(), user.getMobile(), user.getEmail()) ? null : addUser(user);
+            return addUser(user);
         } else {
             updateUser(user, data.convert(User.class));
             return data.getId();
@@ -60,10 +64,8 @@ public class Core {
     private void updateUser(UserDto user, User data) {
         var userId = user.getId();
         var mobile = data.getMobile();
-        if (!user.mobileEquals(mobile)) {
-            if (Util.isNotEmpty(mobile)) {
-                Redis.deleteKey("ID:" + mobile);
-            }
+        if (!user.mobileEquals(mobile) && Util.isNotEmpty(mobile)) {
+            Redis.deleteKey("ID:" + mobile);
         }
 
         if (!user.equals(data)) {
