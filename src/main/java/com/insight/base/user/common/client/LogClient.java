@@ -1,7 +1,6 @@
 package com.insight.base.user.common.client;
 
 import com.insight.base.user.common.dto.OperateType;
-import com.insight.utils.Json;
 import com.insight.utils.common.ApplicationContextHolder;
 import com.insight.utils.pojo.auth.LoginInfo;
 import com.insight.utils.pojo.message.Log;
@@ -31,7 +30,7 @@ public class LogClient {
         log.setType(type.toString());
         log.setBusiness(business);
         log.setBusinessId(id);
-        log.setContent(Json.clone(content, Object.class));
+        log.setContent(content);
         log.setCreator(info.getName());
         log.setCreatorId(info.getId());
 
