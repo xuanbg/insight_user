@@ -48,7 +48,6 @@ public interface UserMapper {
      * @param id 用户ID
      * @return 用户详情
      */
-    @Results({@Result(property = "openId", column = "open_id", javaType = Map.class, typeHandler = JsonTypeHandler.class)})
     @Select("select * from ibu_user where id = #{id};")
     User getUser(Long id);
 
