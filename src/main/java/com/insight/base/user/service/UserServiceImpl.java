@@ -14,7 +14,6 @@ import com.insight.utils.pojo.user.User;
 import com.insight.utils.pojo.user.UserDto;
 import com.insight.utils.redis.Redis;
 
-
 /**
  * @author 宣炳刚
  * @date 2019-09-01
@@ -208,7 +207,7 @@ public class UserServiceImpl implements UserService {
         mapper.updateUser(data);
 
         var key = "User:" + id;
-        if (Redis.hasKey(key)){
+        if (Redis.hasKey(key)) {
             Redis.setHash(key, "headImg", headImg);
         }
     }
