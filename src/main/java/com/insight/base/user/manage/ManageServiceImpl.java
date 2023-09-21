@@ -332,7 +332,7 @@ public class ManageServiceImpl implements ManageService {
                     LOGGER.info("删除缓存：ID:{}", account);
                 }
 
-                if (!account.equals(data.getAccount())) {
+                if (Util.isNotEmpty(sid) && !account.equals(data.getAccount())) {
                     HashOps.put("User:" + id, "account", account);
                     LOGGER.info("更新用户{}的account缓存", user.getName());
                 }
@@ -346,7 +346,7 @@ public class ManageServiceImpl implements ManageService {
                     LOGGER.info("删除缓存：ID:{}", mobile);
                 }
 
-                if (!mobile.equals(data.getMobile())) {
+                if (Util.isNotEmpty(sid) && !mobile.equals(data.getMobile())) {
                     HashOps.put("User:" + id, "mobile", mobile);
                     LOGGER.info("更新用户{}的mobile缓存", user.getName());
                 }
@@ -360,7 +360,7 @@ public class ManageServiceImpl implements ManageService {
                     LOGGER.info("删除缓存：ID:{}", unionId);
                 }
 
-                if (!unionId.equals(data.getUnionId())) {
+                if (Util.isNotEmpty(sid) && !unionId.equals(data.getUnionId())) {
                     HashOps.put("User:" + id, "unionId", unionId);
                     LOGGER.info("更新用户{}的unionId缓存", user.getName());
                 }
