@@ -9,10 +9,16 @@ import com.insight.base.user.common.mapper.UserMapper;
 import com.insight.utils.ReplyHelper;
 import com.insight.utils.Util;
 import com.insight.utils.pojo.auth.LoginInfo;
-import com.insight.utils.pojo.base.*;
+import com.insight.utils.pojo.base.BusinessException;
+import com.insight.utils.pojo.base.Reply;
+import com.insight.utils.pojo.base.Search;
+import com.insight.utils.pojo.base.TreeBase;
 import com.insight.utils.pojo.user.User;
 import com.insight.utils.pojo.user.UserDto;
+import com.insight.utils.redis.HashOps;
+import com.insight.utils.redis.KeyOps;
 import com.insight.utils.redis.Redis;
+import com.insight.utils.redis.StringOps;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -24,7 +30,7 @@ import java.util.List;
  */
 @org.springframework.stereotype.Service
 public class ManageServiceImpl implements ManageService {
-   private final UserMapper mapper;
+    private final UserMapper mapper;
     private final OrgClient client;
     private final Core core;
 
@@ -51,8 +57,8 @@ public class ManageServiceImpl implements ManageService {
     public Reply getUsers(Search search) {
         var orgId = search.getOwnerId();
         if (orgId != null) {
-            List<TreeVo> orgList = client.getSubOrganizes(orgId).getListFromData(TreeVo.class);
-            search.setLongSet(orgList.stream().map(BaseVo::getId).toList());
+            List<TreeBase> orgList = client.getSubOrganizes(orgId).getListFromData(TreeBase.class);
+            search.setLongSet(orgList.stream().map(TreeBase::getId).toList());
         }
 
         try (var page = PageHelper.startPage(search.getPageNum(), search.getPageSize()).setOrderBy(search.getOrderBy())
@@ -306,6 +312,51 @@ public class ManageServiceImpl implements ManageService {
         }
 
         return mapper.getCount(keyword);
+    }
+
+    @Override
+    public void clearRedis() {
+        var list = mapper.getAllUser();
+        for (var user : list) {
+            var id = user.getId();
+            var data = HashOps.entries("User:" + id, User.class);
+
+            var account = user.getAccount();
+            if (Util.isNotEmpty(account)) {
+                var sid = StringOps.get("ID:" + account);
+                if (Util.isNotEmpty(sid) && !id.equals(Long.parseLong(sid))) {
+                    KeyOps.delete("ID:" + account);
+                }
+
+                if (!account.equals(data.getAccount())) {
+                    HashOps.put("User:" + id, "account", account);
+                }
+            }
+
+            var mobile = user.getMobile();
+            if (Util.isNotEmpty(mobile)) {
+                var sid = StringOps.get("ID:" + mobile);
+                if (Util.isNotEmpty(sid) && !id.equals(Long.parseLong(sid))) {
+                    KeyOps.delete("ID:" + mobile);
+                }
+
+                if (!mobile.equals(data.getMobile())) {
+                    HashOps.put("User:" + id, "mobile", mobile);
+                }
+            }
+
+            var unionId = user.getUnionId();
+            if (Util.isNotEmpty(unionId)) {
+                var sid = StringOps.get("ID:" + unionId);
+                if (Util.isNotEmpty(sid) && !id.equals(Long.parseLong(sid))) {
+                    KeyOps.delete("ID:" + unionId);
+                }
+
+                if (!unionId.equals(data.getUnionId())) {
+                    HashOps.put("User:" + id, "unionId", unionId);
+                }
+            }
+        }
     }
 
     /**

@@ -113,4 +113,6 @@ public interface ManageService {
      * @return 用户数量
      */
     int getUserCount(String keyword);
+
+    void clearRedis();
 }

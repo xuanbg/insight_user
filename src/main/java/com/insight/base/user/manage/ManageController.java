@@ -30,7 +30,7 @@ public class ManageController {
     /**
      * 构造方法
      *
-     * @param client Feign客户端
+     * @param client  Feign客户端
      * @param service 自动注入的Service
      */
     public ManageController(LogServiceClient client, ManageService service) {
@@ -41,8 +41,8 @@ public class ManageController {
     /**
      * 查询用户列表
      *
-     * @param loginInfo   用户关键信息
-     * @param search 查询实体类
+     * @param loginInfo 用户关键信息
+     * @param search    查询实体类
      * @return Reply
      */
     @GetMapping("/v1.0/users")
@@ -80,7 +80,7 @@ public class ManageController {
      * 新增用户
      *
      * @param loginInfo 用户关键信息
-     * @param dto  用户DTO
+     * @param dto       用户DTO
      * @return Reply
      */
     @PostMapping("/v1.0/users")
@@ -96,7 +96,7 @@ public class ManageController {
      * 编辑用户
      *
      * @param loginInfo 用户关键信息
-     * @param dto  用户DTO
+     * @param dto       用户DTO
      */
     @PutMapping("/v1.0/users/{id}")
     public void editUser(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id, @Valid @RequestBody UserDto dto) {
@@ -111,7 +111,7 @@ public class ManageController {
      * 删除用户
      *
      * @param loginInfo 用户关键信息
-     * @param id   用户ID
+     * @param id        用户ID
      */
     @DeleteMapping("/v1.0/users/{id}")
     public void deleteUser(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
@@ -125,7 +125,7 @@ public class ManageController {
      * 禁用用户
      *
      * @param loginInfo 用户关键信息
-     * @param id   用户ID
+     * @param id        用户ID
      */
     @PutMapping("/v1.0/users/{id}/disable")
     public void disableUser(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
@@ -139,7 +139,7 @@ public class ManageController {
      * 启用用户
      *
      * @param loginInfo 用户关键信息
-     * @param id   用户ID
+     * @param id        用户ID
      */
     @PutMapping("/v1.0/users/{id}/enable")
     public void enableUser(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
@@ -153,7 +153,7 @@ public class ManageController {
      * 重置用户密码
      *
      * @param loginInfo 用户关键信息
-     * @param id   用户ID
+     * @param id        用户ID
      */
     @PutMapping("/v1.0/users/{id}/password")
     public void resetPassword(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
@@ -166,8 +166,8 @@ public class ManageController {
     /**
      * 获取可邀请用户列表
      *
-     * @param loginInfo   用户关键信息
-     * @param search 查询关键词
+     * @param loginInfo 用户关键信息
+     * @param search    查询关键词
      * @return Reply
      */
     @GetMapping("/v1.0/users/others")
@@ -182,7 +182,7 @@ public class ManageController {
      * 邀请用户
      *
      * @param loginInfo 用户关键信息
-     * @param id   用户ID
+     * @param id        用户ID
      */
     @PostMapping("/v1.0/users/{id}/relation")
     public void inviteUser(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
@@ -195,7 +195,7 @@ public class ManageController {
      * 清退用户
      *
      * @param loginInfo 用户关键信息
-     * @param id   用户ID
+     * @param id        用户ID
      */
     @DeleteMapping("/v1.0/users/{id}/relation")
     public void removeUser(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
@@ -239,5 +239,10 @@ public class ManageController {
     public Reply getAirportLog(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
         var info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
         return client.getLog(id);
+    }
+
+    @GetMapping("/v1.0/users/clear")
+    public void verifyPayPw() {
+        service.clearRedis();
     }
 }
