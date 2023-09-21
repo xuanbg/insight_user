@@ -19,6 +19,8 @@ import com.insight.utils.redis.HashOps;
 import com.insight.utils.redis.KeyOps;
 import com.insight.utils.redis.Redis;
 import com.insight.utils.redis.StringOps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -30,6 +32,7 @@ import java.util.List;
  */
 @org.springframework.stereotype.Service
 public class ManageServiceImpl implements ManageService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ManageServiceImpl.class);
     private final UserMapper mapper;
     private final OrgClient client;
     private final Core core;
@@ -326,10 +329,12 @@ public class ManageServiceImpl implements ManageService {
                 var sid = StringOps.get("ID:" + account);
                 if (Util.isNotEmpty(sid) && !id.equals(Long.parseLong(sid))) {
                     KeyOps.delete("ID:" + account);
+                    LOGGER.info("删除缓存：ID:{}", account);
                 }
 
                 if (!account.equals(data.getAccount())) {
                     HashOps.put("User:" + id, "account", account);
+                    LOGGER.info("更新用户{}的account缓存", user.getName());
                 }
             }
 
@@ -338,10 +343,12 @@ public class ManageServiceImpl implements ManageService {
                 var sid = StringOps.get("ID:" + mobile);
                 if (Util.isNotEmpty(sid) && !id.equals(Long.parseLong(sid))) {
                     KeyOps.delete("ID:" + mobile);
+                    LOGGER.info("删除缓存：ID:{}", mobile);
                 }
 
                 if (!mobile.equals(data.getMobile())) {
                     HashOps.put("User:" + id, "mobile", mobile);
+                    LOGGER.info("更新用户{}的mobile缓存", user.getName());
                 }
             }
 
@@ -350,10 +357,12 @@ public class ManageServiceImpl implements ManageService {
                 var sid = StringOps.get("ID:" + unionId);
                 if (Util.isNotEmpty(sid) && !id.equals(Long.parseLong(sid))) {
                     KeyOps.delete("ID:" + unionId);
+                    LOGGER.info("删除缓存：ID:{}", unionId);
                 }
 
                 if (!unionId.equals(data.getUnionId())) {
                     HashOps.put("User:" + id, "unionId", unionId);
+                    LOGGER.info("更新用户{}的unionId缓存", user.getName());
                 }
             }
         }
