@@ -302,6 +302,6 @@ public interface UserMapper {
     @Select("select count(*) from ibu_user where invalid = 0 and (code = #{keyword} or account = #{keyword} or mobile = #{keyword});")
     int getCount(String keyword);
 
-    @Select("select id, account, mobile, union_id from ibu_user;")
+    @Select("select id, name, account, mobile, union_id from ibu_user;")
     List<User> getAllUser();
 }
