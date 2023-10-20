@@ -240,9 +240,4 @@ public class ManageController {
         var info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
         return client.getLog(id);
     }
-
-    @GetMapping("/v1.0/users/clear")
-    public void verifyPayPw() {
-        service.clearRedis();
-    }
 }

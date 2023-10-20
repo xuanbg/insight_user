@@ -81,7 +81,7 @@ public interface UserMapper {
               join ibs_navigator m on m.id = f.nav_id
             where r.user_id = #{id} union
             select f.id, f.nav_id as parent_id, f.`index`, min(p.permit) + 3 as type, f.`name`,
-            case min(p.permit) when 0 then '禁止' else '允许' end as remark, min(p.permit) as permit
+            if(min(p.permit) = 0, '禁止', '允许') as remark, min(p.permit) as permit
             from ibv_user_roles r
               join ibr_role_permit p on p.role_id = r.role_id
               join ibs_function f on f.id = p.function_id

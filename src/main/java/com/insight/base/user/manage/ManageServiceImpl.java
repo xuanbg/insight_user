@@ -15,10 +15,7 @@ import com.insight.utils.pojo.base.Search;
 import com.insight.utils.pojo.base.TreeBase;
 import com.insight.utils.pojo.user.User;
 import com.insight.utils.pojo.user.UserDto;
-import com.insight.utils.redis.HashOps;
-import com.insight.utils.redis.KeyOps;
 import com.insight.utils.redis.Redis;
-import com.insight.utils.redis.StringOps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -315,57 +312,6 @@ public class ManageServiceImpl implements ManageService {
         }
 
         return mapper.getCount(keyword);
-    }
-
-    @Override
-    public void clearRedis() {
-        var list = mapper.getAllUser();
-        for (var user : list) {
-            var id = user.getId();
-            var data = HashOps.entries("User:" + id, User.class);
-
-            var account = user.getAccount();
-            if (Util.isNotEmpty(account)) {
-                var sid = StringOps.get("ID:" + account);
-                if (Util.isNotEmpty(sid) && !id.equals(Long.parseLong(sid))) {
-                    KeyOps.delete("ID:" + account);
-                    LOGGER.info("删除缓存：ID:{}", account);
-                }
-
-                if (Util.isNotEmpty(sid) && !account.equals(data.getAccount())) {
-                    HashOps.put("User:" + id, "account", account);
-                    LOGGER.info("更新用户{}的account缓存", user.getName());
-                }
-            }
-
-            var mobile = user.getMobile();
-            if (Util.isNotEmpty(mobile)) {
-                var sid = StringOps.get("ID:" + mobile);
-                if (Util.isNotEmpty(sid) && !id.equals(Long.parseLong(sid))) {
-                    KeyOps.delete("ID:" + mobile);
-                    LOGGER.info("删除缓存：ID:{}", mobile);
-                }
-
-                if (Util.isNotEmpty(sid) && !mobile.equals(data.getMobile())) {
-                    HashOps.put("User:" + id, "mobile", mobile);
-                    LOGGER.info("更新用户{}的mobile缓存", user.getName());
-                }
-            }
-
-            var unionId = user.getUnionId();
-            if (Util.isNotEmpty(unionId)) {
-                var sid = StringOps.get("ID:" + unionId);
-                if (Util.isNotEmpty(sid) && !id.equals(Long.parseLong(sid))) {
-                    KeyOps.delete("ID:" + unionId);
-                    LOGGER.info("删除缓存：ID:{}", unionId);
-                }
-
-                if (Util.isNotEmpty(sid) && !unionId.equals(data.getUnionId())) {
-                    HashOps.put("User:" + id, "unionId", unionId);
-                    LOGGER.info("更新用户{}的unionId缓存", user.getName());
-                }
-            }
-        }
     }
 
     /**
