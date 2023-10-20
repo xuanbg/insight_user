@@ -186,10 +186,8 @@ public class UserServiceImpl implements UserService {
 
         data.setNickname(wechatUser.getNickname());
         data.setUnionId(unionId);
-        if (Util.isEmpty(data.getHeadImg())) {
-            data.setHeadImg(wechatUser.getHeadimgurl());
-            Redis.setHash(key, "headImg", wechatUser.getHeadimgurl());
-        }
+        data.setHeadImg(wechatUser.getHeadimgurl());
+        Redis.setHash(key, "headImg", wechatUser.getHeadimgurl());
 
         mapper.updateUser(data);
     }
