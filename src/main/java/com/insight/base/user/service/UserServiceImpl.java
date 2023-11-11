@@ -301,11 +301,7 @@ public class UserServiceImpl implements UserService {
         }
 
         var id = dto.getId();
-        var user = mapper.getUser(id);
-        if (user == null) {
-            throw new BusinessException("ID不存在,未更新数据");
-        }
-
+        var user = getUserById(id);
         var result = client.verifySmsCode(dto.getKey());
         var reply = Json.toBean(result, Reply.class);
         if (!reply.getSuccess()) {

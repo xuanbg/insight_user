@@ -2,14 +2,12 @@ package com.insight.base.user.common.mapper;
 
 import com.insight.base.user.common.dto.FuncPermitDto;
 import com.insight.base.user.common.dto.UserVo;
-import com.insight.utils.pojo.base.JsonTypeHandler;
 import com.insight.utils.pojo.base.Search;
 import com.insight.utils.pojo.user.User;
 import com.insight.utils.pojo.user.UserDto;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author 宣炳刚
@@ -48,7 +46,6 @@ public interface UserMapper {
      * @param id 用户ID
      * @return 用户详情
      */
-    @Results({@Result(property = "openId", column = "open_id", javaType = Map.class, typeHandler = JsonTypeHandler.class)})
     @Select("select * from ibu_user where id = #{id};")
     User getUser(Long id);
 
