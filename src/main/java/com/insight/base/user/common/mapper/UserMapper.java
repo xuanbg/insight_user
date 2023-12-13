@@ -97,7 +97,7 @@ public interface UserMapper {
      */
     @Select("""
             select count(*) from ibu_user
-            where id != #{id}
+            where id != #{id} and invalid = 0
             and (account = #{account} or mobile = #{account} or email = #{account}
               or account = #{mobile} or mobile = #{mobile} or email = #{mobile}
               or account = #{email} or mobile = #{email} or email = #{email});
