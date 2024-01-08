@@ -300,6 +300,16 @@ public class ManageServiceImpl implements ManageService {
     }
 
     /**
+     * 清除绑定设备
+     *
+     * @param id 用户ID
+     */
+    @Override
+    public void removeDevice(Long id) {
+        mapper.removeDevice(id);
+    }
+
+    /**
      * 查询符合条件的用户数量
      *
      * @param keyword 查询条件

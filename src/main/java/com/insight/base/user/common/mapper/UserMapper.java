@@ -266,6 +266,15 @@ public interface UserMapper {
             """)
     void removeRoleRelation(Long tenantId, Long userId);
 
+
+    /**
+     * 清除绑定设备
+     *
+     * @param id 用户ID
+     */
+    @Delete("delete from ibu_user_device where user_id = #{id};")
+    void removeDevice(Long id);
+
     /**
      * 删除用户-用户组关系
      *

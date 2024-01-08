@@ -107,6 +107,13 @@ public interface ManageService {
     void removeUser(LoginInfo info, Long id);
 
     /**
+     * 清除绑定设备
+     *
+     * @param id 用户ID
+     */
+    void removeDevice(Long id);
+
+    /**
      * 查询符合条件的用户数量
      *
      * @param keyword 查询条件

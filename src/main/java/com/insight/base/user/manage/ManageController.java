@@ -200,8 +200,19 @@ public class ManageController {
     @DeleteMapping("/v1.0/users/{id}/relation")
     public void removeUser(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
         LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
-
         service.removeUser(info, id);
+    }
+
+    /**
+     * 清除绑定设备
+     *
+     * @param loginInfo 用户关键信息
+     * @param id        用户ID
+     */
+    @DeleteMapping("/v1.0/users/{id}/devices")
+    public void removeDevice(@RequestHeader("loginInfo") String loginInfo, @PathVariable Long id) {
+        LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
+        service.removeDevice(id);
     }
 
     /**
