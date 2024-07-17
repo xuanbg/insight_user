@@ -67,7 +67,7 @@ public interface UserService {
      * @param id      用户ID
      * @param headImg 头像
      */
-    void updateHeadImg(Long id, String headImg);
+    void updateHeadImg(Long id, Object headImg);
 
     /**
      * 更新用户备注

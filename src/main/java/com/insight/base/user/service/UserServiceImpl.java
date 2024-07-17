@@ -199,9 +199,9 @@ public class UserServiceImpl implements UserService {
      * @param headImg 头像
      */
     @Override
-    public void updateHeadImg(Long id, String headImg) {
+    public void updateHeadImg(Long id, Object headImg) {
         var data = getUserById(id);
-        data.setHeadImg(headImg);
+        data.setHeadImg(String.valueOf(headImg));
         mapper.updateUser(data);
 
         var key = "User:" + id;
