@@ -75,7 +75,7 @@ public interface UserService {
      * @param id     用户ID
      * @param remark 备注
      */
-    void updateRemark(Long id, String remark);
+    void updateRemark(Long id, Object remark);
 
     /**
      * 修改密码
