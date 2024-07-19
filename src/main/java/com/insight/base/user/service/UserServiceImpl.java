@@ -13,6 +13,8 @@ import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.user.User;
 import com.insight.utils.pojo.user.UserDto;
 import com.insight.utils.redis.Redis;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author 宣炳刚
@@ -21,6 +23,7 @@ import com.insight.utils.redis.Redis;
  */
 @org.springframework.stereotype.Service
 public class UserServiceImpl implements UserService {
+    private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserMapper mapper;
     private final MessageClient client;
     private final AuthClient authClient;
@@ -253,6 +256,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Reply resetPassword(PasswordDto dto) {
         var result = client.verifySmsCode(dto.getKey());
+        LOGGER.info(result);
         var reply = Json.toBean(result, Reply.class);
         if (!reply.getSuccess()) {
             return reply;
