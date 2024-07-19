@@ -27,6 +27,8 @@ public class FeignClientConfig implements RequestInterceptor {
             return;
         }
 
+        template.header("Accept", "application/json");
+        template.header("Content-Type", "application/json");
         var request = requestAttributes.getRequest();
         var headers = request.getHeaderNames();
         while (headers.hasMoreElements()) {
