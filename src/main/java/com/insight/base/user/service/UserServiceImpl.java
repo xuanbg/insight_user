@@ -5,7 +5,6 @@ import com.insight.base.user.common.client.AuthClient;
 import com.insight.base.user.common.client.MessageClient;
 import com.insight.base.user.common.dto.*;
 import com.insight.base.user.common.mapper.UserMapper;
-import com.insight.utils.Json;
 import com.insight.utils.Util;
 import com.insight.utils.WechatHelper;
 import com.insight.utils.pojo.base.BusinessException;
@@ -110,8 +109,7 @@ public class UserServiceImpl implements UserService {
 
             // 验证手机验证码
             var key = dto.getKey();
-            var result = client.verifySmsCode(key);
-            var reply = Json.toBean(result, Reply.class);
+            var reply = client.verifySmsCode(key);
             if (!reply.getSuccess()) {
                 throw new BusinessException(reply.getMessage());
             }
@@ -255,17 +253,16 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public Reply resetPassword(PasswordDto dto) {
-        var result = client.verifySmsCode(dto.getKey());
-        LOGGER.info(result);
-        var reply = Json.toBean(result, Reply.class);
+        var reply = client.verifySmsCode(dto.getKey());
+        LOGGER.info(reply.toString());
         if (!reply.getSuccess()) {
             return reply;
         }
 
         // 验证用户
-        var mobile = reply.getBeanFromData(String.class);
-        result = authClient.getCode(new CodeDto(mobile));
-        reply = Json.toBean(result, Reply.class);
+        var mobile = reply.getData().toString();
+        LOGGER.info(mobile);
+        var result = authClient.generateCode(new CodeDto(mobile));
         if (!reply.getSuccess()) {
             return reply;
         }
@@ -289,7 +286,7 @@ public class UserServiceImpl implements UserService {
         login.setAccount(mobile);
         login.setSignature(sign);
 
-        return authClient.getToken(login);
+        return authClient.generateToken(login);
     }
 
     /**
@@ -306,8 +303,7 @@ public class UserServiceImpl implements UserService {
 
         var id = dto.getId();
         var user = getUserById(id);
-        var result = client.verifySmsCode(dto.getKey());
-        var reply = Json.toBean(result, Reply.class);
+        var reply = client.verifySmsCode(dto.getKey());
         if (!reply.getSuccess()) {
             throw new BusinessException(reply.getMessage());
         }

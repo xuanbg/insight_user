@@ -1,6 +1,7 @@
 package com.insight.base.user.common.client;
 
 import com.insight.base.user.common.config.FeignClientConfig;
+import com.insight.utils.pojo.base.Reply;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,5 +21,5 @@ public interface MessageClient {
      * @return Reply
      */
     @GetMapping("/common/message/v1.0/codes/{key}/status?isCheck=false")
-    String verifySmsCode(@PathVariable String key);
+    Reply verifySmsCode(@PathVariable String key);
 }
