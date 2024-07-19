@@ -263,8 +263,8 @@ public class UserServiceImpl implements UserService {
         var mobile = reply.getData().toString();
         LOGGER.info(mobile);
         var result = authClient.generateCode(new CodeDto(mobile));
-        if (!reply.getSuccess()) {
-            return reply;
+        if (!result.getSuccess()) {
+            return result;
         }
 
         // 获取旧密码用于计算签名
@@ -278,7 +278,7 @@ public class UserServiceImpl implements UserService {
         mapper.updatePassword(id, password);
 
         // 构造登录数据并返回Token
-        var code = reply.getData().toString();
+        var code = result.getData().toString();
         var sign = Util.md5(Util.md5(mobile + pw) + code);
         var login = new LoginDto();
         login.setAppId(dto.getAppId());

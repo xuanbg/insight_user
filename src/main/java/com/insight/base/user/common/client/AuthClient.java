@@ -23,7 +23,7 @@ public interface AuthClient {
      * @return Reply
      */
     @PostMapping("/base/auth/v1.0/codes")
-    String generateCode(@RequestBody CodeDto dto);
+    Reply generateCode(@RequestBody CodeDto dto);
 
     /**
      * 获取Token
