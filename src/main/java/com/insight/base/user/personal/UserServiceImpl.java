@@ -1,4 +1,4 @@
-package com.insight.base.user.service;
+package com.insight.base.user.personal;
 
 import com.insight.base.user.common.Core;
 import com.insight.base.user.common.client.AuthClient;
@@ -12,17 +12,15 @@ import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.user.User;
 import com.insight.utils.pojo.user.UserDto;
 import com.insight.utils.redis.Redis;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 /**
  * @author 宣炳刚
  * @date 2019-09-01
  * @remark 用户服务
  */
-@org.springframework.stereotype.Service
+@Service
 public class UserServiceImpl implements UserService {
-    private final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserMapper mapper;
     private final MessageClient client;
     private final AuthClient authClient;
@@ -200,9 +198,9 @@ public class UserServiceImpl implements UserService {
      * @param headImg 头像
      */
     @Override
-    public void updateHeadImg(Long id, Object headImg) {
+    public void updateHeadImg(Long id, String headImg) {
         var data = getUserById(id);
-        data.setHeadImg(String.valueOf(headImg));
+        data.setHeadImg(headImg);
         mapper.updateUser(data);
 
         var key = "User:" + id;
@@ -254,14 +252,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public Reply resetPassword(PasswordDto dto) {
         var reply = client.verifySmsCode(dto.getKey());
-        LOGGER.info(reply.toString());
         if (!reply.getSuccess()) {
             return reply;
         }
 
         // 验证用户
         var mobile = reply.getData().toString();
-        LOGGER.info(mobile);
         var result = authClient.generateCode(new CodeDto(mobile));
         if (!result.getSuccess()) {
             return result;

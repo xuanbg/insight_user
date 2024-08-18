@@ -1,4 +1,4 @@
-package com.insight.base.user.service;
+package com.insight.base.user.personal;
 
 import com.insight.base.user.common.dto.MobileDto;
 import com.insight.base.user.common.dto.PasswordDto;
@@ -67,7 +67,7 @@ public interface UserService {
      * @param id      用户ID
      * @param headImg 头像
      */
-    void updateHeadImg(Long id, Object headImg);
+    void updateHeadImg(Long id, String headImg);
 
     /**
      * 更新用户备注
