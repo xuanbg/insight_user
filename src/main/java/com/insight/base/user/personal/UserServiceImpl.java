@@ -216,9 +216,9 @@ public class UserServiceImpl implements UserService {
      * @param remark 备注
      */
     @Override
-    public void updateRemark(Long id, Object remark) {
+    public void updateRemark(Long id, String remark) {
         var data = getUserById(id);
-        data.setRemark(String.valueOf(remark));
+        data.setRemark(remark);
         mapper.updateUser(data);
     }
 

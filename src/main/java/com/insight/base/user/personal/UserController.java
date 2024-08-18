@@ -115,9 +115,9 @@ public class UserController {
      * @param headImg 头像
      */
     @PutMapping("/v1.0/users/head")
-    public void updateHeadImg(@RequestHeader("loginInfo") String info, @RequestBody Object headImg) {
+    public void updateHeadImg(@RequestHeader("loginInfo") String info, @RequestBody String headImg) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
-        service.updateHeadImg(loginInfo.getId(), headImg.toString());
+        service.updateHeadImg(loginInfo.getId(), headImg);
     }
 
     /**
@@ -127,7 +127,7 @@ public class UserController {
      * @param remark 备注
      */
     @PutMapping("/v1.0/users/remark")
-    public void updateRemark(@RequestHeader("loginInfo") String info, @RequestBody Object remark) {
+    public void updateRemark(@RequestHeader("loginInfo") String info, @RequestBody String remark) {
         LoginInfo loginInfo = Json.toBeanFromBase64(info, LoginInfo.class);
         service.updateRemark(loginInfo.getId(), remark);
     }
