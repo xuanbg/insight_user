@@ -25,7 +25,7 @@ public interface UserMapper {
      */
     @Select("""
             <script>
-            select u.*, r.role_name, r.role_id, group_concat(t.name) as tenant
+            select u.id, group_concat(t.name) as tenant, u.type, u.name, u.mobile, u.email, r.role_name, r.role_id, u.creator, u.created_time
             from ibu_user u
               <if test = 'longSet != null and longSet.size() > 0'>
               join ibo_organize_member m on m.user_id = u.id and m.post_id in
@@ -36,11 +36,12 @@ public interface UserMapper {
                          from ibr_role r
                            join ibr_role_member m on m.role_id = r.id
                          group by m.member_id) r on r.member_id = u.id
-            where 0 = 0
-              <if test = 'tenantId != null'>and t.id = #{tenantId}</if>
+            <where>
+              <if test = 'tenantId != null'>and a.tenant_id = #{tenantId}</if>
+              <if test = 'invalid != null'>and u.invalid = #{invalid}</if>
               <if test = 'keyword != null'>and (u.id = #{keyword} or u.code = #{keyword} or u.account = #{keyword}
               or u.mobile = #{keyword} or u.name like concat('%',#{keyword},'%'))</if>
-              <if test = 'invalid != null'>and u.invalid = #{invalid} </if>
+            </where>
             group by u.id
             </script>
             """)
