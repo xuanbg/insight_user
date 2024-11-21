@@ -48,8 +48,10 @@ public class ManageController {
     @GetMapping("/v1.0/users")
     public Reply getUsers(@RequestHeader("loginInfo") String loginInfo, Search search) {
         LoginInfo info = Json.toBeanFromBase64(loginInfo, LoginInfo.class);
+        if (search.getTenantId() == null) {
+            search.setTenantId(info.getTenantId());
+        }
 
-        search.setTenantId(info.getTenantId());
         search.setOwnerId(info.getOrgId());
         return service.getUsers(search);
     }
