@@ -24,18 +24,24 @@ public interface UserMapper {
      * @return 用户列表
      */
     @Select("""
-            <script>select u.*, r.role_name, r.role_id from ibu_user u
-            <if test = 'tenantId != null'>join ibt_tenant_user t on t.user_id = u.id and t.tenant_id = #{tenantId}</if>
-            <if test = 'longSet != null and longSet.size() > 0'>join ibo_organize_member m on m.user_id = u.id and m.post_id in
-            (<foreach collection = "longSet" item = "item" index = "index" separator = ",">#{item}</foreach>)</if>
+            <script>
+            select u.*, r.role_name, r.role_id, t.name as tenant
+            from ibu_user u
+              <if test = 'tenantId != null'>join ibt_tenant_user t on t.user_id = u.id
+                and t.tenant_id = #{tenantId}</if>
+              <if test = 'longSet != null and longSet.size() > 0'>
+              join ibo_organize_member m on m.user_id = u.id and m.post_id in
+                (<foreach collection = "longSet" item = "item" index = "index" separator = ",">#{item}</foreach>)</if>
+              left join ibt_tenant_user a on a.user_id = u.id
+              left join ibt_tenant t on t.id = a.tenant_id
               left join (select m.member_id, group_concat(r.name) as role_name, group_concat(r.id) as role_id
-                from ibr_role r
-                join ibr_role_member m on m.role_id = r.id
-              group by m.member_id) r on r.member_id = u.id
+                         from ibr_role r
+                           join ibr_role_member m on m.role_id = r.id
+                         group by m.member_id) r on r.member_id = u.id
             where 0 = 0
-            <if test = 'keyword != null'>and (u.id = #{keyword} or u.code = #{keyword} or u.account = #{keyword}
+              <if test = 'keyword != null'>and (u.id = #{keyword} or u.code = #{keyword} or u.account = #{keyword}
               or u.mobile = #{keyword} or u.name like concat('%',#{keyword},'%'))</if>
-            <if test = 'invalid != null'>and u.invalid = #{invalid} </if>
+              <if test = 'invalid != null'>and u.invalid = #{invalid} </if>
             </script>
             """)
     List<UserVo> getUsers(Search search);

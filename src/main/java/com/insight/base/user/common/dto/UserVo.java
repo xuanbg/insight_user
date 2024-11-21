@@ -12,6 +12,11 @@ import java.time.LocalDateTime;
 public class UserVo extends UserBase {
 
     /**
+     * 租户名称
+     */
+    private String tenant;
+
+    /**
      * 登录账号
      */
     private String account;
@@ -50,6 +55,14 @@ public class UserVo extends UserBase {
      * 创建时间
      */
     private LocalDateTime createdTime;
+
+    public String getTenant() {
+        return tenant;
+    }
+
+    public void setTenant(String tenant) {
+        this.tenant = tenant;
+    }
 
     public String getAccount() {
         return account;
