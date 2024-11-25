@@ -9,7 +9,6 @@ import com.insight.utils.Util;
 import com.insight.utils.WechatHelper;
 import com.insight.utils.pojo.base.BusinessException;
 import com.insight.utils.pojo.base.Reply;
-import com.insight.utils.pojo.user.User;
 import com.insight.utils.pojo.user.UserDto;
 import com.insight.utils.redis.Redis;
 import org.springframework.stereotype.Service;
@@ -85,9 +84,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateName(Long id, String name) {
         var data = getUserById(id);
-
         data.setName(name);
-        mapper.updateUser(data);
+        core.processUser(data);
     }
 
     /**
@@ -113,17 +111,7 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        if (Util.isNotEmpty(data.getMobile())) {
-            Redis.deleteKey("ID:" + data.getMobile());
-        }
-
-        var key = "User:" + id;
-        Redis.setHash(key, "mobile", mobile);
-        Redis.set("ID:" + mobile, id.toString());
-
-        // 持久化数据
-        data.setMobile(mobile);
-        mapper.updateUser(data);
+        core.processUser(data);
     }
 
     /**
@@ -139,16 +127,7 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("Email[" + email + "]已被使用");
         }
 
-        if (Util.isNotEmpty(data.getEmail())) {
-            Redis.deleteKey("ID:" + data.getEmail());
-        }
-
-        var key = "User:" + id;
-        Redis.setHash(key, "email", email);
-        Redis.set("ID:" + email, id.toString());
-
-        data.setEmail(email);
-        mapper.updateUser(data);
+        core.processUser(data);
     }
 
     /**
@@ -172,23 +151,11 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("未取得微信用户的UnionID");
         }
 
-        var userId = dto.getId();
-        var data = getUserById(userId);
-        if (Util.isNotEmpty(data.getUnionId())) {
-            Redis.deleteKey("ID:" + data.getUnionId());
-        }
-
-        key = "User:" + userId;
-        Redis.setHash(key, "unionId", unionId);
-        Redis.setHash(key, "nickname", wechatUser.getNickname());
-        Redis.set("ID:" + unionId, userId.toString());
-
+        var data = getUserById(dto.getId());
         data.setNickname(wechatUser.getNickname());
         data.setUnionId(unionId);
         data.setHeadImg(wechatUser.getHeadimgurl());
-        Redis.setHash(key, "headImg", wechatUser.getHeadimgurl());
-
-        mapper.updateUser(data);
+        core.processUser(data);
     }
 
     /**
@@ -201,12 +168,7 @@ public class UserServiceImpl implements UserService {
     public void updateHeadImg(Long id, String headImg) {
         var data = getUserById(id);
         data.setHeadImg(headImg);
-        mapper.updateUser(data);
-
-        var key = "User:" + id;
-        if (Redis.hasKey(key)) {
-            Redis.setHash(key, "headImg", headImg);
-        }
+        core.processUser(data);
     }
 
     /**
@@ -219,7 +181,7 @@ public class UserServiceImpl implements UserService {
     public void updateRemark(Long id, String remark) {
         var data = getUserById(id);
         data.setRemark(remark);
-        mapper.updateUser(data);
+        core.processUser(data);
     }
 
     /**
@@ -332,12 +294,12 @@ public class UserServiceImpl implements UserService {
      * @param id 用户ID
      * @return 用户
      */
-    private User getUserById(Long id) {
+    private UserDto getUserById(Long id) {
         var user = mapper.getUser(id);
         if (user == null) {
             throw new BusinessException("指定的用户不存在");
         }
 
-        return user;
+        return user.convert(UserDto.class);
     }
 }

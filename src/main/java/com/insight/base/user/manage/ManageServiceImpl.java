@@ -126,54 +126,19 @@ public class ManageServiceImpl implements ManageService {
         String account = dto.getAccount();
         String mobile = dto.getMobile();
         String email = dto.getEmail();
-        if (account == null) {
-            account = data.getAccount();
-            dto.setAccount(account);
-        }
-
-        if (mobile == null) {
-            mobile = data.getMobile();
-            dto.setMobile(mobile);
-        }
-
-        if (email == null) {
-            email = data.getEmail();
-            dto.setEmail(email);
-        }
-
-        if (dto.getHeadImg() == null) {
-            dto.setHeadImg(data.getHeadImg());
-        }
 
         if (dto.getRemark() == null) {
             dto.setRemark(data.getRemark());
         }
 
         core.matchUser(id, account, mobile, email);
-
-        // 清理失效缓存数据
-        String oldAccount = data.getAccount();
-        if (!account.equals(oldAccount)) {
-            Redis.deleteKey("ID:" + oldAccount);
-        }
-
-        String oldMobile = data.getMobile();
-        if (oldMobile != null && !oldMobile.isEmpty()) {
-            Redis.deleteKey("ID:" + oldMobile);
-        }
-
-        String oldEmail = data.getEmail();
-        if (oldEmail != null && !oldEmail.isEmpty()) {
-            Redis.deleteKey("ID:" + oldEmail);
-        }
+        core.processUser(dto);
 
         var roleIds = dto.getRoleIds();
         if (roleIds != null && !roleIds.isEmpty()) {
             mapper.removeRoleRelation(info.getTenantId(), id);
             mapper.addRoleMember(id, roleIds);
         }
-
-        mapper.updateUser(dto.convert(User.class));
     }
 
     /**

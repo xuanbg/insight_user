@@ -163,8 +163,17 @@ public interface UserMapper {
      * @param user 用户DTO
      */
     @Update("""
-            update ibu_user set name = #{name}, account = #{account}, mobile = #{mobile}, email = #{email},
-            nickname = #{nickname}, union_id = #{unionId}, head_img = #{headImg}, remark = #{remark} where id = #{id};
+            update ibu_user set
+              name = #{name},
+              account = #{account},
+              mobile = #{mobile},
+              email = #{email},
+              nickname = #{nickname},
+              union_id = #{unionId},
+              head_img = #{headImg},
+              remark = #{remark},
+              invalid = 0
+            where id = #{id};
             """)
     void updateUser(User user);
 

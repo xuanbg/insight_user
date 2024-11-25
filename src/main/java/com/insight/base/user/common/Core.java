@@ -7,7 +7,8 @@ import com.insight.utils.pojo.base.BusinessException;
 import com.insight.utils.pojo.user.User;
 import com.insight.utils.pojo.user.UserDto;
 import com.insight.utils.redis.Generator;
-import com.insight.utils.redis.Redis;
+import com.insight.utils.redis.HashOps;
+import com.insight.utils.redis.KeyOps;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,102 +48,105 @@ public class Core {
 
         var data = mapper.getUser(user.getId());
         if (data == null) {
-            return addUser(user);
+            if (user.getId() == null) {
+                user.setId(creator.nextId(3));
+            }
+
+            if (user.getType() == null) {
+                user.setType(0);
+            }
+
+            if (Util.isEmpty(user.getCode())) {
+                String code = newUserCode(user.getTenantId());
+                user.setCode(code);
+            }
+
+            if (Util.isEmpty(user.getAccount())) {
+                user.setAccount(Util.uuid());
+            }
+
+            if (Util.isEmpty(user.getPassword())) {
+                String pw = Util.md5(user.getType() > 0 ? "123456" : Util.uuid());
+                user.setPassword(pw);
+            }
+
+            if (user.getBuiltin() == null) {
+                user.setBuiltin(false);
+            }
+
+            if (user.getCreatorId() == null) {
+                user.setCreator(user.getName());
+                user.setCreatorId(user.getId());
+            }
+
+            user.setCreatedTime(LocalDateTime.now());
+            mapper.addUser(user);
+
+            if (user.getTenantId() != null) {
+                mapper.addRelation(user.getTenantId(), user.getId());
+            }
+
+            var orgId = user.getOrgId();
+            if (orgId != null) {
+                mapper.addOrgMember(user.getId(), orgId);
+            }
+
+            var roleIds = user.getRoleIds();
+            if (Util.isNotEmpty(roleIds)) {
+                mapper.addRoleMember(user.getId(), roleIds);
+            }
+
+            return user.getId();
         } else {
-            updateUser(user, data.convert(User.class));
+            if (Util.isEmpty(user.getAccount())) {
+                user.setAccount(data.getAccount());
+            }
+
+            if (Util.isEmpty(user.getMobile())) {
+                user.setMobile(data.getMobile());
+            }
+
+            if (Util.isEmpty(user.getEmail())) {
+                user.setEmail(data.getEmail());
+            }
+
+            if (user.getUnionId() == null) {
+                user.setUnionId(data.getUnionId());
+            }
+
+            if (Util.isEmpty(user.getHeadImg())) {
+                user.setHeadImg(data.getHeadImg());
+            }
+
+            if (Util.isEmpty(user.getRemark())) {
+                user.setRemark(data.getRemark());
+            }
+
+            // 清理失效缓存数据
+            var account = data.getAccount();
+            if (!account.equals(user.getAccount())) {
+                KeyOps.delete("ID:" + account);
+            }
+
+            var mobile = data.getMobile();
+            if (Util.isNotEmpty(mobile) && !mobile.equals(user.getMobile())) {
+                KeyOps.delete("ID:" + mobile);
+            }
+
+            String email = data.getEmail();
+            if (Util.isNotEmpty(email) && !email.equals(user.getEmail())) {
+                KeyOps.delete("ID:" + email);
+            }
+
+            var key = "User:" + user.getId();
+            user.setInvalid(false);
+            if (KeyOps.hasKey(key)) {
+                HashOps.putAll(key, user);
+            }
+
+            mapper.updateUser(user.convert(User.class));
             return data.getId();
         }
-    }
-
-    /**
-     * 更新用户信息
-     *
-     * @param user 用户数据
-     * @param data 库中数据
-     */
-    private void updateUser(UserDto user, User data) {
-        var userId = user.getId();
-        var mobile = data.getMobile();
-        if (!user.mobileEquals(mobile) && Util.isNotEmpty(mobile)) {
-            Redis.deleteKey("ID:" + mobile);
-        }
-
-        if (!user.equals(data)) {
-            user.setAccount(data.getAccount());
-            user.setEmail(data.getEmail());
-            user.setHeadImg(data.getHeadImg());
-            user.setRemark(data.getRemark());
-            mapper.updateUser(user.convert(User.class));
-        }
-
-        if (user.getInvalid() != data.getInvalid()) {
-            mapper.updateStatus(userId, user.getInvalid());
-            String key = "User:" + userId;
-            if (Redis.hasKey(key)) {
-                Redis.setHash(key, "invalid", user.getInvalid());
-            }
-        }
-    }
-
-    /**
-     * 新增用户
-     *
-     * @param user 用户数据
-     * @return 用户ID
-     */
-    private Long addUser(UserDto user) {
-        var userId = user.getId();
-        var tenantId = user.getTenantId();
-        if (userId == null) {
-            userId = creator.nextId(3);
-            user.setId(userId);
-        }
-
-        if (user.getType() == null) {
-            user.setType(0);
-        }
-
-        if (Util.isEmpty(user.getCode())) {
-            String code = newUserCode(tenantId);
-            user.setCode(code);
-        }
-
-        if (Util.isEmpty(user.getAccount())) {
-            user.setAccount(Util.uuid());
-        }
-
-        if (Util.isEmpty(user.getPassword())) {
-            String pw = Util.md5(user.getType() > 0 ? "123456" : Util.uuid());
-            user.setPassword(pw);
-        }
-
-        if (user.getBuiltin() == null) {
-            user.setBuiltin(false);
-        }
-
-        if (user.getCreatorId() == null) {
-            user.setCreator(user.getName());
-            user.setCreatorId(user.getId());
-        }
-
-        user.setCreatedTime(LocalDateTime.now());
-        mapper.addUser(user);
-
-        if (tenantId != null) {
-            mapper.addRelation(tenantId, userId);
-        }
-
-        var orgId = user.getOrgId();
-        if (orgId != null) {
-            mapper.addOrgMember(userId, orgId);
-        }
-
-        var roleIds = user.getRoleIds();
-        if (Util.isNotEmpty(roleIds)) {
-            mapper.addRoleMember(userId, roleIds);
-        }
-
-        return user.getId();
     }
 
     /**
