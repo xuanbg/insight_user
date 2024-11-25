@@ -4,7 +4,6 @@ import com.insight.base.user.common.mapper.UserMapper;
 import com.insight.utils.SnowflakeCreator;
 import com.insight.utils.Util;
 import com.insight.utils.pojo.base.BusinessException;
-import com.insight.utils.pojo.user.User;
 import com.insight.utils.pojo.user.UserDto;
 import com.insight.utils.redis.Generator;
 import com.insight.utils.redis.HashOps;
@@ -144,7 +143,7 @@ public class Core {
                 HashOps.putAll(key, user);
             }
 
-            mapper.updateUser(user.convert(User.class));
+            mapper.updateUser(user);
             return data.getId();
         }
     }

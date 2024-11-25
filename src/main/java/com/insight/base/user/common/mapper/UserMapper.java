@@ -175,7 +175,7 @@ public interface UserMapper {
               invalid = 0
             where id = #{id};
             """)
-    void updateUser(User user);
+    void updateUser(UserDto user);
 
     /**
      * 更新密码
