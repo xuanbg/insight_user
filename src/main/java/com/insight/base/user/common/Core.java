@@ -138,7 +138,6 @@ public class Core {
             }
 
             var key = "User:" + user.getId();
-            user.setInvalid(false);
             if (KeyOps.hasKey(key)) {
                 HashOps.putAll(key, user);
             }
