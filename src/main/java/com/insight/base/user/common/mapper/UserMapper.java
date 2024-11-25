@@ -171,7 +171,8 @@ public interface UserMapper {
               nickname = #{nickname},
               union_id = #{unionId},
               head_img = #{headImg},
-              remark = #{remark}
+              remark = #{remark},
+              invalid = #{invalid}
             where id = #{id};
             """)
     void updateUser(UserDto user);
