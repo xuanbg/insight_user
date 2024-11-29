@@ -97,35 +97,35 @@ public class Core {
 
             return user.getId();
         } else {
-            if (Util.isEmpty(user.getName())) {
+            if (Util.isNotEmpty(user.getName())) {
                 data.setName(user.getName());
             }
 
-            if (Util.isEmpty(user.getAccount())) {
+            if (Util.isNotEmpty(user.getAccount())) {
                 data.setAccount(user.getAccount());
             }
 
-            if (Util.isEmpty(user.getMobile())) {
+            if (Util.isNotEmpty(user.getMobile())) {
                 data.setMobile(user.getMobile());
             }
 
-            if (Util.isEmpty(user.getEmail())) {
+            if (Util.isNotEmpty(user.getEmail())) {
                 data.setEmail(user.getEmail());
             }
 
-            if (Util.isEmpty(user.getNickname())) {
+            if (Util.isNotEmpty(user.getNickname())) {
                 data.setNickname(user.getNickname());
             }
 
-            if (user.getUnionId() == null) {
+            if (user.getUnionId() != null) {
                 data.setUnionId(user.getUnionId());
             }
 
-            if (Util.isEmpty(user.getHeadImg())) {
+            if (Util.isNotEmpty(user.getHeadImg())) {
                 data.setHeadImg(user.getHeadImg());
             }
 
-            if (Util.isEmpty(user.getRemark())) {
+            if (Util.isNotEmpty(user.getRemark())) {
                 data.setRemark(user.getRemark());
             }
 
