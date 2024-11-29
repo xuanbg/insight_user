@@ -97,28 +97,40 @@ public class Core {
 
             return user.getId();
         } else {
+            if (Util.isEmpty(user.getName())) {
+                data.setName(user.getName());
+            }
+
             if (Util.isEmpty(user.getAccount())) {
-                user.setAccount(data.getAccount());
+                data.setAccount(user.getAccount());
             }
 
             if (Util.isEmpty(user.getMobile())) {
-                user.setMobile(data.getMobile());
+                data.setMobile(user.getMobile());
             }
 
             if (Util.isEmpty(user.getEmail())) {
-                user.setEmail(data.getEmail());
+                data.setEmail(user.getEmail());
+            }
+
+            if (Util.isEmpty(user.getNickname())) {
+                data.setNickname(user.getNickname());
             }
 
             if (user.getUnionId() == null) {
-                user.setUnionId(data.getUnionId());
+                data.setUnionId(user.getUnionId());
             }
 
             if (Util.isEmpty(user.getHeadImg())) {
-                user.setHeadImg(data.getHeadImg());
+                data.setHeadImg(user.getHeadImg());
             }
 
             if (Util.isEmpty(user.getRemark())) {
-                user.setRemark(data.getRemark());
+                data.setRemark(user.getRemark());
+            }
+
+            if (user.getInvalid() != null) {
+                data.setInvalid(user.getInvalid());
             }
 
             // 清理失效缓存数据
@@ -139,10 +151,10 @@ public class Core {
 
             var key = "User:" + user.getId();
             if (KeyOps.hasKey(key)) {
-                HashOps.putAll(key, user);
+                HashOps.putAll(key, data);
             }
 
-            mapper.updateUser(user);
+            mapper.updateUser(data);
             return data.getId();
         }
     }
