@@ -97,42 +97,6 @@ public class Core {
 
             return user.getId();
         } else {
-            if (Util.isNotEmpty(user.getName())) {
-                data.setName(user.getName());
-            }
-
-            if (Util.isNotEmpty(user.getAccount())) {
-                data.setAccount(user.getAccount());
-            }
-
-            if (Util.isNotEmpty(user.getMobile())) {
-                data.setMobile(user.getMobile());
-            }
-
-            if (Util.isNotEmpty(user.getEmail())) {
-                data.setEmail(user.getEmail());
-            }
-
-            if (Util.isNotEmpty(user.getNickname())) {
-                data.setNickname(user.getNickname());
-            }
-
-            if (user.getUnionId() != null) {
-                data.setUnionId(user.getUnionId());
-            }
-
-            if (Util.isNotEmpty(user.getHeadImg())) {
-                data.setHeadImg(user.getHeadImg());
-            }
-
-            if (Util.isNotEmpty(user.getRemark())) {
-                data.setRemark(user.getRemark());
-            }
-
-            if (user.getInvalid() != null) {
-                data.setInvalid(user.getInvalid());
-            }
-
             // 清理失效缓存数据
             var account = data.getAccount();
             if (!account.equals(user.getAccount())) {
@@ -149,13 +113,48 @@ public class Core {
                 KeyOps.delete("ID:" + email);
             }
 
+            // 更新缓存数据
             var key = "User:" + user.getId();
             if (KeyOps.hasKey(key)) {
-                HashOps.putAll(key, data);
+                if (Util.isNotEmpty(user.getName())) {
+                    HashOps.put(key, "name", user.getName());
+                }
+
+                if (Util.isNotEmpty(user.getAccount())) {
+                    HashOps.put(key, "account", user.getAccount());
+                }
+
+                if (Util.isNotEmpty(user.getMobile())) {
+                    HashOps.put(key, "mobile", user.getMobile());
+                }
+
+                if (Util.isNotEmpty(user.getEmail())) {
+                    HashOps.put(key, "email", user.getEmail());
+                }
+
+                if (Util.isNotEmpty(user.getNickname())) {
+                    HashOps.put(key, "nickname", user.getNickname());
+                }
+
+                if (user.getUnionId() != null) {
+                    HashOps.put(key, "unionId", user.getUnionId());
+                }
+
+                if (Util.isNotEmpty(user.getHeadImg())) {
+                    HashOps.put(key, "headImg", user.getHeadImg());
+                }
+
+                if (Util.isNotEmpty(user.getRemark())) {
+                    HashOps.put(key, "remark", user.getRemark());
+                }
+
+                if (user.getInvalid() != null) {
+                    HashOps.put(key, "invalid", user.getInvalid());
+                }
             }
 
-            mapper.updateUser(data);
-            return data.getId();
+            mapper.updateUser(user);
+            return user.getId();
         }
     }
 
