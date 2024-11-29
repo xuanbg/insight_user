@@ -97,10 +97,7 @@ public interface UserMapper {
     /**
      * 匹配关键词的用户是否存在
      *
-     * @param id      用户ID
-     * @param account 账号
-     * @param mobile  手机号
-     * @param email   电子邮箱
+     * @param user 用户DTO
      * @return 是否存在
      */
     @Select("""
@@ -110,7 +107,7 @@ public interface UserMapper {
               or account = #{mobile} or mobile = #{mobile} or email = #{mobile}
               or account = #{email} or mobile = #{email} or email = #{email});
             """)
-    Boolean userIsExisted(Long id, String account, String mobile, String email);
+    Boolean userIsExisted(UserDto user);
 
     /**
      * 新增用户

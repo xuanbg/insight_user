@@ -41,7 +41,7 @@ public class Core {
      */
     @Transactional
     public Long processUser(UserDto user) {
-        if (mapper.userIsExisted(user.getId(), user.getAccount(), user.getMobile(), user.getEmail())) {
+        if (mapper.userIsExisted(user)) {
             return null;
         }
 
@@ -94,8 +94,6 @@ public class Core {
             if (Util.isNotEmpty(roleIds)) {
                 mapper.addRoleMember(user.getId(), roleIds);
             }
-
-            return user.getId();
         } else {
             // 清理失效缓存数据
             var account = data.getAccount();
@@ -115,47 +113,62 @@ public class Core {
 
             // 更新缓存数据
             var key = "User:" + user.getId();
-            if (KeyOps.hasKey(key)) {
-                if (Util.isNotEmpty(user.getName())) {
-                    HashOps.put(key, "name", user.getName());
-                }
-
-                if (Util.isNotEmpty(user.getAccount())) {
-                    HashOps.put(key, "account", user.getAccount());
-                }
-
-                if (Util.isNotEmpty(user.getMobile())) {
-                    HashOps.put(key, "mobile", user.getMobile());
-                }
-
-                if (Util.isNotEmpty(user.getEmail())) {
-                    HashOps.put(key, "email", user.getEmail());
-                }
-
-                if (Util.isNotEmpty(user.getNickname())) {
-                    HashOps.put(key, "nickname", user.getNickname());
-                }
-
-                if (user.getUnionId() != null) {
-                    HashOps.put(key, "unionId", user.getUnionId());
-                }
-
-                if (Util.isNotEmpty(user.getHeadImg())) {
-                    HashOps.put(key, "headImg", user.getHeadImg());
-                }
-
-                if (Util.isNotEmpty(user.getRemark())) {
-                    HashOps.put(key, "remark", user.getRemark());
-                }
-
-                if (user.getInvalid() != null) {
-                    HashOps.put(key, "invalid", user.getInvalid());
-                }
+            if (Util.isEmpty(user.getName())) {
+                user.setName(data.getName());
+            } else if (KeyOps.hasKey(key)) {
+                HashOps.put(key, "name", user.getName());
             }
 
+            if (Util.isEmpty(user.getAccount())) {
+                user.setAccount(data.getAccount());
+            } else if (KeyOps.hasKey(key)) {
+                HashOps.put(key, "account", user.getAccount());
+            }
+
+            if (Util.isEmpty(user.getMobile())) {
+                user.setMobile(data.getMobile());
+            } else if (KeyOps.hasKey(key)) {
+                HashOps.put(key, "mobile", user.getMobile());
+            }
+
+            if (Util.isEmpty(user.getEmail())) {
+                user.setEmail(data.getEmail());
+            } else if (KeyOps.hasKey(key)) {
+                HashOps.put(key, "email", user.getEmail());
+            }
+
+            if (Util.isEmpty(user.getNickname())) {
+                user.setNickname(data.getNickname());
+            } else if (KeyOps.hasKey(key)) {
+                HashOps.put(key, "nickname", user.getNickname());
+            }
+
+            if (user.getUnionId() == null) {
+                user.setUnionId(data.getUnionId());
+            } else if (KeyOps.hasKey(key)) {
+                HashOps.put(key, "unionId", user.getUnionId());
+            }
+
+            if (Util.isEmpty(user.getHeadImg())) {
+                user.setHeadImg(data.getHeadImg());
+            } else if (KeyOps.hasKey(key)) {
+                HashOps.put(key, "headImg", user.getHeadImg());
+            }
+
+            if (Util.isEmpty(user.getRemark())) {
+                user.setRemark(data.getRemark());
+            } else if (KeyOps.hasKey(key)) {
+                HashOps.put(key, "remark", user.getRemark());
+            }
+
+            if (user.getInvalid() == null) {
+                user.setInvalid(data.getInvalid());
+            } else if (KeyOps.hasKey(key)) {
+                HashOps.put(key, "invalid", user.getInvalid());
+            }
             mapper.updateUser(user);
-            return user.getId();
         }
+        return user.getId();
     }
 
     /**
