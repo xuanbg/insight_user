@@ -180,6 +180,7 @@ public class ManageServiceImpl implements ManageService {
 
         if (info.getTenantId() != null){
             mapper.disableUser(info.getTenantId(), id, status);
+            return;
         }
 
         // 更新缓存
