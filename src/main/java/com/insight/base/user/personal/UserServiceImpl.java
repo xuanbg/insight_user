@@ -10,7 +10,8 @@ import com.insight.utils.WechatHelper;
 import com.insight.utils.pojo.base.BusinessException;
 import com.insight.utils.pojo.base.Reply;
 import com.insight.utils.pojo.user.UserDto;
-import com.insight.utils.redis.Redis;
+import com.insight.utils.redis.HashOps;
+import com.insight.utils.redis.StringOps;
 import org.springframework.stereotype.Service;
 
 /**
@@ -140,7 +141,7 @@ public class UserServiceImpl implements UserService {
         var code = dto.getCode();
         var wechatAppId = dto.getWeChatAppId();
         var key = "WeChatApp:" + wechatAppId;
-        var secret = Redis.get(key, "secret");
+        var secret = HashOps.get(key, "secret");
         var wechatUser = WechatHelper.getUserInfo(code, wechatAppId, secret);
         if (wechatUser == null) {
             throw new BusinessException("微信授权失败");
@@ -201,7 +202,7 @@ public class UserServiceImpl implements UserService {
 
         var key = "User:" + id;
         var password = dto.getPassword();
-        Redis.setHash(key, "password", password);
+        HashOps.put(key, "password", password);
         mapper.updatePassword(id, password);
     }
 
@@ -226,13 +227,13 @@ public class UserServiceImpl implements UserService {
         }
 
         // 获取旧密码用于计算签名
-        var id = Long.valueOf(Redis.get("ID:" + mobile));
+        var id = Long.valueOf(StringOps.get("ID:" + mobile));
         var key = "User:" + id;
-        var pw = Redis.get(key, "password");
+        var pw = HashOps.get(key, "password");
 
         // 更新密码
         var password = dto.getPassword();
-        Redis.setHash(key, "password", password);
+        HashOps.put(key, "password", password);
         mapper.updatePassword(id, password);
 
         // 构造登录数据并返回Token
@@ -266,7 +267,7 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException(reply.getMessage());
         }
 
-        Redis.setHash("User:" + id, "payPassword", password);
+        HashOps.put("User:" + id, "payPassword", password);
         mapper.updatePayPassword(id, password);
     }
 
@@ -278,7 +279,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void verifyPayPw(Long id, String key) {
-        var payPassword = Redis.get("User:" + id, "payPassword");
+        var payPassword = HashOps.get("User:" + id, "payPassword");
         if (payPassword == null || payPassword.isEmpty()) {
             throw new BusinessException("当前未设置支付密码,请先设置支付密码");
         }

@@ -22,9 +22,14 @@ public interface GroupMapper {
      * @param search 查询关键词
      * @return 用户组列表
      */
-    @Select("<script>select id, code, name, remark, builtin from ibu_group where tenant_id = #{tenantId} " +
-            "<if test = 'keyword != null'>and (code = #{keyword} or name like concat('%',#{keyword},'%')) </if>" +
-            "</script>")
+    @Select("""
+            <script>
+            select id, code, name, remark, builtin
+            from ibu_group
+            where tenant_id = #{tenantId}
+              <if test = 'keyword != null'>and (code = #{keyword} or name like concat('%',#{keyword},'%')) </if>
+            </script>
+            """)
     List<GroupListDto> getGroups(Search search);
 
     /**
@@ -41,8 +46,10 @@ public interface GroupMapper {
      *
      * @param group 用户组DTO
      */
-    @Insert("insert ibu_group(id, tenant_id, code, name, remark, builtin, creator, creator_id, created_time) values " +
-            "(#{id}, #{tenantId}, #{code}, #{name}, #{remark}, #{builtin}, #{creator}, #{creatorId}, #{createdTime});")
+    @Insert("""
+            insert ibu_group(id, tenant_id, code, name, remark, builtin, creator, creator_id, created_time) values
+            (#{id}, #{tenantId}, #{code}, #{name}, #{remark}, #{builtin}, #{creator}, #{creatorId}, #{createdTime});
+            """)
     void addGroup(GroupDto group);
 
     /**
@@ -67,9 +74,15 @@ public interface GroupMapper {
      * @param search 查询关键词
      * @return 用户组成员集合
      */
-    @Select("<script>select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.builtin, u.invalid from ibu_group_member m join ibu_user u on u.id = m.user_id " +
-            "<if test = 'keyword != null'>and (u.code = #{keyword} or u.account = #{keyword} or u.name like concat('%',#{keyword},'%')) </if>" +
-            "where m.group_id = #{id}</script>")
+    @Select("""
+            <script>
+            select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.builtin, u.invalid
+            from ibu_group_member m
+              join ibu_user u on u.id = m.user_id
+              <if test = 'keyword != null'>and (u.code = #{keyword} or u.account = #{keyword} or u.name like concat('%',#{keyword},'%'))</if>
+            where m.group_id = #{id}
+            </script>
+            """)
     List<UserVo> getMembers(Search search);
 
     /**
@@ -78,9 +91,18 @@ public interface GroupMapper {
      * @param id 用户组ID
      * @return 用户列表
      */
-    @Select("select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.builtin, u.invalid from ibu_user u " +
-            "join ibt_tenant_user t on t.user_id = u.id join ibu_group g on g.tenant_id = t.tenant_id and g.id = #{id} " +
-            "left join ibu_group_member m on m.group_id = g.id and m.user_id = u.id where isnull(m.id)")
+    @Select("""
+            select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.builtin, u.invalid
+            from ibu_user u
+              join ibt_tenant_user t on t.user_id = u.id
+                and t.invalid = 0
+              join ibu_group g on g.tenant_id = t.tenant_id
+                and g.id = #{id}
+              left join ibu_group_member m on m.group_id = g.id
+                and m.user_id = u.id
+            where u.invalid = 0
+              and isnull(m.id);
+            """)
     List<UserVo> getOthers(Long id);
 
     /**
@@ -89,9 +111,12 @@ public interface GroupMapper {
      * @param id      用户组ID
      * @param userIds 用户ID集合
      */
-    @Insert("<script>insert ibu_group_member (group_id, user_id) values " +
-            "<foreach collection = \"list\" item = \"item\" index = \"index\" separator = \",\">" +
-            "(#{id}, #{item})</foreach>;</script>")
+    @Insert("""
+            <script>
+            insert ibu_group_member (group_id, user_id) values
+            <foreach collection = "list" item = "item" index = "index" separator = ",">(#{id}, #{item})</foreach>;
+            </script>
+            """)
     void addMembers(@Param("id") Long id, @Param("list") List<Long> userIds);
 
     /**
@@ -100,9 +125,14 @@ public interface GroupMapper {
      * @param id      用户组ID
      * @param userIds 用户ID集合
      */
-    @Delete("<script>delete from ibu_group_member where group_id = #{id} and user_id in " +
-            "(<foreach collection = \"list\" item = \"item\" index = \"index\" separator = \",\">" +
-            "#{item}</foreach>);</script>")
+    @Delete("""
+            <script>
+            delete
+            from ibu_group_member
+            where group_id = #{id}
+              and user_id in (<foreach collection = "list" item = "item" index = "index" separator = ",">#{item}</foreach>);
+            </script>
+            """)
     void removeMembers(@Param("id") Long id, @Param("list") List<Long> userIds);
 
     /**

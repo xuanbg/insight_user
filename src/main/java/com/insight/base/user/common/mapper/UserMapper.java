@@ -139,9 +139,15 @@ public interface UserMapper {
      * @return 用户数量
      */
     @Select("""
-            <script>select count(*) from ibu_user u
-            <if test = 'tenantId != null'>join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId}</if>
-            where u.code = #{code};</script>
+            <script>
+            select count(*)
+            from ibu_user u
+              <if test = 'tenantId != null'>
+              join ibt_tenant_user r on r.user_id = u.id
+                and r.tenant_id = #{tenantId}
+              </if>
+            where u.code = #{code};
+            </script>
             """)
     Boolean codeIsExisted(@Param("tenantId") Long tenantId, @Param("code") String code);
 
@@ -152,7 +158,13 @@ public interface UserMapper {
      * @param userId   用户ID
      * @return 用户数
      */
-    @Select("select count(*) from ibt_tenant_user where tenant_id = #{tenantId} and user_id = #{userId};")
+    @Select("""
+            select count(*)
+            from ibt_tenant_user
+            where tenant_id = #{tenantId}
+              and user_id = #{userId}
+              and invalid = 0;
+            """)
     int matchRelation(@Param("tenantId") Long tenantId, @Param("userId") Long userId);
 
     /**
@@ -194,6 +206,21 @@ public interface UserMapper {
     void updatePayPassword(Long id, String password);
 
     /**
+     * 禁用用户
+     *
+     * @param tenantId 租户ID
+     * @param id       用户ID
+     * @param status   禁用/启用状态
+     */
+    @Update("""
+            update ibt_tenant_user set
+              invalid = #{status}
+            where tenant_id = #{tenantId}
+              and user_id = #{id};
+            """)
+    void disableUser(Long tenantId, Long id, Boolean status);
+
+    /**
      * 禁用/启用用户
      *
      * @param id     用户ID
@@ -208,9 +235,14 @@ public interface UserMapper {
      * @param id 用户ID
      */
     @Delete("""
-            delete u, g, t, o, r from ibu_user u left join ibu_group_member g on g.user_id = u.id
-            left join ibt_tenant_user t on t.user_id = u.id left join ibo_organize_member o on o.user_id = u.id
-            left join ibr_role_member r on r.member_id = u.id and r.type = 1 where u.id = #{id};
+            delete u, g, t, o, r
+            from ibu_user u
+              left join ibu_group_member g on g.user_id = u.id
+              left join ibt_tenant_user t on t.user_id = u.id
+              left join ibo_organize_member o on o.user_id = u.id
+              left join ibr_role_member r on r.member_id = u.id
+                and r.type = 1
+            where u.id = #{id};
             """)
     void deleteUser(Long id);
 
@@ -221,9 +253,13 @@ public interface UserMapper {
      * @return 用户列表
      */
     @Select("""
-            select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.builtin, u.invalid from ibu_user u
-            left join ibt_tenant_user r on r.user_id = u.id and r.tenant_id = #{tenantId}
-            where isnull(r.id) and (u.account = #{keyword} or u.mobile = #{keyword} or u.`name` like concat('%',#{keyword},'%'))
+            select u.id, u.code, u.name, u.account, u.mobile, u.remark, u.builtin, u.invalid
+            from ibu_user u
+              left join ibt_tenant_user r on r.user_id = u.id
+                and r.tenant_id = #{tenantId}
+            where u.invalid = 0
+              and isnull(r.id)
+              and (u.account = #{keyword} or u.mobile = #{keyword} or u.`name` like concat('%',#{keyword},'%'))
             """)
     List<UserVo> getOtherUsers(Search search);
 

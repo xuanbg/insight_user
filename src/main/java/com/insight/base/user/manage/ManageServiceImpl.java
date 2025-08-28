@@ -15,7 +15,8 @@ import com.insight.utils.pojo.base.Search;
 import com.insight.utils.pojo.base.TreeBase;
 import com.insight.utils.pojo.user.User;
 import com.insight.utils.pojo.user.UserDto;
-import com.insight.utils.redis.Redis;
+import com.insight.utils.redis.HashOps;
+import com.insight.utils.redis.KeyOps;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Transactional;
@@ -152,12 +153,12 @@ public class ManageServiceImpl implements ManageService {
         var data = getUserById(id);
 
         // 清理缓存
-        Redis.deleteKey("ID:" + data.getAccount());
-        Redis.deleteKey("ID:" + data.getMobile());
-        Redis.deleteKey("ID:" + data.getEmail());
-        Redis.deleteKey("ID:" + data.getUnionId());
-        Redis.deleteKey("User:" + id);
-        Redis.deleteKey("UserToken:" + id);
+        KeyOps.delete("ID:" + data.getAccount());
+        KeyOps.delete("ID:" + data.getMobile());
+        KeyOps.delete("ID:" + data.getEmail());
+        KeyOps.delete("ID:" + data.getUnionId());
+        KeyOps.delete("User:" + id);
+        KeyOps.delete("UserToken:" + id);
 
         // 删除数据
         mapper.deleteUser(id);
@@ -177,10 +178,14 @@ public class ManageServiceImpl implements ManageService {
             return;
         }
 
+        if (info.getTenantId() != null){
+            mapper.disableUser(info.getTenantId(), id, status);
+        }
+
         // 更新缓存
         String key = "User:" + id;
-        if (Redis.hasKey(key)) {
-            Redis.setHash(key, "invalid", status);
+        if (KeyOps.hasKey(key)) {
+            HashOps.put(key, "invalid", status);
         }
 
         mapper.updateStatus(id, status);
@@ -198,8 +203,8 @@ public class ManageServiceImpl implements ManageService {
         var password = Util.md5("123456");
         mapper.updatePassword(id, password);
         String key = "User:" + id;
-        if (Redis.hasKey(key)) {
-            Redis.setHash(key, "password", password);
+        if (KeyOps.hasKey(key)) {
+            HashOps.put(key, "password", password);
         }
     }
 
