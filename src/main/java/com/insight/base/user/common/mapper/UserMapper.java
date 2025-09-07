@@ -26,7 +26,7 @@ public interface UserMapper {
     @Select("""
             <script>
             select u.id, group_concat(t.name) as tenant, u.type, u.name, u.account, u.mobile, u.email, r.role_name, r.role_id,
-                   u.invalid, u.creator, u.created_time
+                   ifnull(a.invalid, u.invalid) as invalid, u.creator, u.created_time
             from ibu_user u
               <if test = 'longSet != null and longSet.size() > 0'>
               join ibo_organize_member m on m.user_id = u.id and m.post_id in
