@@ -97,6 +97,7 @@ public class Core {
         } else {
             if (user.getTenantId() != null){
                 mapper.disableUser(user.getTenantId(), user.getId(), true);
+                return null;
             }
 
             // 清理失效缓存数据
