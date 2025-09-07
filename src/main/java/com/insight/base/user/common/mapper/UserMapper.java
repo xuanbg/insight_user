@@ -39,7 +39,7 @@ public interface UserMapper {
                          group by m.member_id) r on r.member_id = u.id
             <where>
               <if test = 'tenantId != null'>and a.tenant_id = #{tenantId}</if>
-              <if test = 'invalid != null'>and u.invalid = #{invalid}</if>
+              <if test = 'invalid != null'>and invalid = #{invalid}</if>
               <if test = 'keyword != null'>and (u.id = #{keyword} or u.code = #{keyword} or u.account = #{keyword}
               or u.mobile = #{keyword} or u.name like concat('%',#{keyword},'%'))</if>
             </where>
