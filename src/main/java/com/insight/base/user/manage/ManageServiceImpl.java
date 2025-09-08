@@ -178,7 +178,7 @@ public class ManageServiceImpl implements ManageService {
             return;
         }
 
-        if (info.getTenantId() != null){
+        if (info.getTenantId() != null) {
             mapper.disableUser(info.getTenantId(), id, status);
             return;
         }
@@ -200,11 +200,8 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public void resetPassword(LoginInfo info, Long id) {
-        if (info.getTenantId() != null) {
-            var notUnique = mapper.isNotUnique(id);
-            if(notUnique != null && notUnique) {
-                return;
-            }
+        if (info.getTenantId() != null && mapper.isNotUnique(id)) {
+            throw new BusinessException("您无权重置该用户的密码");
         }
 
         var password = Util.md5("123456");
