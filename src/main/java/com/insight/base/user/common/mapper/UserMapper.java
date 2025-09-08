@@ -194,14 +194,13 @@ public interface UserMapper {
      * @return 用户ID
      */
     @Select("""
-            select count(u.id)
+            select if(count(u.id) > 1, 1, 0)
             from ibu_user u
               join ibt_tenant_user r on r.user_id = u.id
             where u.id = #{id}
-            group by u.id
-            having count(distinct r.id) = 1;
+            group by u.id;
             """)
-    Boolean isUnique(Long id);
+    Boolean isNotUnique(Long id);
 
     /**
      * 更新密码
