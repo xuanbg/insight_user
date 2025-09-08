@@ -188,6 +188,22 @@ public interface UserMapper {
     void updateUser(UserDto user);
 
     /**
+     * 用户身份是否唯一
+     *
+     * @param id 用户ID
+     * @return 用户ID
+     */
+    @Select("""
+            select count(u.id)
+            from ibu_user u
+              join ibt_tenant_user r on r.user_id = u.id
+            where u.id = #{id}
+            group by u.id
+            having count(distinct r.id) = 1;
+            """)
+    Boolean isUnique(Long id);
+
+    /**
      * 更新密码
      *
      * @param id       用户ID

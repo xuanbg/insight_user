@@ -200,7 +200,10 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public void resetPassword(LoginInfo info, Long id) {
-        var data = getUserById(id);
+        if (info.getTenantId() != null && mapper.isUnique(id)) {
+            return;
+        }
+
         var password = Util.md5("123456");
         mapper.updatePassword(id, password);
         String key = "User:" + id;
