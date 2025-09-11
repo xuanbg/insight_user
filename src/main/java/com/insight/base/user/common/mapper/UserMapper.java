@@ -197,7 +197,6 @@ public interface UserMapper {
             select if(count(u.id) > 1, 1, 0)
             from ibu_user u
               left join ibt_tenant_user r on r.user_id = u.id
-                and r.invalid = 0
             where u.id = #{id}
             group by u.id;
             """)
