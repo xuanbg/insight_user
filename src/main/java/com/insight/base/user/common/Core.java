@@ -95,11 +95,6 @@ public class Core {
                 mapper.addRoleMember(user.getId(), roleIds);
             }
         } else {
-            if (user.getTenantId() != null){
-                mapper.disableUser(user.getTenantId(), user.getId(), true);
-                return null;
-            }
-
             // 清理失效缓存数据
             var account = data.getAccount();
             if (!account.equals(user.getAccount())) {
