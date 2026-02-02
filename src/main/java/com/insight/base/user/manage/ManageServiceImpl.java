@@ -202,7 +202,7 @@ public class ManageServiceImpl implements ManageService {
     public void resetPassword(LoginInfo info, Long id) {
         var data = getUserById(id);
         if ("123".equals(data.getPassword())){
-            throw new BusinessException("您的密码已废弃，不能重置密码");
+            throw new BusinessException("该用户密码已废弃，不能重置密码");
         }
 
         var password = Util.md5("123456");
