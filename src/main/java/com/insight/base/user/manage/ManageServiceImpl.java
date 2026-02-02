@@ -200,8 +200,9 @@ public class ManageServiceImpl implements ManageService {
      */
     @Override
     public void resetPassword(LoginInfo info, Long id) {
-        if (info.getTenantId() != null && mapper.isNotUnique(id)) {
-            throw new BusinessException("您无权重置该用户的密码");
+        var data = getUserById(id);
+        if ("123".equals(data.getPassword())){
+            throw new BusinessException("您的密码已废弃，不能重置密码");
         }
 
         var password = Util.md5("123456");

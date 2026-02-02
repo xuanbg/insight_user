@@ -188,19 +188,6 @@ public interface UserMapper {
     void updateUser(UserDto user);
 
     /**
-     * 用户身份是否唯一
-     *
-     * @param id 用户ID
-     * @return 用户ID
-     */
-    @Select("""
-            select password = '123'
-            from ibu_user
-            where id = #{id};
-            """)
-    Boolean isNotUnique(Long id);
-
-    /**
      * 更新密码
      *
      * @param id       用户ID
