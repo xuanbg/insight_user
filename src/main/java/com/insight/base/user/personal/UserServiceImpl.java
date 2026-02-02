@@ -194,6 +194,9 @@ public class UserServiceImpl implements UserService {
     public void changePassword(PasswordDto dto) {
         var id = dto.getId();
         var data = getUserById(id);
+        if ("123".equals(data.getPassword())){
+            throw new BusinessException("您的密码已废弃，不能修改密码");
+        }
 
         var old = dto.getOld();
         if (Util.isEmpty(old) || !old.equals(data.getPassword())) {
@@ -219,15 +222,20 @@ public class UserServiceImpl implements UserService {
             return reply;
         }
 
-        // 验证用户
         var mobile = reply.getData().toString();
+        var id = Long.valueOf(StringOps.get("ID:" + mobile));
+        var data = getUserById(id);
+        if ("123".equals(data.getPassword())){
+            throw new BusinessException("您的密码已废弃，不能重置密码");
+        }
+
+        // 验证用户
         var result = authClient.generateCode(new CodeDto(mobile));
         if (!result.getSuccess()) {
             return result;
         }
 
         // 获取旧密码用于计算签名
-        var id = Long.valueOf(StringOps.get("ID:" + mobile));
         var key = "User:" + id;
         var pw = HashOps.get(key, "password");
 

